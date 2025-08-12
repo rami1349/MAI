@@ -1,0 +1,208 @@
+//
+//  HomeIphone.swift
+//  Assistant
+//
+//  Created by Ramiro  on 3/2/26.
+//
+//  SIMPLIFIED HOME LAYOUT
+//  - Focus Now: Top 5 priority tasks (what needs attention)
+//  - Today habits (quick daily tracking)
+//  - Timeline: Merged tasks + events for today/tomorrow
+//  - All Tasks: Search + full task list
+//  - Groups: Task organization
+//
+//  Empty-state inline CTAs appear when sections are empty,
+//  doubling as tour targets for first-time users.
+
+import SwiftUI
+
+extension HomeView {
+    
+    // MARK: - iPhone Layout (Linear Scroll)
+    
+    var iPhoneLayout: some View {
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: Luxury.Spacing.xl) {
+                // Header (includes date + greeting)
+                headerSection
+                
+                // ── Tasks Section ──
+                if !derived.focusTasks.isEmpty {
+                    HomeFocusNowSection(
+                        tasks: derived.focusTasks,
+                        groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
+                        onSelectTask: { selectedTask = $0 },
+                        onCompleteTask: { task in
+                            await familyVM.updateTaskStatus(task, to: .completed)
+                        }
+                    )
+                    .tourTarget("home.focusNow")
+                } else if derived.activeTasks.isEmpty {
+                    addTaskCTA
+                        .padding(.horizontal, Luxury.Spacing.screenH)
+                }
+                
+                // ── Habits Section ──
+                if !habitVM.habits.isEmpty {
+                    QuickHabitsWidget()
+                        .tourTarget("home.habitsWidget")
+                        .padding(.horizontal, Luxury.Spacing.screenH)
+                } else {
+                    addHabitCTA
+                        .padding(.horizontal, Luxury.Spacing.screenH)
+                }
+                
+                // Calendar Permission (if needed)
+                if eventKitService.authStatus == .denied || eventKitService.authStatus == .notDetermined {
+                    CalendarPermissionPrompt(
+                        authStatus: eventKitService.authStatus,
+                        onRequestAccess: {
+                            Task {
+                                await eventKitService.requestAccessIfNeeded()
+                                await eventKitService.loadEvents()
+                            }
+                        }
+                    )
+                    .padding(.horizontal, Luxury.Spacing.screenH)
+                }
+                
+                // ── Events / Timeline Section ──
+                if !derived.timelineItems.isEmpty {
+                    HomeTimelineSection(
+                        items: derived.timelineItems,
+                        groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
+                        memberLookup: { familyMemberVM.getMember(by: $0) },
+                        onSelectTask: { selectedTask = $0 },
+                        onDeleteEvent: deleteUpcomingEvent
+                    )
+                    .tourTarget("home.timeline")
+                }
+                
+                if !derived.weekEvents.isEmpty {
+                    HomeWeekEventsSection(
+                        events: derived.weekEvents,
+                        isLoading: eventKitService.isLoading,
+                        onDeleteEvent: deleteUpcomingEvent
+                    )
+                    .tourTarget("home.upcomingEvents")
+                } else if derived.timelineItems.isEmpty {
+                    addEventCTA
+                        .padding(.horizontal, Luxury.Spacing.screenH)
+                }
+                
+                // All Tasks (search + full list) — only show when tasks exist
+                if !derived.activeTasks.isEmpty || !derived.completedTasks.isEmpty {
+                    HomeUnifiedTaskList(
+                        tasks: derived.displayedTasks,
+                        totalActive: derived.activeTasks.count,
+                        completedCount: derived.completedTasks.count,
+                        searchText: $derived.searchText,
+                        showCompleted: $derived.showCompleted,
+                        isSearchActive: !derived.searchText.isEmpty,
+                        groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
+                        memberLookup: { familyMemberVM.getMember(by: $0) },
+                        onSelectTask: { selectedTask = $0 },
+                        onCompleteTask: { task in
+                            await familyVM.updateTaskStatus(task, to: .completed)
+                        },
+                        onDeleteTask: { task in
+                            await familyVM.deleteTask(task)
+                        }
+                    )
+                }
+                
+                // Task Groups
+                if !derived.myVisibleGroups.isEmpty {
+                    HomeCompactGroupsSection(
+                        groups: derived.myVisibleGroups,
+                        onSelectGroup: { showTaskGroup = $0 },
+                        onDeleteGroup: { group in
+                            await familyVM.deleteTaskGroup(group)
+                        }
+                    )
+                }
+                
+                // Pending Verification (for parents)
+                if !derived.myPendingVerificationTasks.isEmpty {
+                    HomePendingVerificationSection(
+                        tasks: derived.myPendingVerificationTasks
+                    )
+                }
+                
+                Spacer().frame(height: 120)
+            }
+            .padding(.top, Luxury.Spacing.md)
+        }
+        .refreshable {
+            await refreshData()
+        }
+    }
+}
+
+// MARK: - Inline CTA (Empty State Action Card)
+
+/// Compact inline card shown when a home section is empty.
+/// Doubles as a tour target for first-time onboarding.
+struct HomeInlineCTA: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let subtitle: String
+    let buttonLabel: String
+    let action: () -> Void
+    
+    var body: some View {
+        VStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: Luxury.Spacing.md) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(iconColor.opacity(0.1))
+                        .frame(width: 44, height: 44)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(iconColor)
+                }
+                
+                // Text
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(Luxury.Typography.label())
+                        .foregroundColor(.textPrimary)
+                    
+                    Text(subtitle)
+                        .font(Luxury.Typography.caption())
+                        .foregroundColor(.textSecondary)
+                        .lineLimit(2)
+                }
+                
+                Spacer(minLength: 0)
+            }
+            
+            // Action button
+            Button(action: action) {
+                HStack(spacing: Luxury.Spacing.xs) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text(buttonLabel)
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Luxury.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                        .fill(iconColor)
+                )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(Luxury.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+                .fill(Color.themeCardBackground)
+        )
+        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+    }
+}
