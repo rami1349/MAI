@@ -33,11 +33,11 @@ struct FamilySetupView: View {
                         Text("\(L10n.hi) \(authViewModel.currentUser?.displayName ?? "")!")
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         Text(L10n.letSetupFamily)
                             .font(.subheadline)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                     
                     // Toggle
@@ -50,7 +50,7 @@ struct FamilySetupView: View {
                     if let error = authViewModel.errorMessage {
                         Text(error)
                             .font(.caption)
-                            .foregroundStyle(Color.accentRed)
+                            .foregroundStyle(.accentRed)
                             .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                     }
                     
@@ -75,7 +75,7 @@ struct FamilySetupView: View {
                         authViewModel.signOut()
                     }
                     .font(.subheadline)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     
                     Spacer()
                 }
@@ -91,7 +91,7 @@ struct FamilySetupView: View {
                 Text(L10n.createFamily)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(isCreating ? .white : Color.textSecondary)
+                    .foregroundStyle(isCreating ? .textOnAccent : .textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, DS.Spacing.md)
                     .background(
@@ -105,7 +105,7 @@ struct FamilySetupView: View {
                 Text(L10n.joinFamily)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(!isCreating ? .white : Color.textSecondary)
+                    .foregroundStyle(!isCreating ? .textOnAccent : .textSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, DS.Spacing.md)
                     .background(
@@ -138,7 +138,7 @@ struct FamilySetupView: View {
                 
                 Text(L10n.createFamilyMessage)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             } else {
                 // Invite code with help
@@ -153,7 +153,7 @@ struct FamilySetupView: View {
                 
                 Text(L10n.enterInviteCode)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             }
         }

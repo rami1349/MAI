@@ -11,14 +11,14 @@
 //  PERFORMANCE: Snapshot provider pattern
 //  - ViewModels passed as parameters (not @Environment)
 //  - Minimizes cascade re-renders
-//  - Only 2 @Environment kept (ThemeManager, TourManager)
+//  - Only 2 @Environment kept
 //
 
 import SwiftUI
 import EventKit
 
 struct HomeView: View {
-    // MARK: - Essential Environment (migrated to @Observable)
+    // MARK: - Essential EnvironmentObjects (kept to 2)
     @Environment(ThemeManager.self) var themeManager
     @Environment(TourManager.self) var tourManager
     
@@ -33,23 +33,7 @@ struct HomeView: View {
     // MARK: - Environment
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.adaptiveLayout) var layout
-    // MARK: - Explicit Init (required because private properties make memberwise init private)
-
-    init(
-        resetTrigger: UUID,
-        authVM: AuthViewModel,
-        familyVM: FamilyViewModel,
-        taskVM: TaskViewModel,
-        habitVM: HabitViewModel,
-        notificationVM: NotificationViewModel
-    ) {
-        self.resetTrigger = resetTrigger
-        self.authVM = authVM
-        self.familyVM = familyVM
-        self.taskVM = taskVM
-        self.habitVM = habitVM
-        self.notificationVM = notificationVM
-    }
+    
     // MARK: - Convenience Accessors
     var familyMemberVM: FamilyMemberViewModel { familyVM.familyMemberVM }
     var calendarVM: CalendarViewModel { familyVM.calendarVM }
@@ -67,9 +51,9 @@ struct HomeView: View {
     @State var showAddHabit = false
     @State var showAddEvent = false
     
-    // MARK: - EventKit (@Observable singleton — plain property)
+    // MARK: - EventKit
     
-    private var eventKitService = EventKitCalendarService.shared
+    var eventKitService = EventKitCalendarService.shared
     
     // MARK: - Derived State Cache
     
@@ -78,7 +62,7 @@ struct HomeView: View {
     @State var cachedUpcomingEvents: [UpcomingEvent] = []
     
     // MARK: - Rebuild Debounce
-    /// Coalesces rapid-fire fingerprint onChange notifications
+    /// Coalesces rapid-fire @Observable change notifications
     /// into a single rebuild pass after 150ms of quiet.
     @State private var rebuildTask: Task<Void, Never>?
     @State private var pendingEventRecompute = false
@@ -89,27 +73,6 @@ struct HomeView: View {
         horizontalSizeClass == .regular
     }
     
-    // MARK: - Fingerprints (replace objectWillChange for @Observable VMs)
-    
-    private var taskFingerprint: Int {
-        var hasher = Hasher()
-        for t in taskVM.activeTasks { hasher.combine(t.id); hasher.combine(t.status); hasher.combine(t.dueDate) }
-        return hasher.finalize()
-    }
-    
-    private var memberFingerprint: Int {
-        var hasher = Hasher()
-        for m in familyMemberVM.familyMembers { hasher.combine(m.id) }
-        for g in familyMemberVM.taskGroups { hasher.combine(g.id) }
-        return hasher.finalize()
-    }
-    
-    private var calendarFingerprint: Int {
-        var hasher = Hasher()
-        for e in calendarVM.events { hasher.combine(e.id); hasher.combine(e.startDate) }
-        return hasher.finalize()
-    }
-    
     // myPendingVerificationTasks → moved to derived.myPendingVerificationTasks
     // myVisibleGroups → moved to derived.myVisibleGroups
     
@@ -118,7 +81,7 @@ struct HomeView: View {
     var addTaskCTA: some View {
         HomeInlineCTA(
             icon: "checkmark.circle",
-            iconColor: .accentPrimary,
+            iconColor: Color.accentPrimary,
             title: "Create Your First Task",
             subtitle: "Organize to-dos and chores for the whole family.",
             buttonLabel: "Add Task",
@@ -130,7 +93,7 @@ struct HomeView: View {
     var addHabitCTA: some View {
         HomeInlineCTA(
             icon: "flame",
-            iconColor: .accentGreen,
+            iconColor: Color.accentGreen,
             title: "Start Tracking Habits",
             subtitle: "Build daily routines like reading, exercise, or chores.",
             buttonLabel: "Add Habit",
@@ -142,7 +105,7 @@ struct HomeView: View {
     var addEventCTA: some View {
         HomeInlineCTA(
             icon: "calendar.badge.plus",
-            iconColor: .accentOrange,
+            iconColor: Color.accentOrange,
             title: "Add a Family Event",
             subtitle: "Birthdays, appointments, and activities in one place.",
             buttonLabel: "Add Event",
@@ -171,7 +134,7 @@ struct HomeView: View {
                     ProgressView()
                     Text(L10n.loading)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -217,16 +180,17 @@ struct HomeView: View {
         .task {
             await loadData()
         }
-        // PERF: Fingerprint-based rebuild (replaces .onReceive(objectWillChange) for @Observable)
-        // Each fingerprint hashes the data arrays so SwiftUI only triggers onChange when
-        // actual data changes — not on every @Published mutation (isLoading, errorMessage, etc.).
-        .onChange(of: taskFingerprint) { _, _ in
+        // PERF: Debounced rebuild — @Observable tracks per-property access
+        // (isLoading, errorMessage, selectedDate, etc.), not just data arrays.
+        // A single Firestore snapshot fires isLoading=true → data → isLoading=false = 3 events.
+        // With 3 VMs that's up to 9 rebuilds per snapshot. Debounce coalesces to 1.
+        .onReceive(taskVM.objectWillChange) { _ in
             scheduleRebuild()
         }
-        .onChange(of: memberFingerprint) { _, _ in
+        .onReceive(familyMemberVM.objectWillChange) { _ in
             scheduleRebuild(recomputeEvents: true)
         }
-        .onChange(of: calendarFingerprint) { _, _ in
+        .onReceive(calendarVM.objectWillChange) { _ in
             scheduleRebuild(recomputeEvents: true)
         }
         .onChange(of: eventKitService.events.count) { _, _ in scheduleRebuild(recomputeEvents: true) }
@@ -241,12 +205,12 @@ struct HomeView: View {
                 // Date (small, muted) - on top
                 Text(Self.fullDateFormatter.string(from: Date()))
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                 
                 // Large greeting with name
                 Text("\(greetingText), \(authVM.currentUser?.displayName ?? "")!")
-                    .font(.system(size: 28, weight: .bold, design: .default))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(DS.Typography.displayMedium())
+                    .foregroundStyle(.textPrimary)
             }
             
             Spacer()
@@ -255,18 +219,13 @@ struct HomeView: View {
             Button(action: { showNotifications = true }) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: "bell")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundStyle(Color.textPrimary)
+                        .font(DS.Typography.heading())
+                        .foregroundStyle(.textPrimary)
                         .frame(width: 44, height: 44)
                         .background(
                             Circle()
                                 .fill(Color.themeCardBackground)
-                                .shadow(
-                                    color: Color.black.opacity(0.04),
-                                    radius: 6,
-                                    x: 0,
-                                    y: 2
-                                )
+                                .elevation1()
                         )
                     
                     if notificationVM.unreadCount > 0 {
@@ -296,8 +255,8 @@ struct HomeView: View {
     /// Accumulates the `recomputeEvents` flag across coalesced calls so event
     /// recomputation isn't lost when a non-event call arrives first.
     ///
-    /// Fingerprint-based onChange fires only when actual data changes,
-    /// but multiple VMs can change near-simultaneously, so debounce still helps.
+    /// Before: 9 rebuilds per Firestore snapshot (3 VMs × isLoading + data + isLoading)
+    /// After:  1 rebuild per snapshot, 150ms after the last mutation
     func scheduleRebuild(recomputeEvents: Bool = false) {
         if recomputeEvents { pendingEventRecompute = true }
         rebuildTask?.cancel()
@@ -374,7 +333,7 @@ struct HomeView: View {
     }
 }
 
-// MARK: - Luxury Circular Progress View
+// MARK: - Circular Progress View
 
 struct CircularProgressView: View {
     let progress: Double
@@ -390,8 +349,8 @@ struct CircularProgressView: View {
                 .rotationEffect(.degrees(-90))
             
             Text("\(Int(progress * 100))%")
-                .font(.system(size: 8, weight: .medium, design: .rounded))
-                .foregroundStyle(Color.textSecondary)
+                .font(DS.Typography.micro())
+                .foregroundStyle(.textSecondary)
         }
     }
 }
@@ -401,7 +360,7 @@ struct CircularProgressView: View {
 #Preview("iPhone") {
     let authVM = AuthViewModel()
     let familyVM = FamilyViewModel()
-    NavigationStack {
+    return NavigationStack {
         HomeView(
             resetTrigger: UUID(),
             authVM: authVM,

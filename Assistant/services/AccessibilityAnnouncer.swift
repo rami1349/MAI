@@ -151,7 +151,7 @@ struct AccessibleTabBarButton: View {
         }) {
             Image(systemName: icon)
                 .font(.system(size: iconSize)) // DT-exempt: icon sizing
-                .foregroundStyle(isSelected ? Color.accentPrimary : Color.textSecondary)
+                .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 44) // Minimum touch target
         }
@@ -206,7 +206,7 @@ struct AccessibleFABButton: View {
                 Image(systemName: "plus")
                     .font(iconSize)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
             }
         }
         .accessibilityLabel("Add new \(contextLabel)")
@@ -466,7 +466,7 @@ extension View {
         AccessibleFABButton(action: {}, contextLabel: "task")
         
         // Test Dynamic Type scaling
-        Text("Dynamic Type Test")
+        Text(L10n.dynamicTypeTest)
             .dynamicTypeScaling()
     }
     .padding()

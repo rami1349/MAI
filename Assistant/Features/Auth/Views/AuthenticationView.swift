@@ -1,13 +1,6 @@
 //
 //  AuthenticationView.swift
 //  FamilyHub
-//
-//  LUXURY CALM REDESIGN
-//  - Elegant, minimal authentication flow
-//  - Soft shadows, premium typography
-//  - FIXED: Removed toolbar Done button (tap outside to dismiss)
-//  - Uses existing FieldHint and PasswordStrengthBar
-//
 
 import SwiftUI
 import AuthenticationServices
@@ -27,7 +20,7 @@ struct AuthenticationView: View {
     
     var body: some View {
         ZStack {
-            // Luxury calm background
+            // Calm background
             Color.themeSurfacePrimary
                 .ignoresSafeArea()
             
@@ -71,7 +64,7 @@ enum AuthErrorField {
     }
 }
 
-// MARK: - Social Login Buttons (Luxury)
+// MARK: - Social Login Buttons
 
 struct SocialLoginButtonsView: View {
     @Environment(AuthViewModel.self) var authViewModel
@@ -92,7 +85,7 @@ struct SocialLoginButtonsView: View {
                     Text(L10n.continueWithGoogle)
                         .font(DS.Typography.label())
                 }
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
                 .background(
@@ -214,7 +207,7 @@ struct AppleSignInButtonRepresentable: UIViewRepresentable {
     }
 }
 
-// MARK: - Or Divider (Luxury)
+// MARK: - Or Divider
 
 struct OrDivider: View {
     var body: some View {
@@ -225,7 +218,7 @@ struct OrDivider: View {
             
             Text(L10n.orDivider)
                 .font(DS.Typography.caption())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             
             Rectangle()
                 .fill(Color.textTertiary.opacity(0.2))
@@ -234,9 +227,9 @@ struct OrDivider: View {
     }
 }
 
-// MARK: - Luxury Error Banner
+// MARK: - Error Banner
 
-struct LuxuryErrorBanner: View {
+struct ErrorBanner: View {
     let message: String
     
     var body: some View {
@@ -248,19 +241,19 @@ struct LuxuryErrorBanner: View {
                 .font(DS.Typography.caption())
                 .multilineTextAlignment(.leading)
         }
-        .foregroundStyle(Color(hex: "E57373"))
+        .foregroundStyle(.statusError)
         .padding(DS.Spacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: DS.Radius.md)
-                .fill(Color(hex: "E57373").opacity(0.08))
+                .fill(Color.statusError.opacity(0.08))
         )
     }
 }
 
-// MARK: - Luxury Primary Button
+// MARK: - Auth Button
 
-struct LuxuryAuthButton: View {
+struct AuthButton: View {
     let title: String
     var isLoading: Bool = false
     var isDisabled: Bool = false
@@ -278,7 +271,7 @@ struct LuxuryAuthButton: View {
                 Text(title)
                     .font(DS.Typography.label())
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(.textOnAccent)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
             .background(
@@ -357,11 +350,11 @@ struct SignInView: View {
                     
                     Text(L10n.appTitle)
                         .font(DS.Typography.displayMedium())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Text(L10n.manageFamily)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 // Social Login
@@ -414,7 +407,7 @@ struct SignInView: View {
                         }) {
                             Text(L10n.forgotPassword)
                                 .font(DS.Typography.captionMedium())
-                                .foregroundStyle(Color.accentPrimary)
+                                .foregroundStyle(.accentPrimary)
                         }
                     }
                 }
@@ -423,13 +416,13 @@ struct SignInView: View {
                 
                 // Error
                 if let error = authViewModel.errorMessage {
-                    LuxuryErrorBanner(message: error)
+                    ErrorBanner(message: error)
                         .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
                 
                 // Sign In Button
-                LuxuryAuthButton(
+                AuthButton(
                     title: L10n.signIn,
                     isLoading: authViewModel.isLoading,
                     isDisabled: email.isEmpty || password.isEmpty,
@@ -441,7 +434,7 @@ struct SignInView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.dontHaveAccount)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Button(action: {
                         focusedField = nil
@@ -449,7 +442,7 @@ struct SignInView: View {
                     }) {
                         Text(L10n.signUp)
                             .font(DS.Typography.label())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 
@@ -581,11 +574,11 @@ struct SignUpView: View {
                     
                     Text(L10n.createAccount)
                         .font(DS.Typography.displayMedium())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Text(L10n.joinFamily)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 // Social Login
@@ -638,18 +631,18 @@ struct SignUpView: View {
                         HStack(spacing: DS.Spacing.md) {
                             Image(systemName: "calendar")
                                 .font(DS.Typography.body())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .frame(width: 24)
                             
                             Text(dateOfBirth.formattedDate)
                                 .font(DS.Typography.body())
-                                .foregroundStyle(Color.textPrimary)
+                                .foregroundStyle(.textPrimary)
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(DS.Typography.captionMedium())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                         .padding(.horizontal, DS.Spacing.lg)
                         .padding(.vertical, DS.Spacing.md + 2)
@@ -707,13 +700,13 @@ struct SignUpView: View {
                 
                 // Error
                 if let error = authViewModel.errorMessage {
-                    LuxuryErrorBanner(message: error)
+                    ErrorBanner(message: error)
                         .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
                 
                 // Sign Up Button
-                LuxuryAuthButton(
+                AuthButton(
                     title: L10n.createAccount,
                     isLoading: authViewModel.isLoading,
                     isDisabled: !isFormValid,
@@ -725,7 +718,7 @@ struct SignUpView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.alreadyHaveAccount)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Button(action: {
                         focusedField = nil
@@ -733,7 +726,7 @@ struct SignUpView: View {
                     }) {
                         Text(L10n.signIn)
                             .font(DS.Typography.label())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 

@@ -1,13 +1,6 @@
 //
 //  AgendaTaskRow.swift
 //
-//  DS CALM REDESIGN
-//  - Clean card design with soft shadows
-//  - Refined priority indicators
-//  - Elegant status badges
-//  - Premium typography
-//
-
 import SwiftUI
 
 // MARK: - Agenda Task Row
@@ -31,7 +24,7 @@ struct AgendaTaskRow: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(task.title)
                     .font(DS.Typography.label())
-                    .foregroundStyle(task.status == .completed ? Color.textTertiary : Color.textPrimary)
+                    .foregroundStyle(task.status == .completed ? .textTertiary : .textPrimary)
                     .strikethrough(task.status == .completed, color: Color.textTertiary)
                     .lineLimit(1)
                 
@@ -43,14 +36,14 @@ struct AgendaTaskRow: View {
                     if let time = task.scheduledTime {
                         Text(time.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                     
                     // Assignee
                     if let assignee = assignee {
                         Text(assignee.displayName)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
             }
@@ -61,13 +54,13 @@ struct AgendaTaskRow: View {
             if task.hasReward, let amount = task.rewardAmount {
                 Text(amount.currencyString)
                     .font(DS.Typography.captionMedium())
-                    .foregroundStyle(Color.accentGreen)
+                    .foregroundStyle(.accentGreen)
             }
             
             // Chevron
             Image(systemName: "chevron.right")
                 .font(DS.Typography.captionMedium())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
         }
         .padding(DS.Spacing.md)
         .background(
@@ -89,7 +82,7 @@ struct AgendaTaskRow: View {
                     .frame(width: 10, height: 10)
                 Text("To Do")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
         case .inProgress:
@@ -99,7 +92,7 @@ struct AgendaTaskRow: View {
                     .frame(width: 6, height: 6)
                 Text("In Progress")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.statusInProgress)
+                    .foregroundStyle(.statusInProgress)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, 2)
@@ -115,7 +108,7 @@ struct AgendaTaskRow: View {
                     .frame(width: 6, height: 6)
                 Text("Pending")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.statusPending)
+                    .foregroundStyle(.statusPending)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, 2)
@@ -127,7 +120,7 @@ struct AgendaTaskRow: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(DS.Typography.body())
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
         }
     }
     
@@ -135,7 +128,7 @@ struct AgendaTaskRow: View {
     
     private var priorityColor: Color {
         switch task.priority {
-        case .urgent: return Color(hex: "E57373")  // Soft red
+        case .urgent: return Color.statusError  // Soft red
         case .high: return Color(hex: "FFB74D")    // Soft orange
         case .medium: return Color.accentPrimary
         case .low: return Color.textTertiary
@@ -159,12 +152,12 @@ struct AgendaEventRow: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(event.title)
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Text(event.isAllDay ? L10n.allDay : timeRange)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()
@@ -185,7 +178,7 @@ struct AgendaEventRow: View {
                     if event.participants.count > 3 {
                         Text("+\(event.participants.count - 3)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .padding(.leading, DS.Spacing.xs)
                     }
                 }

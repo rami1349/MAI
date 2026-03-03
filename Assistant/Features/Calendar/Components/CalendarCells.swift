@@ -32,7 +32,7 @@ struct YearMonthCell: View {
                 Text(monthName)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundStyle(isCurrentMonth ? .accentRed : Color.textPrimary)
+                    .foregroundStyle(isCurrentMonth ? .accentRed : .textPrimary)
                 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 2) {
                     ForEach(Array(generateDaysInMonth().enumerated()), id: \.offset) { index, day in
@@ -132,7 +132,7 @@ struct CalendarDayCell: View {
                     .font(DS.Typography.body()).fontWeight(isSelected || isToday ? .bold : .regular)
                     .foregroundStyle(
                         isSelected ? .white :
-                            isToday ? .accentRed :
+                            isToday ? Color.accentRed :
                                 Color.textPrimary
                     )
                 

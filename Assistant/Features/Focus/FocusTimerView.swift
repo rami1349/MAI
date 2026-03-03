@@ -12,8 +12,8 @@ struct FocusTimerView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(FamilyViewModel.self) var familyViewModel
-    // PERFORMANCE FIX: Plain property for @Observable singleton
-    private var timerManager = FocusTimerManager.shared
+    // PERFORMANCE: Direct singleton reference (computed — excluded from memberwise init)
+    private var timerManager: FocusTimerManager { .shared }
     
     let task: FamilyTask
     
@@ -85,11 +85,11 @@ struct FocusTimerView: View {
             VStack(spacing: DS.Spacing.sm) {
                 Text(L10n.focusTimer)
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(task.title)
                     .font(.subheadline)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, DS.Spacing.jumbo)
@@ -113,15 +113,15 @@ struct FocusTimerView: View {
                         Image(systemName: "minus")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundStyle(selectedMinutes <= minTime ? Color.textTertiary : Color.textPrimary)
+                            .foregroundStyle(selectedMinutes <= minTime ? .textTertiary : .textPrimary)
                     }
                 }
                 .disabled(selectedMinutes <= minTime)
                 
                 // Time display
                 Text("\(selectedMinutes) mins")
-                    .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(DS.Typography.displayLarge()) // was .rounded
+                    .foregroundStyle(.textPrimary)
                     .frame(minWidth: 140)
                 
                 // Plus button
@@ -138,7 +138,7 @@ struct FocusTimerView: View {
                         Image(systemName: "plus")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundStyle(selectedMinutes >= maxTime ? Color.textTertiary : Color.textPrimary)
+                            .foregroundStyle(selectedMinutes >= maxTime ? .textTertiary : .textPrimary)
                     }
                 }
                 .disabled(selectedMinutes >= maxTime)
@@ -153,7 +153,7 @@ struct FocusTimerView: View {
                     Text(L10n.startFocus)
                 }
                 .font(DS.Typography.heading())
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.lg)
                 .background(
@@ -194,7 +194,7 @@ struct FocusTimerView: View {
             }
             .font(.subheadline)
             .fontWeight(.medium)
-            .foregroundStyle(Color.accentPrimary)
+            .foregroundStyle(.accentPrimary)
             .padding(.horizontal, DS.Spacing.lg)
             .padding(.vertical, DS.Spacing.sm)
             .background(Capsule().fill(Color.accentPrimary.opacity(0.12)))
@@ -212,8 +212,8 @@ struct FocusTimerView: View {
                     .stroke(
                         LinearGradient(
                             colors: timerManager.isBreakMode
-                                ? [.accentTertiary, .accentTertiary]
-                                : [.accentPrimary, .accentSecondary],
+                                ? [Color.accentTertiary, Color.accentTertiary]
+                                : [Color.accentPrimary, Color.accentSecondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -239,8 +239,8 @@ struct FocusTimerView: View {
                 VStack(spacing: DS.Spacing.sm) {
                     // Time display
                     Text(timerManager.formattedTime)
-                        .font(.system(size: DS.Timer.displayFont, weight: .bold, design: .rounded))
-                        .foregroundStyle(Color.textPrimary)
+                        .font(.system(size: DS.Timer.displayFont, weight: .bold, design: .rounded)) // DT-exempt: timer display
+                        .foregroundStyle(.textPrimary)
                         .contentTransition(.numericText())
                     
                     // State indicator
@@ -250,7 +250,7 @@ struct FocusTimerView: View {
                             .frame(width: 8, height: 8)
                         Text(stateText)
                             .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
             }
@@ -258,7 +258,7 @@ struct FocusTimerView: View {
             // Task title
             Text(task.title)
                 .font(.headline)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DS.Spacing.jumbo)
@@ -286,10 +286,10 @@ struct FocusTimerView: View {
     
     private var stateIndicatorColor: Color {
         switch timerManager.state {
-        case .running: return .statusSuccess
-        case .paused: return .statusWarning
-        case .completed: return .accentPrimary
-        default: return .textTertiary
+        case .running: return Color.statusSuccess
+        case .paused: return Color.statusWarning
+        case .completed: return Color.accentPrimary
+        default: return Color.textTertiary
         }
     }
     
@@ -302,8 +302,8 @@ struct FocusTimerView: View {
                 showTimeDial = true
             }) {
                 Image(systemName: "arrow.counterclockwise")
-                    .font(.system(size: DS.IconSize.lg))
-                    .foregroundStyle(Color.textSecondary)
+                    .font(.system(size: DS.IconSize.lg)) // DT-exempt: icon sizing
+                    .foregroundStyle(.textSecondary)
                     .frame(width: DS.Control.standard, height: DS.Control.standard)
                     .background(Circle().fill(Color.fill))
             }
@@ -312,12 +312,12 @@ struct FocusTimerView: View {
             Button(action: toggleTimer) {
                 Image(systemName: timerManager.state == .running ? "pause.fill" : "play.fill")
                     .font(.system(size: DS.IconSize.xl)) // DT-exempt: decorative icon
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .frame(width: DS.Control.fab, height: DS.Control.fab)
                     .background(
                         Circle()
                             .fill(Color.accentPrimary)
-                            .shadow(color: .accentPrimary.opacity(0.4), radius: DS.Spacing.sm, x: 0, y: DS.Spacing.xs)
+                            .shadow(color: Color.accentPrimary.opacity(0.4), radius: DS.Spacing.sm, x: 0, y: DS.Spacing.xs)
                     )
             }
             
@@ -326,8 +326,8 @@ struct FocusTimerView: View {
                 timerManager.complete()
             }) {
                 Image(systemName: "checkmark")
-                    .font(.system(size: DS.IconSize.lg))
-                    .foregroundStyle(Color.statusSuccess)
+                    .font(.system(size: DS.IconSize.lg)) // DT-exempt: icon sizing
+                    .foregroundStyle(.statusSuccess)
                     .frame(width: DS.Control.standard, height: DS.Control.standard)
                     .background(Circle().fill(Color.statusSuccess.opacity(0.15)))
             }
@@ -345,8 +345,8 @@ struct FocusTimerView: View {
                     .frame(width: DS.EmptyState.iconContainer, height: DS.EmptyState.iconContainer)
                 
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: DS.EmptyState.icon))
-                    .foregroundStyle(Color.statusSuccess)
+                    .font(.system(size: DS.EmptyState.icon)) // DT-exempt: decorative icon
+                    .foregroundStyle(.statusSuccess)
                     .scaleEffect(animateRing ? 1.0 : 0.5)
                     .animation(.spring(response: 0.5, dampingFraction: 0.6), value: animateRing)
             }
@@ -356,12 +356,12 @@ struct FocusTimerView: View {
             VStack(spacing: DS.Spacing.xs) {
                 Text(timerManager.isBreakMode ? "Break Complete!" : "Focus Session Complete!")
                     .font(DS.Typography.heading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 if !timerManager.isBreakMode {
                     Text("\(timerManager.totalSeconds / 60) minutes of focused work")
                         .font(.subheadline)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             
@@ -381,7 +381,7 @@ struct FocusTimerView: View {
                             Text(L10n.shortBreak)
                         }
                         .font(.headline)
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -399,7 +399,7 @@ struct FocusTimerView: View {
                             Text(L10n.longBreak)
                         }
                         .font(.headline)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -427,7 +427,7 @@ struct FocusTimerView: View {
                             Text(L10n.submitProof)
                         }
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -450,7 +450,7 @@ struct FocusTimerView: View {
                             Text(L10n.completeTask)
                         }
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -467,7 +467,7 @@ struct FocusTimerView: View {
                 }) {
                     Text(L10n.continueLater)
                         .font(.subheadline)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 .padding(.top, DS.Spacing.sm)
             }
@@ -580,11 +580,27 @@ struct AnimatedProgressRing: View {
 }
 
 // MARK: - Preview
-#Preview {    
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+#Preview {
+    let familyVM = FamilyViewModel()
+    FocusTimerView(
+        task: FamilyTask(
+            familyId: "test",
+            title: "Complete project review",
+            assignedBy: "user1",
+            dueDate: Date(),
+            status: .inProgress,
+            priority: .high,
+            createdAt: Date(),
+            hasReward: false,
+            requiresProof: false,
+            rewardPaid: false,
+            isRecurring: false
+        )
+    )
+    .environment(familyVM)
+    .environment(familyVM.familyMemberVM)
+    .environment(familyVM.taskVM)
+    .environment(familyVM.calendarVM)
+    .environment(familyVM.habitVM)
+    .environment(familyVM.notificationVM)
 }

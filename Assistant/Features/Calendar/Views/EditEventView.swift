@@ -91,12 +91,12 @@ struct EditEventView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.cancel) { dismiss() }
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
                     Text(L10n.editEvent)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: saveEvent) {
@@ -109,7 +109,7 @@ struct EditEventView: View {
                                 .fontWeight(.semibold)
                         }
                     }
-                    .foregroundStyle(title.isEmpty ? Color.textTertiary : Color.accentPrimary)
+                    .foregroundStyle(title.isEmpty ? .textTertiary : .accentPrimary)
                     .disabled(title.isEmpty || isLoading)
                 }
                 ToolbarItem(placement: .keyboard) {
@@ -140,11 +140,11 @@ struct EditEventView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
             Text(L10n.eventWhatHappening)
                 .font(DS.Typography.caption())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             
             TextField(L10n.eventTitlePlaceholder, text: $title)
                 .font(DS.Typography.displayMedium())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .focused($isTitleFocused)
                 .padding(.vertical, DS.Spacing.sm)
             
@@ -168,18 +168,18 @@ struct EditEventView: View {
                 HStack {
                     Image(systemName: "clock.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(formattedDateRange)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         if isAllDay {
                             Text(L10n.allDay)
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                     
@@ -188,11 +188,11 @@ struct EditEventView: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Text(L10n.change)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                         
                         Image(systemName: showDatePicker ? "chevron.up" : "chevron.down")
                             .font(DS.Typography.bodySmall())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 .padding(DS.Spacing.md)
@@ -223,12 +223,12 @@ struct EditEventView: View {
                 HStack(spacing: DS.Spacing.md) {
                     Image(systemName: "sun.max.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
                     Text(L10n.allDay)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
             }
             .tint(Color.accentPrimary)
@@ -250,12 +250,12 @@ struct EditEventView: View {
             HStack {
                 Image(systemName: "calendar")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
                 Text(L10n.starts)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -279,12 +279,12 @@ struct EditEventView: View {
             HStack {
                 Image(systemName: "calendar.badge.clock")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
                 Text(L10n.ends)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -305,18 +305,18 @@ struct EditEventView: View {
                 HStack {
                     Image(systemName: "hourglass")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.duration)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Spacer()
                     
                     Text(durationText)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -353,18 +353,18 @@ struct EditEventView: View {
                 HStack {
                     Image(systemName: "ellipsis.circle.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(showMoreOptions ? Color.accentPrimary : Color.textTertiary)
+                        .foregroundStyle(showMoreOptions ? .accentPrimary : .textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.moreOptions)
                         .font(DS.Typography.body())
-                        .foregroundStyle(showMoreOptions ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(showMoreOptions ? .textPrimary : .textSecondary)
                     
                     Spacer()
                     
                     Image(systemName: showMoreOptions ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -395,12 +395,12 @@ struct EditEventView: View {
                 HStack {
                     Image(systemName: "note.text")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.notes)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 TextField(L10n.addNotes, text: $notes, axis: .vertical)
@@ -417,12 +417,12 @@ struct EditEventView: View {
             HStack {
                 Image(systemName: "paintpalette.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
                 Text(L10n.color)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 
@@ -437,7 +437,7 @@ struct EditEventView: View {
                                 if selectedColor == color {
                                     Image(systemName: "checkmark")
                                         .font(DS.Typography.captionMedium())
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(.textOnAccent)
                                 }
                             }
                         }
@@ -552,17 +552,17 @@ private struct EditCollapsibleParticipantsRow: View {
                 HStack {
                     Image(systemName: selectedIds.isEmpty ? "person.2" : "person.2.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(selectedIds.isEmpty ? Color.textTertiary : Color.accentPrimary)
+                        .foregroundStyle(selectedIds.isEmpty ? .textTertiary : .accentPrimary)
                         .frame(width: 24)
                     
                     if selectedIds.isEmpty {
                         Text(L10n.addParticipants)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     } else {
                         Text(participantsSummary)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                             .lineLimit(1)
                     }
                     
@@ -571,7 +571,7 @@ private struct EditCollapsibleParticipantsRow: View {
                     if !selectedIds.isEmpty {
                         Text("\(selectedIds.count)")
                             .font(DS.Typography.badge())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
                             .background(Capsule().fill(Color.accentPrimary))
@@ -579,7 +579,7 @@ private struct EditCollapsibleParticipantsRow: View {
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -603,14 +603,14 @@ private struct EditCollapsibleParticipantsRow: View {
                                 
                                 Text(member.displayName)
                                     .font(DS.Typography.body())
-                                    .foregroundStyle(Color.textPrimary)
+                                    .foregroundStyle(.textPrimary)
                                 
                                 Spacer()
                                 
                                 if let id = member.id, selectedIds.contains(id) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(DS.Typography.heading())
-                                        .foregroundStyle(Color.accentPrimary)
+                                        .foregroundStyle(.accentPrimary)
                                 } else {
                                     Circle()
                                         .stroke(Color.textTertiary.opacity(0.3), lineWidth: 1.5)

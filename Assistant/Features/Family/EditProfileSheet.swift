@@ -51,7 +51,7 @@ struct EditProfileSheet: View {
                             PhotosPicker(selection: $selectedPhoto, matching: .images) {
                                 Text(L10n.changePhoto)
                                     .font(.subheadline)
-                                    .foregroundStyle(Color.accentPrimary)
+                                    .foregroundStyle(.accentPrimary)
                             }
                         }
                         Spacer()
@@ -68,10 +68,10 @@ struct EditProfileSheet: View {
                     } label: {
                         HStack {
                             Text(L10n.dateOfBirth)
-                                .foregroundStyle(Color.textPrimary)
+                                .foregroundStyle(.textPrimary)
                             Spacer()
                             Text(dateOfBirth.formattedDate)
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                     
@@ -96,7 +96,7 @@ struct EditProfileSheet: View {
                                 Group {
                                     if goal.isEmpty {
                                         Text(L10n.yearlyGoalPlaceholder)
-                                            .foregroundStyle(Color.textTertiary)
+                                            .foregroundStyle(.textTertiary)
                                             .padding(.top, DS.Spacing.sm)
                                             .padding(.leading, DS.Spacing.xs)
                                             .allowsHitTesting(false)
@@ -211,11 +211,11 @@ struct GoalSuggestionButton: View {
             HStack {
                 Text(text)
                     .font(.subheadline)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .multilineTextAlignment(.leading)
                 Spacer()
                 Image(systemName: "plus.circle")
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
             }
         }
     }

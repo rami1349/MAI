@@ -1,8 +1,5 @@
-//
 //  HomeIphone.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  SIMPLIFIED HOME LAYOUT
 //  - Focus Now: Top 5 priority tasks (what needs attention)
@@ -161,19 +158,19 @@ struct HomeInlineCTA: View {
                         .frame(width: 44, height: 44)
                     
                     Image(systemName: icon)
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(iconColor)
+                        .font(DS.Typography.heading())
+                        .foregroundStyle(iconColor)
                 }
                 
                 // Text
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(DS.Typography.label())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Text(subtitle)
                         .font(DS.Typography.caption())
-                        .foregroundColor(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .lineLimit(2)
                 }
                 
@@ -184,15 +181,15 @@ struct HomeInlineCTA: View {
             Button(action: action) {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "plus")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(DS.Typography.labelSmall())
                     Text(buttonLabel)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(DS.Typography.label())
                 }
-                .foregroundColor(.white)
+                .foregroundStyle(.textOnAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                    RoundedRectangle(cornerRadius: DS.Radius.lg)
                         .fill(iconColor)
                 )
             }
@@ -200,9 +197,9 @@ struct HomeInlineCTA: View {
         }
         .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
                 .fill(Color.themeCardBackground)
         )
-        .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)
+        .elevation1()
     }
 }

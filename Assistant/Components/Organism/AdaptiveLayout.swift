@@ -32,15 +32,8 @@ enum DeviceType {
 
 // MARK: - Adaptive Layout Environment
 
-struct AdaptiveLayoutKey: EnvironmentKey {
-    static let defaultValue = AdaptiveLayout()
-}
-
 extension EnvironmentValues {
-    var adaptiveLayout: AdaptiveLayout {
-        get { self[AdaptiveLayoutKey.self] }
-        set { self[AdaptiveLayoutKey.self] = newValue }
-    }
+    @Entry var adaptiveLayout = AdaptiveLayout()
 }
 
 struct AdaptiveLayout {
@@ -402,15 +395,8 @@ struct OrientationInfo {
     let isUpsideDown: Bool
 }
 
-struct OrientationKey: EnvironmentKey {
-    static let defaultValue = OrientationInfo(isLandscape: false, isPortrait: true, isUpsideDown: false)
-}
-
 extension EnvironmentValues {
-    var orientationInfo: OrientationInfo {
-        get { self[OrientationKey.self] }
-        set { self[OrientationKey.self] = newValue }
-    }
+    @Entry var orientationInfo = OrientationInfo(isLandscape: false, isPortrait: true, isUpsideDown: false)
 }
 
 // MARK: - Split View / Slide Over Support
@@ -437,7 +423,7 @@ extension View {
 
 #Preview("Adaptive Grid - iPad") {
     AdaptiveGrid(minColumnWidth: 300) {
-        ForEach(0..<6) { i in
+        ForEach(0..<6, id: \.self) { i in
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.accentPrimary.opacity(0.2))
                 .frame(height: 100)

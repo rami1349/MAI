@@ -29,26 +29,26 @@ struct DeleteAccountSheet: View {
                 // Warning icon
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: DS.IconSize.xxxl)) // DT-exempt: icon sizing
-                    .foregroundStyle(Color.accentRed)
+                    .foregroundStyle(.accentRed)
                     .padding(.top, DS.Spacing.xl)
                 
                 // Title
                 Text(L10n.deleteAccount)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 // Warning message
                 VStack(spacing: DS.Spacing.md) {
                     Text(L10n.deleteAccountPermanent)
                         .font(.subheadline)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                     
                     Text(L10n.deleteAccountRemoves)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                         deleteWarningItem("Your profile and account")
@@ -62,7 +62,7 @@ struct DeleteAccountSheet: View {
                     
                     Text(L10n.tasksUnassignedNote)
                         .font(.caption)
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .italic()
                 }
                 .padding(.horizontal)
@@ -108,7 +108,7 @@ struct DeleteAccountSheet: View {
         VStack(spacing: DS.Spacing.lg) {
             Text(L10n.typeToConfirm(requiredConfirmation))
                 .font(.subheadline)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             TextField(L10n.typeDeletePlaceholder, text: $confirmText)
                 .textFieldStyle(.roundedBorder)
@@ -118,7 +118,7 @@ struct DeleteAccountSheet: View {
             if let error = authViewModel.errorMessage {
                 Text(error)
                     .font(.caption)
-                    .foregroundStyle(Color.accentRed)
+                    .foregroundStyle(.accentRed)
                     .padding(.horizontal)
             }
             
@@ -135,7 +135,7 @@ struct DeleteAccountSheet: View {
             }) {
                 Text(L10n.deleteMyAccount)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(
@@ -152,7 +152,7 @@ struct DeleteAccountSheet: View {
         VStack(spacing: DS.Spacing.lg) {
             Text(L10n.reenterPassword)
                 .font(.subheadline)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             SecureField("Password", text: $password)
                 .textFieldStyle(.roundedBorder)
@@ -161,7 +161,7 @@ struct DeleteAccountSheet: View {
             if let error = authViewModel.errorMessage {
                 Text(error)
                     .font(.caption)
-                    .foregroundStyle(Color.accentRed)
+                    .foregroundStyle(.accentRed)
                     .padding(.horizontal)
             }
             
@@ -184,7 +184,7 @@ struct DeleteAccountSheet: View {
                     Text(L10n.confirmAndDelete)
                         .fontWeight(.semibold)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(
@@ -202,7 +202,7 @@ struct DeleteAccountSheet: View {
                 authViewModel.needsReauthentication = false
             }
             .font(.subheadline)
-            .foregroundStyle(Color.textSecondary)
+            .foregroundStyle(.textSecondary)
         }
     }
     
@@ -214,7 +214,7 @@ struct DeleteAccountSheet: View {
             
             Text(L10n.deletingAccount)
                 .font(.subheadline)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(.top, DS.Spacing.xl)
     }
@@ -224,11 +224,11 @@ struct DeleteAccountSheet: View {
     private func deleteWarningItem(_ text: String) -> some View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             Image(systemName: "xmark.circle.fill")
-                .foregroundStyle(Color.accentRed)
+                .foregroundStyle(.accentRed)
                 .font(.caption)
             Text(text)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
     }
 }

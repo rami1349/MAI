@@ -235,7 +235,7 @@ struct ProofCaptureView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundStyle(task.taskType == .homework ? Color.accentPrimary : Color.textSecondary)
+            .foregroundStyle(task.taskType == .homework ? .accentPrimary : .textSecondary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.xs)
             .background(
@@ -254,12 +254,12 @@ struct ProofCaptureView: View {
             if task.hasReward, let amount = task.rewardAmount {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "dollarsign.circle.fill")
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                     Text("Earn \(amount.currencyString)")
                         .fontWeight(.medium)
                 }
                 .font(.subheadline)
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
             }
             
             // Show what will happen after submit
@@ -270,7 +270,7 @@ struct ProofCaptureView: View {
                 Text("\(proofItems.count) file\(proofItems.count == 1 ? "" : "s") · \(formatBytes(currentTotalBytes)) / \(formatBytes(maxTotalBytes))")
             }
             .font(.caption)
-            .foregroundStyle(Color.textSecondary)
+            .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal)
     }
@@ -291,7 +291,7 @@ struct ProofCaptureView: View {
             }
         }
         .font(.caption)
-        .foregroundStyle(willAutoVerify ? .purple : Color.textSecondary)
+        .foregroundStyle(willAutoVerify ? .purple : .textSecondary)
         .padding(.horizontal, DS.Spacing.md)
         .padding(.vertical, DS.Spacing.xs)
         .background(
@@ -314,7 +314,7 @@ struct ProofCaptureView: View {
                 
                 Image(systemName: "doc.badge.plus")
                     .font(DS.Typography.displayLarge())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
             }
             
             VStack(spacing: DS.Spacing.xs) {
@@ -323,7 +323,7 @@ struct ProofCaptureView: View {
                 
                 Text("Upload photos, videos, or documents to show your work")
                     .font(.subheadline)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             }
             
@@ -333,7 +333,7 @@ struct ProofCaptureView: View {
                     Text("Tips for homework photos:")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     VStack(alignment: .leading, spacing: 4) {
                         tipRow("Good lighting – avoid shadows")
@@ -357,7 +357,7 @@ struct ProofCaptureView: View {
                             .foregroundStyle(type.color)
                         Text(type.rawValue.capitalized)
                             .font(.caption2)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
             }
@@ -377,10 +377,10 @@ struct ProofCaptureView: View {
         HStack(spacing: DS.Spacing.xs) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.caption2)
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
             Text(text)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
     }
     
@@ -413,7 +413,7 @@ struct ProofCaptureView: View {
         VStack(spacing: DS.Spacing.md) {
             Text("Add More")
                 .font(.subheadline)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             HStack(spacing: DS.Spacing.lg) {
                 // Camera (captures photo or video)
@@ -451,7 +451,7 @@ struct ProofCaptureView: View {
             // Size budget indicator
             Text("\(formatBytes(remainingBytes)) remaining")
                 .font(.caption2)
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
         }
         .padding(.horizontal)
     }
@@ -477,7 +477,7 @@ struct ProofCaptureView: View {
                 RoundedRectangle(cornerRadius: DS.Radius.card)
                     .fill(proofItems.isEmpty ? Color.gray : Color.accentPrimary)
             )
-            .foregroundStyle(.white)
+            .foregroundStyle(.textOnAccent)
         }
         .disabled(proofItems.isEmpty || isUploading || isProcessingImage)
     }
@@ -490,7 +490,7 @@ struct ProofCaptureView: View {
                 .tint(Color.accentPrimary)
             Text("\(Int(uploadProgress * 100))% uploaded")
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
     }
     
@@ -499,17 +499,17 @@ struct ProofCaptureView: View {
     private func errorBanner(_ message: String) -> some View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(.red)
+                .foregroundStyle(.statusError)
             Text(message)
                 .font(.caption)
-                .foregroundStyle(.red)
+                .foregroundStyle(.statusError)
             Spacer()
             Button {
                 errorMessage = nil
             } label: {
                 Image(systemName: "xmark")
                     .font(.caption)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(.statusError)
             }
         }
         .padding()
@@ -776,11 +776,11 @@ struct ImageProcessingOverlay: View {
                 
                 Text(message)
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                 
                 Text("Optimizing for MAI")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(.textOnAccent.opacity(0.8))
             }
             .padding(32)
             .background(
@@ -834,7 +834,7 @@ struct ProofPreviewCard: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Text(item.fileSizeString)
                         .font(.caption)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     if item.wasEnhanced {
                         HStack(spacing: 2) {
@@ -842,7 +842,7 @@ struct ProofPreviewCard: View {
                             Text("Enhanced")
                         }
                         .font(.caption2)
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                     }
                 }
             }
@@ -852,7 +852,7 @@ struct ProofPreviewCard: View {
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
         }
         .padding()
@@ -893,7 +893,7 @@ struct ImageQualityBadge: View {
         }
         .font(.caption2)
         .fontWeight(.medium)
-        .foregroundStyle(.white)
+        .foregroundStyle(.textOnAccent)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
         .background(color)
@@ -922,7 +922,7 @@ struct ProofActionButtonContent: View {
             
             Text(title)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
     }
 }
@@ -1035,9 +1035,9 @@ struct ProofPreviewSheet: View {
                     VStack(spacing: DS.Spacing.lg) {
                         Image(systemName: "doc.fill")
                             .font(DS.Typography.displayLarge())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                         Text(item.displayName)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                         Text(item.fileSizeString)
                             .foregroundStyle(.gray)
                     }
@@ -1047,7 +1047,7 @@ struct ProofPreviewSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)

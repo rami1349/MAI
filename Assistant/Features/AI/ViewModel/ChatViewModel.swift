@@ -248,10 +248,10 @@ class ChatViewModel {
         var useStreaming = true
         
         /// Streaming service instance
-        private var streamingService: StreamingChatService?
+        @ObservationIgnored private var streamingService: StreamingChatService?
         
         /// ID of the placeholder message being streamed into
-        private var streamingMessageId: UUID?
+        @ObservationIgnored private var streamingMessageId: UUID?
     // MARK: Computed Properties
     
     
@@ -267,8 +267,8 @@ class ChatViewModel {
     
     // MARK: Private
     
-    private lazy var functions = Functions.functions(region: "us-west1")
-    private var retryCount = 0
+    @ObservationIgnored private let functions = Functions.functions(region: "us-west1")
+    @ObservationIgnored private var retryCount = 0
     
     // MARK: - Initialization
     

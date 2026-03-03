@@ -54,7 +54,7 @@ struct RewardWalletView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.close) { dismiss() }
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }
@@ -154,12 +154,12 @@ struct RewardWalletView: View {
             VStack(spacing: DS.Spacing.xs) {
                 Text("\(Int(balance))")
                     .font(DS.Typography.displayLarge()) // was .rounded
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                 
                 if totalTasksCompleted > 0 {
                     Text(L10n.earnedFromTasks(totalTasksCompleted))
                         .font(DS.Typography.body())
-                        .foregroundStyle(.white.opacity(0.8))
+                        .foregroundStyle(.textOnAccent.opacity(0.8))
                 }
             }
             
@@ -170,7 +170,7 @@ struct RewardWalletView: View {
                     Text(L10n.payoutRequested)
                         .font(DS.Typography.caption())
                 }
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(.textOnAccent.opacity(0.9))
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)
                 .background(Capsule().fill(Color.white.opacity(0.2)))
@@ -195,16 +195,16 @@ struct RewardWalletView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "bell.badge.fill")
-                   .foregroundStyle(Color.accentOrange)
+                    .foregroundStyle(.accentOrange)
                 Text(L10n.payoutRequestsToYou)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
                 Text("\(requestsToMe.count)")
                     .font(DS.Typography.badge())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
                     .background(Capsule().fill(Color.accentOrange))
@@ -224,7 +224,7 @@ struct RewardWalletView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text(L10n.whoOwesYou)
                 .font(DS.Typography.subheading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             VStack(spacing: DS.Spacing.md) {
                 ForEach(whoOwesYou, id: \.odId) { owed in
@@ -243,7 +243,7 @@ struct RewardWalletView: View {
                     .font(DS.Typography.heading())
                 Text(L10n.recentEarnings)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
             }
             
             VStack(spacing: 0) {
@@ -297,18 +297,18 @@ private struct EarningRow: View {
                     .frame(width: 36, height: 36)
                 Image(systemName: "plus")
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.accentGreen)
+                    .foregroundStyle(.accentGreen)
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(transaction.description)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Text(L10n.fromPerson(assignerName))
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
             Spacer()
@@ -316,7 +316,7 @@ private struct EarningRow: View {
             Text("+\(Int(transaction.amount))")
                 .font(DS.Typography.body())
                 .fontWeight(.semibold)
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
         }
         .padding(DS.Spacing.md)
     }
@@ -344,7 +344,7 @@ private struct WhoOwesYouCard: View {
                     .frame(width: 44, height: 44)
                     .overlay(
                         Image(systemName: "person.fill")
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     )
             }
             
@@ -352,23 +352,23 @@ private struct WhoOwesYouCard: View {
                 Text(owed.userName)
                     .font(DS.Typography.body())
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(L10n.owesYou)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()
             
             Text("\(Int(owed.amount))")
                 .font(DS.Typography.heading()) // was .rounded
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
             
             if owed.hasPendingRequest || showSuccess {
                 Text(L10n.requested)
                     .font(DS.Typography.micro())
-                   .foregroundStyle(Color.accentOrange)
+                    .foregroundStyle(.accentOrange)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(Capsule().fill(Color.accentOrange.opacity(0.12)))
@@ -381,7 +381,7 @@ private struct WhoOwesYouCard: View {
                     } else {
                         Image(systemName: "hand.wave.fill")
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 .frame(width: 36, height: 36)
@@ -473,7 +473,7 @@ private struct PayoutRequestCard: View {
                         .frame(width: 48, height: 48)
                         .overlay(
                             Image(systemName: "person.fill")
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         )
                 }
                 
@@ -481,22 +481,22 @@ private struct PayoutRequestCard: View {
                     Text(request.userName)
                         .font(DS.Typography.body())
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Text(L10n.requestedPayout)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Text(relativeDate)
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Spacer()
                 
                 Text("\(Int(request.amount))")
                     .font(DS.Typography.displayMedium()) // was .rounded
-                   .foregroundStyle(Color.accentOrange)
+                    .foregroundStyle(.accentOrange)
             }
             
             Button(action: payOut) {
@@ -517,7 +517,7 @@ private struct PayoutRequestCard: View {
                 }
                 .font(DS.Typography.label())
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.md)
                 .background(
@@ -570,9 +570,10 @@ private struct PayoutRequestCard: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     RewardWalletView()
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.rewardVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.rewardVM)
+        .environment(familyVM.notificationVM)
 }

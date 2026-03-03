@@ -49,20 +49,20 @@ struct ActionConfirmationSheet: View {
     
     private var header: some View {
         HStack {
-            Button("Cancel") {
+            Button(L10n.cancel) {
                 onCancel()
             }
-            .foregroundStyle(.red)
+            .foregroundStyle(.statusError)
             
             Spacer()
             
-            Text("Confirm Action")
+            Text(L10n.confirmAction)
                 .font(.headline)
             
             Spacer()
             
             // Invisible button for balance
-            Button("Cancel") {}
+            Button(L10n.cancel) {}
                 .opacity(0)
         }
         .padding()
@@ -97,7 +97,7 @@ struct ActionConfirmationSheet: View {
     
     private var detailsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Details")
+            Text(L10n.details)
                 .font(.headline)
             
             VStack(spacing: 8) {
@@ -170,9 +170,9 @@ struct ActionConfirmationSheet: View {
     private var disclaimer: some View {
         HStack(spacing: 8) {
             Image(systemName: "info.circle.fill")
-                .foregroundStyle(.blue)
+                .foregroundStyle(.statusInfo)
             
-            Text("This action will be performed after you confirm.")
+            Text(L10n.thisActionWillBePerformedAfterYouConfirm)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -198,7 +198,7 @@ struct ActionConfirmationSheet: View {
                 Button {
                     onCancel()
                 } label: {
-                    Text("Cancel")
+                    Text(L10n.cancel)
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -213,7 +213,7 @@ struct ActionConfirmationSheet: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                     } else {
-                        Text("Confirm")
+                        Text(L10n.confirm)
                             .frame(maxWidth: .infinity)
                             .padding()
                     }

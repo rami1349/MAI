@@ -94,7 +94,7 @@ struct AIChatView: View {
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .frame(width: 32, height: 32)
                         .background(
                             Circle()
@@ -105,7 +105,7 @@ struct AIChatView: View {
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .frame(width: 32, height: 32)
                         .background(
                             Circle()
@@ -119,7 +119,7 @@ struct AIChatView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.assistantName)
                         .font(DS.Typography.heading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     if viewModel.isStreaming {
                         StreamingDot()
@@ -138,7 +138,7 @@ struct AIChatView: View {
                     } label: {
                         Image(systemName: "arrow.counterclockwise")
                             .font(DS.Typography.labelSmall())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .frame(width: 30, height: 30)
                             .background(
                                 Circle()
@@ -167,7 +167,7 @@ struct AIChatView: View {
             if remaining <= 0 && credits > 0 {
                 Text("\(credits) credits left")
                     .font(DS.Typography.captionMedium()) // was .rounded
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(
@@ -177,7 +177,7 @@ struct AIChatView: View {
             } else {
                 Text("\(remaining)/\(limit)")
                     .font(DS.Typography.captionMedium()) // was .rounded
-                    .foregroundStyle(remaining <= 3 ? .orange : Color.textTertiary)
+                    .foregroundStyle(remaining <= 3 ? .orange : .textTertiary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(
@@ -265,21 +265,21 @@ struct AIChatView: View {
         return VStack(spacing: DS.Spacing.md) {
             Image(systemName: "moon.zzz.fill")
                 .font(DS.Typography.displayMedium())
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
             
             Text(L10n.dailyLimitReached)
                 .font(DS.Typography.heading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             if credits > 0 {
                 Text("You've used all \(limit) messages, but you have \(credits) credits left.")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             } else {
                 Text("You've used all \(limit) messages for today.")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                 
                 HStack(spacing: DS.Spacing.md) {
@@ -294,7 +294,7 @@ struct AIChatView: View {
                                     .font(.caption)
                                     .fontWeight(.semibold)
                             }
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(Capsule().fill(Color.accentPrimary))
@@ -311,7 +311,7 @@ struct AIChatView: View {
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
                         .background(Capsule().fill(Color.accentPrimary.opacity(0.1)))
@@ -344,7 +344,7 @@ struct AIChatView: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                               Color.accentPrimary.opacity(0.12),
+                                Color.accentPrimary.opacity(0.12),
                                 Color.purple.opacity(0.08)
                             ],
                             startPoint: .topLeading,
@@ -369,11 +369,11 @@ struct AIChatView: View {
             VStack(spacing: DS.Spacing.sm) {
                 Text(L10n.assistantName)
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(L10n.assistantDescription)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             }
             
@@ -384,7 +384,7 @@ struct AIChatView: View {
             
             Text("\(remaining) of \(limit) messages remaining today")
                 .font(DS.Typography.badge())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
         }
     }
     
@@ -398,11 +398,11 @@ struct AIChatView: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: icon)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                 
                 Text(text)
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
             }
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.sm)
@@ -473,11 +473,11 @@ struct AIChatView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "bolt.fill")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                     
                     Text("Using credits · \(store.aiCredits) remaining")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Spacer()
                     
@@ -486,7 +486,7 @@ struct AIChatView: View {
                     } label: {
                         Text("Get more")
                             .font(.caption)
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 .padding(.horizontal, DS.Spacing.md)
@@ -499,11 +499,11 @@ struct AIChatView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "moon.zzz.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.statusWarning)
                     
                     Text(L10n.dailyLimitResets)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Spacer()
                     
@@ -515,7 +515,7 @@ struct AIChatView: View {
                                 Text("Upgrade")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.textOnAccent)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 5)
                                     .background(Capsule().fill(Color.accentPrimary))
@@ -532,7 +532,7 @@ struct AIChatView: View {
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                             }
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                             .background(Capsule().fill(Color.accentPrimary.opacity(0.1)))
@@ -578,7 +578,7 @@ struct AIChatView: View {
                     } label: {
                         Image(systemName: viewModel.isStreaming ? "stop.fill" : "arrow.up")
                             .font(DS.Typography.label())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .frame(width: 32, height: 32)
                             .background(
                                 Circle()
@@ -670,7 +670,7 @@ struct StreamingCursor: View {
     var body: some View {
         Text("▊")
             .font(DS.Typography.body())
-            .foregroundStyle(Color.accentPrimary)
+            .foregroundStyle(.accentPrimary)
             .opacity(isVisible ? 0.8 : 0)
             .animation(
                 .easeInOut(duration: 0.5).repeatForever(autoreverses: true),
@@ -710,7 +710,7 @@ struct MessageBubble: View {
                     if message.isError {
                         Image(systemName: "exclamationmark.triangle")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(.statusWarning)
                     } else {
                         Image("samy")
                             .resizable()
@@ -726,7 +726,7 @@ struct MessageBubble: View {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text(message.content.isEmpty && isStreaming ? " " : message.content)
                         .font(DS.Typography.body())
-                        .foregroundStyle(isUser ? .white : (message.isError ? Color.textSecondary : Color.textPrimary))
+                        .foregroundStyle(isUser ? .textOnAccent : (message.isError ? .textSecondary : .textPrimary))
                         .textSelection(.enabled)
                     
                     if isStreaming && !isUser {
@@ -745,7 +745,7 @@ struct MessageBubble: View {
                             Text(L10n.retry)
                                 .font(DS.Typography.badge())
                         }
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, 4)
                         .background(
@@ -758,7 +758,7 @@ struct MessageBubble: View {
                 if !isStreaming {
                     Text(message.timestamp, style: .time)
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
             }
             

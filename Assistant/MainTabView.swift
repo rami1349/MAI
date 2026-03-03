@@ -223,7 +223,7 @@ struct MainTabView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [Color.accentPrimary, .accentSecondary],
+                            colors: [Color.accentPrimary, Color.accentSecondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -235,7 +235,7 @@ struct MainTabView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: DS.IconSize.lg, height: DS.IconSize.lg)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
             }
         }
         .buttonStyle(.plain)
@@ -343,7 +343,7 @@ struct MainTabView: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: isSelected ? item.selectedIcon : item.icon)
                         .font(DS.Typography.body()).fontWeight(isSelected ? .semibold : .regular)
-                        .foregroundStyle(isSelected ? Color.accentPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
                         .frame(width: 28, height: 28)
                     
                     // Badge dot (collapsed) / count is shown as trailing text (expanded)
@@ -359,7 +359,7 @@ struct MainTabView: View {
                 if sidebarExpanded {
                     Text(item.title)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -367,7 +367,7 @@ struct MainTabView: View {
                     if badge > 0 {
                         Text("\(min(badge, 99))")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(Capsule().fill(Color.red))
@@ -400,7 +400,7 @@ struct MainTabView: View {
                         HStack {
                             Text(L10n.folders.uppercased())
                                 .font(DS.Typography.micro())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .tracking(0.8)
                             
                             Spacer()
@@ -414,7 +414,7 @@ struct MainTabView: View {
                         if sidebarExpanded {
                             Text(L10n.noFoldersYet)
                                 .font(DS.Typography.bodySmall())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .padding(.horizontal, DS.Spacing.lg)
                                 .padding(.vertical, DS.Spacing.md)
                         }
@@ -472,7 +472,7 @@ struct MainTabView: View {
                 if sidebarExpanded {
                     Text(group.name)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -480,7 +480,7 @@ struct MainTabView: View {
                     if count > 0 {
                         Text("\(count)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
             }
@@ -513,14 +513,14 @@ struct MainTabView: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: icon)
                     .font(DS.Typography.body()).fontWeight(isAccented ? .semibold : .regular)
-                    .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
+                    .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
                     .frame(width: 28, height: 28)
                     .frame(width: 32)
                 
                 if sidebarExpanded {
                     Text(label)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
+                        .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -654,7 +654,7 @@ struct MainTabView: View {
                     fabMenuItem(
                         icon: "checkmark.circle.fill",
                         label: L10n.newTask,
-                        color: .accentYellow,
+                        color: Color.accentYellow,
                         delay: 0.0
                     ) {
                         showFABMenu = false
@@ -664,7 +664,7 @@ struct MainTabView: View {
                     fabMenuItem(
                         icon: "calendar.badge.plus",
                         label: L10n.newEvent,
-                        color: .accentOrange,
+                        color: Color.accentOrange,
                         delay: 0.04
                     ) {
                         showFABMenu = false
@@ -674,7 +674,7 @@ struct MainTabView: View {
                     fabMenuItem(
                         icon: "flame.fill",
                         label: L10n.newHabit,
-                        color: .accentGreen,
+                        color: Color.accentGreen,
                         delay: 0.08
                     ) {
                         showFABMenu = false
@@ -690,7 +690,7 @@ struct MainTabView: View {
                 }) {
                     Image(systemName: showFABMenu ? "xmark" : "plus")
                         .font(.system(size: DS.IconSize.lg, weight: .semibold)) // DT-exempt: icon sizing
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .frame(width: DS.Control.fab, height: DS.Control.fab)
                         .background(
                             Circle()
@@ -724,7 +724,7 @@ struct MainTabView: View {
             HStack(spacing: DS.Spacing.sm) {
                 Text(label)
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -735,7 +735,7 @@ struct MainTabView: View {
                 
                 Image(systemName: icon)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
@@ -933,13 +933,13 @@ struct MainTabView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                 }
                 .offset(y: -8) // Raise above other tabs
                 
                 Text(L10n.chat)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                     .offset(y: -8) // Match raise
             }
             .frame(maxWidth: .infinity)
@@ -974,14 +974,15 @@ struct MainTabView: View {
 // MARK: - Previews
 
 #Preview("iPad") {
+    let familyVM = FamilyViewModel()
     MainTabView()
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
         .environment(ThemeManager.shared)
         .environment(LocalizationManager.shared)
         .environment(TourManager.shared)
@@ -989,14 +990,15 @@ struct MainTabView: View {
 }
 
 #Preview("iPhone") {
+    let familyVM = FamilyViewModel()
     MainTabView()
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
         .environment(ThemeManager.shared)
         .environment(LocalizationManager.shared)
         .environment(TourManager.shared)

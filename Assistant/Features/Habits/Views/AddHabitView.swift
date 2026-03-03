@@ -70,10 +70,10 @@ struct AddHabitView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 Text(name.isEmpty ? "Habit Name" : name)
                     .font(.headline)
-                    .foregroundStyle(name.isEmpty ? Color.textTertiary : Color.textPrimary)
+                    .foregroundStyle(name.isEmpty ? .textTertiary : .textPrimary)
                 Text(L10n.trackDaily)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()
@@ -105,7 +105,7 @@ struct AddHabitView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text(L10n.icon)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                 ForEach(HabitColors.icons, id: \.icon) { item in
@@ -135,7 +135,7 @@ struct AddHabitView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text(L10n.color)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                 ForEach(HabitColors.colors, id: \.hex) { color in
@@ -185,12 +185,12 @@ struct AddHabitView: View {
 }
 
 #Preview {
+    let familyVM = FamilyViewModel()
     AddHabitView()
-    
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
 }

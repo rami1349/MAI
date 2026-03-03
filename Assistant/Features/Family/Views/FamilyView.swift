@@ -48,7 +48,7 @@ struct FamilyView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button { showSettings = true } label: {
-                        Image(systemName: "gearshape.fill").foregroundStyle(Color.textPrimary)
+                        Image(systemName: "gearshape.fill").foregroundStyle(.textPrimary)
                     }
                 }
             }
@@ -153,11 +153,11 @@ struct FamilyView: View {
                         showInviteCode = true
                     }
                     
-                    ActionButton(title: "Family Members", icon: "person.3.fill", color: .accentTertiary) {
+                    ActionButton(title: "Family Members", icon: "person.3.fill", color: Color.accentTertiary) {
                         showFamilyMembers = true
                     }
                     
-                    ActionButton(title: "Edit Profile", icon: "person.crop.circle", color: .accentSecondary) {
+                    ActionButton(title: "Edit Profile", icon: "person.crop.circle", color: Color.accentSecondary) {
                         showEditProfile = true
                     }
                 }
@@ -187,11 +187,11 @@ struct FamilyView: View {
                 HStack {
                     Image(systemName: "dollarsign.circle.fill")
                         .font(.title2)
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                     
                     Text("Reward Wallet")
                         .font(.headline)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Spacer()
                     
@@ -203,7 +203,7 @@ struct FamilyView: View {
                         Text("\(requestsForMe.count) pending")
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, DS.Spacing.sm)
                             .padding(.vertical, DS.Spacing.xs)
                             .background(Capsule().fill(Color.accentRed))
@@ -216,17 +216,17 @@ struct FamilyView: View {
                         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                             Text("Your Balance")
                                 .font(.caption)
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                             Text(user.balance.currencyString)
-                                .font(DS.Typography.displayMedium()) 
-                                .foregroundStyle(Color.accentGreen)
+                                .font(DS.Typography.displayMedium()) // was .rounded
+                                .foregroundStyle(.accentGreen)
                         }
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
                             .font(.title3)
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
             }
@@ -288,7 +288,7 @@ struct FamilyView: View {
                             .scaleEffect(1.2)
                         Text(L10n.uploading)
                             .font(.caption)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                     }
                 }
             }
@@ -310,12 +310,12 @@ struct FamilyView: View {
                     Text(familyMemberVM.family?.name ?? L10n.family)
                         .font(.title)
                         .fontWeight(.bold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .elevation3()
                     
                     Text(L10n.xMembers(familyMemberVM.familyMembers.count))
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.textOnAccent.opacity(0.9))
                         .elevation3()
                 }
                 .padding(.bottom, DS.Spacing.xl)
@@ -328,7 +328,7 @@ struct FamilyView: View {
                 PhotosPicker(selection: $selectedBannerPhoto, matching: .images) {
                     Image(systemName: "camera.fill")
                         .font(.caption)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .padding(DS.Spacing.sm)
                         .background(Circle().fill(Color.black.opacity(0.5)))
                 }
@@ -358,7 +358,7 @@ struct FamilyView: View {
                     Button(action: { showEditProfile = true }) {
                         Image(systemName: "pencil")
                             .font(.caption2)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(DS.Spacing.sm)
                             .background(Circle().fill(Color.accentPrimary))
                     }
@@ -371,7 +371,7 @@ struct FamilyView: View {
                     HStack(spacing: DS.Spacing.sm) {
                         RoleBadge(role: user.role)
                         if user.isAdult {
-                            Text(L10n.adult).font(.caption).foregroundStyle(Color.textSecondary)
+                            Text(L10n.adult).font(.caption).foregroundStyle(.textSecondary)
                         }
                     }
                 }
@@ -379,9 +379,9 @@ struct FamilyView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: DS.Spacing.xs) {
-                    Text(L10n.balance).font(.caption).foregroundStyle(Color.textSecondary)
+                    Text(L10n.balance).font(.caption).foregroundStyle(.textSecondary)
                     Text(user.balance.currencyString)
-                        .font(.title3).fontWeight(.bold).foregroundStyle(Color.accentGreen)
+                        .font(.title3).fontWeight(.bold).foregroundStyle(.accentGreen)
                 }
             }
             
@@ -390,15 +390,15 @@ struct FamilyView: View {
                 HStack(alignment: .top, spacing: DS.Spacing.sm) {
                     Image(systemName: "target")
                         .font(.subheadline)
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                     
                     VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                         Text(L10n.goalForYear(currentYear))
                             .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                         Text(goal)
                             .font(.subheadline)
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                             .lineLimit(2)
                     }
                     
@@ -449,7 +449,7 @@ struct FamilyView: View {
         VStack(spacing: DS.Spacing.md) {
             // Reward Wallet (with pending badge for parents)
             ZStack(alignment: .topTrailing) {
-                ActionButton(title: "Reward Wallet", icon: "dollarsign.circle.fill", color: .accentGreen) {
+                ActionButton(title: "Reward Wallet", icon: "dollarsign.circle.fill", color: Color.accentGreen) {
                     showRewardWallet = true
                 }
                 
@@ -459,7 +459,7 @@ struct FamilyView: View {
                 if !requestsForMe.isEmpty {
                     Text("\(requestsForMe.count)")
                         .font(DS.Typography.micro())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .frame(width: 22, height: 22)
                         .background(Circle().fill(Color.accentRed))
                         .offset(x: -8, y: -4)
@@ -470,7 +470,7 @@ struct FamilyView: View {
                 showInviteCode = true
             }
             
-            ActionButton(title: "Family Members", icon: "person.3.fill", color: .accentTertiary) {
+            ActionButton(title: "Family Members", icon: "person.3.fill", color: Color.accentTertiary) {
                 showFamilyMembers = true
             }
         }
@@ -692,7 +692,7 @@ struct MonthlyActivityHeatmap: View {
                     Text(verbatim: "\(displayYear) Contributions")
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Spacer()
                     
@@ -700,10 +700,10 @@ struct MonthlyActivityHeatmap: View {
                     HStack(spacing: 4) {
                         Image(systemName: "flame.fill")
                             .font(DS.Typography.bodySmall())
-                            .foregroundStyle(Color.accentOrange)
+                            .foregroundStyle(.accentOrange)
                         Text(L10n.thisYearCount(yearToDateCompleted))
                             .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
                 
@@ -712,7 +712,7 @@ struct MonthlyActivityHeatmap: View {
                     Button(action: goToPreviousMonth) {
                         Image(systemName: "chevron.left")
                             .font(DS.Typography.label())
-                            .foregroundStyle(canGoBack ? Color.accentPrimary : Color.textTertiary)
+                            .foregroundStyle(canGoBack ? .accentPrimary : .textTertiary)
                             .frame(width: DS.Avatar.sm, height: DS.Avatar.sm)
                             .background(Circle().fill(canGoBack ? Color.accentPrimary.opacity(0.1) : Color.clear))
                     }
@@ -722,14 +722,14 @@ struct MonthlyActivityHeatmap: View {
                     
                     Text(currentMonthName)
                         .font(.headline)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Spacer()
                     
                     Button(action: goToNextMonth) {
                         Image(systemName: "chevron.right")
                             .font(DS.Typography.label())
-                            .foregroundStyle(canGoForward ? Color.accentPrimary : Color.textTertiary)
+                            .foregroundStyle(canGoForward ? .accentPrimary : .textTertiary)
                             .frame(width: DS.Avatar.sm, height: DS.Avatar.sm)
                             .background(Circle().fill(canGoForward ? Color.accentPrimary.opacity(0.1) : Color.clear))
                     }
@@ -744,7 +744,7 @@ struct MonthlyActivityHeatmap: View {
                     ForEach(0..<dayNames.count, id: \.self) { index in
                         Text(dayNames[index])
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .frame(maxWidth: .infinity)
                     }
                 }
@@ -765,7 +765,7 @@ struct MonthlyActivityHeatmap: View {
                                     
                                     Text("\(dayNum)")
                                         .font(DS.Typography.micro()).fontWeight(isToday ? .bold : .regular)
-                                        .foregroundStyle(isFuture ? Color.textTertiary : textColor(count: count))
+                                        .foregroundStyle(isFuture ? .textTertiary : textColor(count: count))
                                 }
                                 .frame(maxWidth: .infinity)
                                 .aspectRatio(1, contentMode: .fit)
@@ -790,7 +790,7 @@ struct MonthlyActivityHeatmap: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.less)
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     
                     ForEach([0, 1, 3, 5, 6], id: \.self) { level in
                         RoundedRectangle(cornerRadius: 3)
@@ -800,7 +800,7 @@ struct MonthlyActivityHeatmap: View {
                     
                     Text(L10n.moreLabel)
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Spacer()
@@ -809,10 +809,10 @@ struct MonthlyActivityHeatmap: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                     Text(L10n.thisMonthCount(monthCompleted))
                         .font(DS.Typography.micro())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
         }
@@ -845,8 +845,8 @@ struct StatItem: View {
     
     var body: some View {
         VStack(spacing: DS.Spacing.xs) {
-            Text(value).font(DS.Typography.heading()).foregroundStyle(Color.textPrimary)
-            Text(label).font(DS.Typography.bodySmall()).foregroundStyle(Color.textSecondary)
+            Text(value).font(DS.Typography.heading()).foregroundStyle(.textPrimary)
+            Text(label).font(DS.Typography.bodySmall()).foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -857,9 +857,9 @@ struct RoleBadge: View {
     
     private var color: Color {
         switch role {
-        case .admin: return .accentOrange
+        case .admin: return Color.accentOrange
         case .adult: return Color.accentPrimary
-        case .member: return .accentTertiary
+        case .member: return Color.accentTertiary
         }
     }
     
@@ -886,11 +886,11 @@ struct ActionButton: View {
                     .frame(width: DS.Avatar.md, height: DS.Avatar.md)
                     .background(Circle().fill(color.opacity(0.1)))
                 
-                Text(title).font(DS.Typography.label()).foregroundStyle(Color.textPrimary)
+                Text(title).font(DS.Typography.label()).foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Color.textTertiary)
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.textTertiary)
             }
             .padding(DS.Spacing.lg)
             .background(RoundedRectangle(cornerRadius: DS.Radius.xl).fill(Color.themeCardBackground))
@@ -907,8 +907,8 @@ struct SectionHeader: View {
     
     var body: some View {
         HStack(spacing: DS.Spacing.sm) {
-            Image(systemName: icon).foregroundStyle(Color.accentPrimary)
-            Text(title).font(DS.Typography.heading()).foregroundStyle(Color.textPrimary)
+            Image(systemName: icon).foregroundStyle(.accentPrimary)
+            Text(title).font(DS.Typography.heading()).foregroundStyle(.textPrimary)
         }
     }
 }

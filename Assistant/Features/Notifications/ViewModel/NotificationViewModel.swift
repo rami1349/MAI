@@ -62,19 +62,14 @@ final class NotificationViewModel {
     
     // MARK: - Private
     
-    /// PERFORMANCE: Lazy Firestore initialization.
-    /// (`lazy` is incompatible with @Observable; use nillable backing store instead.)
-    @ObservationIgnored private var _db: Firestore?
-    private var db: Firestore {
-        if _db == nil { _db = Firestore.firestore() }
-        return _db!
-    }
+    /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
+    @ObservationIgnored private let db = Firestore.firestore()
     
     /// Real-time snapshot listener for the current user's notifications.
     @ObservationIgnored private var listener: ListenerRegistration?
     
     /// Current user ID for pagination queries
-    private var currentUserId: String?
+    @ObservationIgnored private var currentUserId: String?
     
     /// Page size for notification queries (SUGGESTION 5: increased from 50)
     private static let pageSize = 100
@@ -85,7 +80,7 @@ final class NotificationViewModel {
     /// SUGGESTION 4: Deduplication cache - tracks recent notifications by hash
     /// Key: hash of (userId, type, relatedId, message prefix)
     /// Value: timestamp when notification was sent
-    private var recentNotifications: [String: Date] = [:]
+    @ObservationIgnored private var recentNotifications: [String: Date] = [:]
     
     /// Deduplication window - ignore duplicate notifications within this interval
     private static let deduplicationWindow: TimeInterval = 5.0 // 5 seconds

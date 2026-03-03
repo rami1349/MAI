@@ -25,13 +25,12 @@ final class FamilyMemberViewModel {
     var errorMessage: String?
     
     // MARK: - Private
-    // PERFORMANCE: Lazy Firestore initialization - deferred until first database access
-    // This removes ~50-100ms from app launch by not initializing Firestore synchronously
-    private var db = Firestore.firestore()
-    private var membersListener: ListenerRegistration?
+    // Firestore singleton — @ObservationIgnored (infrastructure, not UI state)
+    @ObservationIgnored private let db = Firestore.firestore()
+    @ObservationIgnored private var membersListener: ListenerRegistration?
     
     // Caches for O(1) lookup
-    private var memberCache: [String: FamilyUser] = [:]
+    @ObservationIgnored private var memberCache: [String: FamilyUser] = [:]
     private var groupCache: [String: TaskGroup] = [:]
     
     deinit {

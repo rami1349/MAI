@@ -1,7 +1,7 @@
 //
 //  AgendaDayView.swift
 //
-//  DS CALM REDESIGN
+//  LUXURY CALM REDESIGN
 //  - Clean section headers
 //  - Refined empty state
 //  - Elegant expand/collapse
@@ -41,12 +41,12 @@ struct AgendaDayView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(selectedDay.isToday ? L10n.today : selectedDay.formattedDate)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 if selectedDay.isToday {
                     Text(selectedDay.formattedShortDate)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             
@@ -56,11 +56,11 @@ struct AgendaDayView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text("\(agenda.totalCount)")
                         .font(DS.Typography.labelSmall())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                     
                     Text(agenda.totalCount == 1 ? "item" : "items")
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.xs)
@@ -86,17 +86,17 @@ struct AgendaDayView: View {
                 
                 Image(systemName: "leaf")
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(Color.accentPrimary.opacity(0.4))
+                    .foregroundStyle(.accentPrimary.opacity(0.4))
             }
             
             VStack(spacing: DS.Spacing.xs) {
                 Text(L10n.noEvents)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text("This day is clear")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
             Spacer()
@@ -176,7 +176,7 @@ struct AgendaDayView: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: icon)
                 .font(DS.Typography.body())
-                .foregroundStyle(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
                 .frame(width: 24, height: 24)
                 .background(
                     Circle()
@@ -185,11 +185,11 @@ struct AgendaDayView: View {
             
             Text(title)
                 .font(DS.Typography.labelSmall())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Text("(\(count))")
                 .font(DS.Typography.caption())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             
             Spacer()
         }
@@ -207,7 +207,7 @@ struct AgendaDayView: View {
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(DS.Typography.micro())
             }
-            .foregroundStyle(Color.accentPrimary)
+            .foregroundStyle(.accentPrimary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.sm)
             .background(

@@ -68,15 +68,15 @@ final class TaskViewModel {
     private(set) var completionPercentage: Double = 0
     
     // MARK: - Private
-    // PERFORMANCE:  Firestore initialization - deferred until first database access
-    private var db = Firestore.firestore()
+    // Firestore singleton — @ObservationIgnored (infrastructure, not UI state)
+    @ObservationIgnored private let db = Firestore.firestore()
     @ObservationIgnored private var listener: ListenerRegistration?
     
     /// Current user ID - used to detect when tasks assigned to this user are approved
-    private var currentUserId: String?
+    @ObservationIgnored private var currentUserId: String?
     
     /// Track task statuses to detect approvals for sound playback
-    private var previousTaskStatuses: [String: FamilyTask.TaskStatus] = [:]
+    @ObservationIgnored private var previousTaskStatuses: [String: FamilyTask.TaskStatus] = [:]
     
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -85,11 +85,11 @@ final class TaskViewModel {
     }()
     
     // MARK: - Caches (internal, not published)
-    private var tasksByStatus: [FamilyTask.TaskStatus: [FamilyTask]] = [:]
-    private var tasksByGroup: [String: [FamilyTask]] = [:]
-    private var tasksByDate: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var tasksByStatus: [FamilyTask.TaskStatus: [FamilyTask]] = [:]
+@ObservationIgnored     private var tasksByGroup: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var tasksByDate: [String: [FamilyTask]] = [:]
     /// Date-indexed cache excluding completed non-recurring tasks (for calendar/day views).
-    private var activeTasksByDate: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var activeTasksByDate: [String: [FamilyTask]] = [:]
     
     deinit {
         listener?.remove()
@@ -98,8 +98,8 @@ final class TaskViewModel {
     // MARK: - PERFORMANCE: User-specific task caches
     // Pre-indexed for O(1) lookup by user ID
     // Updated for multi-assignee: indexes by all assignees (allAssignees computed property)
-    private var tasksByAssignedTo: [String: [FamilyTask]] = [:]
-    private var tasksByAssignedBy: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var tasksByAssignedTo: [String: [FamilyTask]] = [:]
+@ObservationIgnored     private var tasksByAssignedBy: [String: [FamilyTask]] = [:]
     
     /// Returns tasks assigned to a specific user - O(1) lookup
     /// Updated for multi-assignee: checks allAssignees

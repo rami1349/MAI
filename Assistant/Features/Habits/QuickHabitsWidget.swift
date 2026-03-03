@@ -24,12 +24,12 @@ struct QuickHabitsWidget: View {
             // Header
             HStack {
                 Image(systemName: "flame.fill")
-                   .foregroundStyle(Color.accentOrange)
+                    .foregroundStyle(.accentOrange)
                 
                 Text(L10n.todaysHabits)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -40,7 +40,7 @@ struct QuickHabitsWidget: View {
                     Text("\(completed)/\(total)")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(completed == total ? .accentGreen : Color.textSecondary)
+                        .foregroundStyle(completed == total ? .accentGreen : .textSecondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
                         .background(
@@ -84,7 +84,7 @@ struct QuickHabitsWidget: View {
                               Image(systemName: "chevron.down")
                                   .font(DS.Typography.micro())
                           }
-                          .foregroundStyle(Color.textTertiary)
+                          .foregroundStyle(.textTertiary)
                           .padding(.top, 4)
                       }
                   }
@@ -115,14 +115,14 @@ struct QuickHabitsWidget: View {
         VStack(spacing: 8) {
             Image(systemName: "plus.circle.dashed")
                 .font(.title)
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             Text(L10n.noHabitsShort)
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             Text(L10n.addHabitsToTrack)
                 .font(.caption)
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
@@ -168,7 +168,7 @@ struct QuickHabitRow: View {
                         
                         Image(systemName: "checkmark")
                             .font(DS.Typography.label())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .scaleEffect(animateCheck ? 1.2 : 1.0)
                     }
                 }
@@ -183,7 +183,7 @@ struct QuickHabitRow: View {
                 Text(habit.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(isCompleted ? Color.textSecondary : Color.textPrimary)
+                    .foregroundStyle(isCompleted ? .textSecondary : .textPrimary)
                     .strikethrough(isCompleted, color: Color.textSecondary)
                 
                 Spacer()
@@ -207,13 +207,14 @@ struct QuickHabitRow: View {
 
 // MARK: - Preview
 #Preview {
+    let familyVM = FamilyViewModel()
     QuickHabitsWidget()
         .padding(20)
         .background(Color.backgroundPrimary)
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
 }

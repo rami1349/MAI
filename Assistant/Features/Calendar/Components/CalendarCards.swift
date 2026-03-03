@@ -27,7 +27,7 @@ struct MultiDayEventBar: View {
             HStack(spacing: 0) {
                 Text(event.title)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .padding(.horizontal, 6)
@@ -153,7 +153,7 @@ struct EventCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(event.title)
                         .font(.headline)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     HStack(spacing: 4) {
                         Image(systemName: isMultiDay ? "calendar" : "clock")
@@ -161,12 +161,12 @@ struct EventCard: View {
                         Text(dateRangeText)
                             .font(.caption)
                     }
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     
                     if let description = event.description, !description.isEmpty {
                         Text(description)
                             .font(.caption)
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .lineLimit(1)
                     }
                 }
@@ -176,12 +176,12 @@ struct EventCard: View {
                 if isMultiDay {
                     Image(systemName: "arrow.left.arrow.right")
                         .font(.caption)
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             .padding(16)
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
@@ -198,10 +198,10 @@ struct CalendarTaskCard: View {
     
     var statusColor: Color {
         switch task.status {
-        case .todo: return .statusTodo
+        case .todo: return Color.statusTodo
         case .inProgress: return Color.statusInProgress
         case .pendingVerification: return Color.statusPending
-        case .completed: return .statusCompleted
+        case .completed: return Color.statusCompleted
         }
     }
     
@@ -218,12 +218,12 @@ struct CalendarTaskCard: View {
                 Text(task.title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 if let time = task.scheduledTime {
                     Text(time.formattedTime)
                         .font(.caption)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             
@@ -233,7 +233,7 @@ struct CalendarTaskCard: View {
                 Text(amount.currencyString)
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(Color.accentGreen)
+                    .foregroundStyle(.accentGreen)
             }
         }
         .padding(12)
@@ -285,12 +285,12 @@ struct SpecialEventCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
                     .font(.headline)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             

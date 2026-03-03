@@ -71,8 +71,8 @@ final class HabitViewModel {
 
     // MARK: - Private
 
-    /// PERFORMANCE: Lazy Firestore initialization — deferred until first database access.
-    private var db = Firestore.firestore()
+    /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
+    @ObservationIgnored private let db = Firestore.firestore()
 
     /// Real-time snapshot listener for habits. Removed on `deinit` and on listener reset.
     @ObservationIgnored private var listener: ListenerRegistration?

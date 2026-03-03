@@ -1,11 +1,6 @@
+//  ToastBanner.swift
+//  FamilyHub
 //
-//  ToastStyle.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Reusable toast/snackbar component for transient feedback.
 //  Supports success, error, and info variants.
 //  Auto-dismisses after a configurable duration.
@@ -31,16 +26,16 @@ enum ToastStyle {
     
     var iconColor: Color {
         switch self {
-        case .success: return .accentGreen
-        case .error: return .accentRed
+        case .success: return Color.accentGreen
+        case .error: return Color.accentRed
         case .info: return Color.accentPrimary
         }
     }
     
     var backgroundColor: Color {
         switch self {
-        case .success: return .accentGreen
-        case .error: return .accentRed
+        case .success: return Color.accentGreen
+        case .error: return Color.accentRed
         case .info: return Color.accentPrimary
         }
     }
@@ -82,12 +77,12 @@ struct ToastBanner: View {
     var body: some View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: style.icon)
-                .font(.system(size: DS.IconSize.md))
-                .foregroundColor(.white)
+                .font(.system(size: DS.IconSize.md)) // DT-exempt: icon sizing
+                .foregroundStyle(.textOnAccent)
             
             Text(message)
                 .font(DS.Typography.label())
-                .foregroundColor(.white)
+                .foregroundStyle(.textOnAccent)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
             
@@ -97,7 +92,7 @@ struct ToastBanner: View {
                 Button(action: onDismiss) {
                     Image(systemName: "xmark")
                         .font(.caption.bold())
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundStyle(.textOnAccent.opacity(0.8))
                         .frame(width: DS.Control.compact, height: DS.Control.compact)
                         .contentShape(Rectangle())
                 }
@@ -134,7 +129,8 @@ struct GlobalErrorBannerModifier: ViewModifier {
                     .padding(.top, DS.Spacing.sm)
                     .onAppear {
                         // Auto-dismiss after 4 seconds
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .seconds(4))
                             clearError()
                         }
                     }
@@ -177,7 +173,8 @@ struct ToastBannerModifier: ViewModifier {
                     )
                     .padding(.top, DS.Spacing.sm)
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .seconds(2.5))
                             dismiss()
                         }
                     }
@@ -213,13 +210,13 @@ struct SuccessDismissOverlay: View {
     var body: some View {
         VStack(spacing: DS.Spacing.md) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: DS.IconSize.jumbo))
-                .foregroundColor(.accentGreen)
+                .font(.system(size: DS.IconSize.jumbo)) // DT-exempt: icon sizing
+                .foregroundStyle(.accentGreen)
                 .scaleEffect(scale)
             
             Text(message)
                 .font(DS.Typography.subheading())
-                .foregroundColor(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
         }
         .padding(DS.Spacing.xxl)
         .background(
@@ -239,11 +236,13 @@ struct SuccessDismissOverlay: View {
             }
             
             // Dismiss after delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(0.6))
                 withAnimation(.easeOut(duration: 0.2)) {
                     opacity = 0
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(0.2))
                     onComplete()
                 }
             }
@@ -256,7 +255,7 @@ struct SuccessDismissOverlay: View {
 /// Automatically hides when connectivity is restored. No auto-dismiss.
 /// Uses NetworkMonitor.shared internally Ã¢â‚¬â€ no environment wiring needed.
 struct OfflineBannerModifier: ViewModifier {
-    @ObservedObject private var networkMonitor = NetworkMonitor.shared
+    private var networkMonitor: NetworkMonitor { .shared }
     
     @State private var showBanner = false
     @State private var debounceTask: Task<Void, Never>?

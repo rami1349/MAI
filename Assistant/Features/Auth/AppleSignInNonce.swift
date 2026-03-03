@@ -3,13 +3,6 @@
 //  Assistant
 //
 //  Created by Ramiro  on 2/1/26.
-//
-
-
-//
-//  AppleSignInNonce.swift
-//  FamilyHub
-//
 //  Helper utilities for Sign in with Apple secure nonce generation
 //
 

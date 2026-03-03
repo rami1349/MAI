@@ -22,13 +22,9 @@ class RewardViewModel {
     var errorMessage: String?
     
     // MARK: - Private
-    @ObservationIgnored private var _db: Firestore?
-    private var db: Firestore {
-        if _db == nil { _db = Firestore.firestore() }
-        return _db!
-    }
-    private var transactionListener: ListenerRegistration?
-    private var withdrawalListener: ListenerRegistration?
+    @ObservationIgnored private let db = Firestore.firestore()
+    @ObservationIgnored private var transactionListener: ListenerRegistration?
+    @ObservationIgnored private var withdrawalListener: ListenerRegistration?
     
     deinit {
         transactionListener?.remove()

@@ -1,10 +1,9 @@
 //
 //  AvatarView.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
+//  User avatar with initials fallback and various sizes
 //
-
 
 import SwiftUI
 
@@ -35,13 +34,13 @@ struct AvatarView: View {
     private var initialsView: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.accentPrimary, .accentBlue],
+                colors: [Color.accentPrimary, Color.accentBlue],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             Text(user?.displayName.prefix(2).uppercased() ?? "?")
-                .font(.system(size: size * 0.4, weight: .bold))
-                .foregroundColor(.white)
+                .font(.system(size: size * 0.4, weight: .bold)) // DT-exempt: proportional sizing
+                .foregroundStyle(.textOnAccent)
         }
     }
 }
@@ -70,13 +69,13 @@ struct MemberAvatarSmall: View {
     private var initialsView: some View {
         ZStack {
             LinearGradient(
-                colors: [Color.accentPrimary, .accentBlue],
+                colors: [Color.accentPrimary, Color.accentBlue],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             Text(user.displayName.prefix(1).uppercased())
-                .font(.system(size: size * 0.45, weight: .bold))
-                .foregroundColor(.white)
+                .font(.system(size: size * 0.45, weight: .bold)) // DT-exempt: proportional sizing
+                .foregroundStyle(.textOnAccent)
         }
     }
 }

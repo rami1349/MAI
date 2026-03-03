@@ -1,25 +1,5 @@
 //
 //  LocalizationManager.swift
-//  FamilyHub
-//
-//  Refactored to use Apple's standard Localizable.strings files.
-//
-//  HOW IT WORKS:
-//  - All translations live in standard .strings files:
-//      en.lproj/Localizable.strings
-//      es.lproj/Localizable.strings
-//      zh-Hans.lproj/Localizable.strings
-//  - LocalizationManager handles in-app language override by loading
-//    the correct .lproj bundle at runtime.
-//  - L10n provides type-safe accessors (unchanged public API).
-//  - No more Strings.defaults dictionary â€” Apple's bundle system IS the source of truth.
-//
-//  MIGRATION NOTES:
-//  - The Localizable.strings files you already have for es and zh-Hans remain as-is.
-//  - You MUST add en.lproj/Localizable.strings with all English strings
-//    (previously hardcoded in Strings.defaults). A generated copy is provided.
-//  - Every call site using L10n.xxx continues to work with zero changes.
-//
 
 import Foundation
 import SwiftUI
@@ -55,13 +35,14 @@ enum AppLanguage: String, CaseIterable, Identifiable {
 
 // MARK: - Localization Manager
 
-final class LocalizationManager: ObservableObject {
+@Observable
+final class LocalizationManager {
     static let shared = LocalizationManager()
     
-    private let languageKey = "app_language_preference"
+    @ObservationIgnored private let languageKey = "app_language_preference"
     
-    @Published private(set) var currentLanguage: String
-    @Published private(set) var selectedLanguage: AppLanguage
+    private(set) var currentLanguage: String
+    private(set) var selectedLanguage: AppLanguage
     
     /// The .lproj bundle for the active language.
     /// `nil` only if the .lproj folder is missing from the app bundle.

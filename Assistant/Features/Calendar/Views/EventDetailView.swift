@@ -96,12 +96,12 @@ struct EventDetailView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.close) { dismiss() }
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
                     Text(L10n.eventDetails)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
             }
             .alert(L10n.deleteEventConfirm, isPresented: $showDeleteConfirmation) {
@@ -132,7 +132,7 @@ struct EventDetailView: View {
             // Event title
             Text(event.title)
                 .font(DS.Typography.displayMedium())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DS.Spacing.xl)
             
@@ -144,7 +144,7 @@ struct EventDetailView: View {
                 
                 Text(quickTimeSummary)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
         .frame(maxWidth: .infinity)
@@ -205,18 +205,18 @@ struct EventDetailView: View {
                 HStack(spacing: DS.Spacing.md) {
                     Image(systemName: "hourglass")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.duration)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Spacer()
                     
                     Text(durationText)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -235,23 +235,23 @@ struct EventDetailView: View {
         HStack(spacing: DS.Spacing.md) {
             Image(systemName: "calendar")
                 .font(DS.Typography.body())
-                .foregroundStyle(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(formatDate(event.startDate))
                     .font(DS.Typography.body())
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 if event.isAllDay {
                     Text(L10n.allDay)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 } else {
                     Text("\(event.startDate.formattedTime) – \(event.endDate.formattedTime)")
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             
@@ -266,23 +266,23 @@ struct EventDetailView: View {
             HStack(spacing: DS.Spacing.md) {
                 Image(systemName: "calendar")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(L10n.starts)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     
                     Text(formatDate(event.startDate))
                         .font(DS.Typography.body())
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     if !event.isAllDay {
                         Text(event.startDate.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
                 
@@ -305,23 +305,23 @@ struct EventDetailView: View {
             HStack(spacing: DS.Spacing.md) {
                 Image(systemName: "calendar.badge.checkmark")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(L10n.ends)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     
                     Text(formatDate(event.endDate))
                         .font(DS.Typography.body())
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     if !event.isAllDay {
                         Text(event.endDate.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
                 
@@ -337,17 +337,17 @@ struct EventDetailView: View {
         HStack(alignment: .top, spacing: DS.Spacing.md) {
             Image(systemName: "note.text")
                 .font(DS.Typography.body())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(L10n.notes)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                 
                 Text(notes)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
             }
             
             Spacer()
@@ -370,18 +370,18 @@ struct EventDetailView: View {
             HStack(spacing: DS.Spacing.md) {
                 Image(systemName: "person.2.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
                 Text(L10n.participants)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                 
                 Spacer()
                 
                 Text("\(event.participants.count)")
                     .font(DS.Typography.badge())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
                     .background(
@@ -399,7 +399,7 @@ struct EventDetailView: View {
                                 
                                 Text(member.displayName.components(separatedBy: " ").first ?? member.displayName)
                                     .font(DS.Typography.micro())
-                                    .foregroundStyle(Color.textSecondary)
+                                    .foregroundStyle(.textSecondary)
                                     .lineLimit(1)
                             }
                             .frame(width: 56)
@@ -432,7 +432,7 @@ struct EventDetailView: View {
                     Text(L10n.edit)
                         .font(DS.Typography.label())
                 }
-                .foregroundStyle(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.md)
                 .background(
@@ -456,7 +456,7 @@ struct EventDetailView: View {
                     Text(L10n.delete)
                         .font(DS.Typography.label())
                 }
-                .foregroundStyle(.red)
+                .foregroundStyle(.statusError)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.md)
                 .background(

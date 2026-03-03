@@ -79,24 +79,24 @@ final class CalendarViewModel {
     
     // MARK: - Private
     
-    /// PERFORMANCE: Lazy Firestore initialization — deferred until first database access.
-    private var db = Firestore.firestore()
+    /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
+    @ObservationIgnored private let db = Firestore.firestore()
     
     /// Shared Calendar instance for all date arithmetic in this ViewModel.
-    private let calendar = Calendar.current
+    @ObservationIgnored private let calendar = Calendar.current
     
     /// Real-time Firestore listener for events (FIX: SUGGESTION 1)
-    private var eventsListener: ListenerRegistration?
+    @ObservationIgnored private var eventsListener: ListenerRegistration?
     
     /// Currently loaded family ID (for listener management)
-    private var currentFamilyId: String?
+    @ObservationIgnored private var currentFamilyId: String?
     
     /// Currently loaded date range (to avoid redundant listener setup)
-    private var loadedStartDate: Date?
-    private var loadedEndDate: Date?
+    @ObservationIgnored private var loadedStartDate: Date?
+@ObservationIgnored     @ObservationIgnored private var loadedEndDate: Date?
     
     /// Cached month/year string - recomputed only when currentMonth changes (FIX: SUGGESTION 2)
-    private var _cachedMonthYearString: String?
+    @ObservationIgnored private var _cachedMonthYearString: String?
     
     
     deinit {

@@ -107,8 +107,8 @@ struct WelcomeSlidesView: View {
                     .frame(width: 120, height: 120)
                 
                 Image(systemName: slide.icon)
-                    .font(.system(size: 48, weight: .semibold))
-                    .foregroundColor(.white)
+                    .font(DS.Typography.displayLarge())
+                    .foregroundStyle(.textOnAccent)
             }
             .scaleEffect(currentPage == slides.firstIndex(where: { $0.id == slide.id }) ? 1.0 : 0.8)
             .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentPage)
@@ -118,14 +118,14 @@ struct WelcomeSlidesView: View {
             // Text content
             VStack(spacing: DS.Spacing.md) {
                 Text(slide.headline)
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(DS.Typography.displayMedium())
+                    .foregroundStyle(.textOnAccent)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
                 
                 Text(slide.subheadline)
                     .font(.title3)
-                    .foregroundColor(.white.opacity(0.85))
+                    .foregroundStyle(.textOnAccent.opacity(0.85))
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, DS.Spacing.xxl)
@@ -187,14 +187,14 @@ struct WelcomeSlidesView: View {
                         Text(L10n.getStarted)
                             .font(.headline)
                             .fontWeight(.semibold)
-                            .foregroundColor(slides[currentPage].gradientColors[0])
+                            .foregroundStyle(slides[currentPage].gradientColors[0])
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, DS.Spacing.lg)
                             .background(
                                 RoundedRectangle(cornerRadius: DS.Radius.xl)
                                     .fill(Color.white)
                             )
-                            .shadow(color: Color.black.opacity(0.1), radius: 10, y: 5)
+                            .elevation2()
                     }
                     
                     // Sign In link
@@ -204,7 +204,7 @@ struct WelcomeSlidesView: View {
                     }) {
                         Text(L10n.alreadyHaveAccount)
                             .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.9))
+                            .foregroundStyle(.textOnAccent.opacity(0.9))
                     }
                 }
                 .padding(.horizontal, DS.Spacing.xxl)
@@ -214,11 +214,11 @@ struct WelcomeSlidesView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.swipeToContinue)
                         .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundStyle(.textOnAccent.opacity(0.7))
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.5))
+                        .foregroundStyle(.textOnAccent.opacity(0.5))
                 }
                 .padding(.top, DS.Spacing.md)
             }

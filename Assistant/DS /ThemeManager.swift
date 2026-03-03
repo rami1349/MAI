@@ -1,14 +1,12 @@
 //
-//  ThemeManager.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  Theme.swift
+//  FamilyHub
 //
 //  REWRITTEN: Simplified 4-color palette system
 //  Each theme has: Primary, Accent, Surface, Card
 //  Plus system neutrals for text/separators
 //
-//  UPDATED: DS color palettes (Matcha Linen, Oyster Silk, Rose Clay)
+//  Color palettes: Matcha Linen, Oyster Silk, Rose Clay
 //  NO LOGIC CHANGES - Only color values updated
 //
 
@@ -16,16 +14,17 @@
 import SwiftUI
 
 // MARK: - Theme Manager
-class ThemeManager: ObservableObject {
+@Observable
+class ThemeManager {
     static let shared = ThemeManager()
     
-    @Published var currentTheme: AppTheme {
+    var currentTheme: AppTheme {
         didSet {
             UserDefaults.standard.set(currentTheme.rawValue, forKey: "selectedTheme")
         }
     }
     
-    @Published var appearanceMode: AppearanceMode {
+    var appearanceMode: AppearanceMode {
         didSet {
             UserDefaults.standard.set(appearanceMode.rawValue, forKey: "appearanceMode")
             applyAppearance()
@@ -43,7 +42,7 @@ class ThemeManager: ObservableObject {
     }
     
     private func applyAppearance() {
-        DispatchQueue.main.async {
+        Task { @MainActor in
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else { return }
             
@@ -287,25 +286,7 @@ extension Color {
         })
     }
     
-    static var themeCardBorder: Color {
-        Color(UIColor { traits in
-            return traits.userInterfaceStyle == .dark
-            ? UIColor.white.withAlphaComponent(0.06)
-            : UIColor.black.withAlphaComponent(0.04)
-        })
-    }
-    
-    // MARK: - Theme Highlight (subtle tint using accent)
-    static var themeHighlight: Color {
-        Color(UIColor { traits in
-            let palette = ThemeManager.shared.palette
-            if traits.userInterfaceStyle == .dark {
-                return UIColor(Color(hex: palette.accentDark)).withAlphaComponent(0.15)
-            } else {
-                return UIColor(Color(hex: palette.accent)).withAlphaComponent(0.12)
-            }
-        })
-    }
+    // themeCardBorder and themeHighlight → moved to DS.swift
     
     // MARK: - Semantic Status Colors
     static var statusSuccess: Color { SemanticColors.success }
@@ -411,7 +392,63 @@ extension Color {
     }
 }
 
-// MARK: - UIColor Extension for Blending
+// MARK: - ShapeStyle Convenience (enables .textPrimary instead of Color.textPrimary)
+//
+// Swift's .foregroundStyle() accepts any ShapeStyle. By extending ShapeStyle
+// with static properties that return Color, we can write:
+//     .foregroundStyle(.textPrimary)
+// instead of:
+//     .foregroundStyle(.textPrimary)
+//
+// This also works with .tint(), .background(), .overlay(), etc.
+
+extension ShapeStyle where Self == Color {
+    
+    // MARK: Text
+    static var textPrimary: Color { Color.textPrimary }
+    static var textSecondary: Color { Color.textSecondary }
+    static var textTertiary: Color { Color.textTertiary }
+    static var textOnAccent: Color { Color.textOnAccent }
+    
+    // MARK: Accent
+    static var accentPrimary: Color { Color.accentPrimary }
+    static var accentSecondary: Color { Color.accentSecondary }
+    static var accentTertiary: Color { Color.accentTertiary }
+    
+    // MARK: Accent Colors
+    static var accentGreen: Color { Color.accentGreen }
+    static var accentYellow: Color { Color.accentYellow }
+    static var accentOrange: Color { Color.accentOrange }
+    static var accentRed: Color { Color.accentRed }
+    static var accentBlue: Color { Color.accentBlue }
+    
+    // MARK: Status
+    static var statusSuccess: Color { Color.statusSuccess }
+    static var statusWarning: Color { Color.statusWarning }
+    static var statusError: Color { Color.statusError }
+    static var statusInfo: Color { Color.statusInfo }
+    static var statusTodo: Color { Color.statusTodo }
+    static var statusInProgress: Color { Color.statusInProgress }
+    static var statusPending: Color { Color.statusPending }
+    static var statusCompleted: Color { Color.statusCompleted }
+    
+    // MARK: Surfaces
+    static var themeSurfacePrimary: Color { Color.themeSurfacePrimary }
+    static var themeSurfaceSecondary: Color { Color.themeSurfaceSecondary }
+    static var themeCardBackground: Color { Color.themeCardBackground }
+    static var backgroundPrimary: Color { Color.backgroundPrimary }
+    static var backgroundSecondary: Color { Color.backgroundSecondary }
+    static var backgroundCard: Color { Color.backgroundCard }
+    static var surfaceElevated: Color { Color.surfaceElevated }
+    static var surfaceColor: Color { Color.surfaceColor }
+    
+    // MARK: Borders & Dividers
+    static var dividerColor: Color { Color.dividerColor }
+    
+    // MARK: Fill
+    static var fill: Color { Color.fill }
+    static var fillSecondary: Color { Color.fillSecondary }
+}
 extension UIColor {
     func blended(withFraction fraction: CGFloat, of color: UIColor) -> UIColor? {
         var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, a1: CGFloat = 0
@@ -431,25 +468,7 @@ extension UIColor {
     }
 }
 
-// MARK: - Gradients
-extension LinearGradient {
-    static var primaryGradient: LinearGradient {
-        LinearGradient(
-            colors: [Color.accentPrimary, Color.accentSecondary],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-    
-    /// Subtle top-to-bottom gradient for auth / setup screens
-    static var backgroundGradient: LinearGradient {
-        LinearGradient(
-            colors: [Color.themeSurfacePrimary, Color.themeCardBackground],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-}
+// primaryGradient, backgroundGradient, surfaceGradient, glassOverlay → moved to DS.swift
 
 // MARK: - Adaptive Background View
 struct AdaptiveBackgroundView: View {
@@ -571,7 +590,7 @@ struct HabitColors {
                         .font(.headline)
                     
                     HStack(spacing: 8) {
-                        ForEach(0..<4) { index in
+                        ForEach(0..<4, id: \.self) { index in
                             let colors = [
                                 theme.palette.primary,
                                 theme.palette.accent,
@@ -591,14 +610,14 @@ struct HabitColors {
                                 
                                 Text(labels[index])
                                     .font(.caption2)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
                 }
                 .padding()
                 .background(Color(hex: theme.palette.surface))
-                .cornerRadius(16)
+                .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
             }
         }
         .padding()

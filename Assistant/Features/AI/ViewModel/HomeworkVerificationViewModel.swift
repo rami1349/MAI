@@ -33,7 +33,7 @@ class HomeworkVerificationViewModel {
     
     // MARK: - Private
     
-    private lazy var functions = Functions.functions(region: "us-west1")
+    @ObservationIgnored private let functions = Functions.functions(region: "us-west1")
     private var lastVerifiedTaskId: String?
     private var lastVerifiedImageUrl: String?
     

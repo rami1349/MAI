@@ -3,7 +3,7 @@
 //  FamilyHub
 //
 //  Floating Action Button with expandable menu
-//  UPDATED: DS Level 3 elevation for floating elements
+//  Floating action button with Level 3 elevation
 //  NO LOGIC CHANGES - Presentation layer only
 //
 
@@ -45,7 +45,7 @@ struct FABMenu: View {
                     FABMenuItem(
                         icon: "calendar.badge.plus",
                         label: "New Event",
-                        color: .accentOrange,
+                        color: Color.accentOrange,
                         delay: 0.04
                     ) {
                         showFABMenu = false
@@ -55,7 +55,7 @@ struct FABMenu: View {
                     FABMenuItem(
                         icon: "flame.fill",
                         label: "New Habit",
-                        color: .accentGreen,
+                        color: Color.accentGreen,
                         delay: 0.08
                     ) {
                         showFABMenu = false
@@ -87,11 +87,11 @@ struct FABButton: View {
         Button(action: action) {
             Image(systemName: isExpanded ? "xmark" : "plus")
                 .font(.system(size: DS.IconSize.lg, weight: .semibold)) // DT-exempt: icon sizing
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .frame(width: DS.Control.fab, height: DS.Control.fab)
                 .background(
                     Circle()
-                        .fill(isExpanded ?Color.textSecondary : Color.accentPrimary)
+                        .fill(isExpanded ? Color.textSecondary : Color.accentPrimary)
                 )
                 // Level 3 elevation for floating element
                 .shadow(
@@ -123,7 +123,7 @@ struct FABMenuItem: View {
                 // Label pill with Level 2 elevation
                 Text(label)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.xs)
                     .background(
@@ -135,7 +135,7 @@ struct FABMenuItem: View {
                 // Icon circle with colored glow
                 Image(systemName: icon)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()

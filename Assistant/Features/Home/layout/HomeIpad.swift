@@ -1,8 +1,6 @@
 //
 //  HomeIpad.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  SIMPLIFIED HOME LAYOUT - iPad
 //  - Two-column layout maintained for wide screens
@@ -127,8 +125,8 @@ extension HomeView {
             // Header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "target")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.label())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -137,11 +135,11 @@ extension HomeView {
                 
                 Text("Focus Now")
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text("\(derived.focusTasks.count)")
                     .font(DS.Typography.captionMedium())
-                    .foregroundColor(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
@@ -178,30 +176,30 @@ extension HomeView {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.title)
                         .font(DS.Typography.label())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     HStack(spacing: DS.Spacing.xs) {
                         if task.isOverdue {
                             Text("Overdue")
                                 .font(DS.Typography.micro())
-                                .foregroundColor(.accentRed)
+                                .foregroundStyle(.accentRed)
                         } else if Calendar.current.isDateInToday(task.dueDate) {
                             Text("Today")
                                 .font(DS.Typography.micro())
-                                .foregroundColor(.accentOrange)
+                                .foregroundStyle(.accentOrange)
                         } else {
                             Text(task.dueDate.formatted(.dateTime.weekday(.abbreviated)))
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                         
                         if let time = task.scheduledTime {
                             Text("•")
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                             Text(time.formatted(.dateTime.hour().minute()))
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                 }
@@ -209,16 +207,16 @@ extension HomeView {
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .fill(Color.themeCardBackground)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .stroke(task.isOverdue ? Color.accentRed.opacity(0.3) : Color.clear, lineWidth: 1)
             )
         }
@@ -233,8 +231,8 @@ extension HomeView {
             // Header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "clock")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -243,11 +241,11 @@ extension HomeView {
                 
                 Text("Today & Tomorrow")
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text("\(derived.timelineItems.count)")
                     .font(DS.Typography.captionMedium())
-                    .foregroundColor(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
@@ -267,7 +265,7 @@ extension HomeView {
                 if derived.timelineItems.count > 6 {
                     Text("+\(derived.timelineItems.count - 6) more")
                         .font(DS.Typography.captionMedium())
-                        .foregroundColor(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.top, DS.Spacing.xs)
                 }
@@ -275,10 +273,10 @@ extension HomeView {
         }
         .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
                 .fill(Color.themeCardBackground)
         )
-        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+        .elevation1()
         .tourTarget("home.timeline")
     }
     
@@ -292,8 +290,8 @@ extension HomeView {
                 HStack(spacing: DS.Spacing.sm) {
                     // Time
                     Text(task.scheduledTime?.formatted(.dateTime.hour().minute()) ?? "--:--")
-                        .font(.system(size: 11, weight: .medium, design: .monospaced))
-                        .foregroundColor(Color.textSecondary)
+                        .font(DS.Typography.micro())
+                        .foregroundStyle(.textSecondary)
                         .frame(width: 44, alignment: .leading)
                     
                     Circle()
@@ -302,14 +300,14 @@ extension HomeView {
                     
                     Text(task.title)
                         .font(DS.Typography.bodySmall())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     Spacer()
                     
                     Image(systemName: "checklist")
-                        .font(.system(size: 10))
-                        .foregroundColor(Color.textTertiary)
+                        .font(DS.Typography.micro())
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(.vertical, DS.Spacing.xs)
             }
@@ -318,8 +316,8 @@ extension HomeView {
         case .event(let event):
             HStack(spacing: DS.Spacing.sm) {
                 Text(event.date.formatted(.dateTime.hour().minute()))
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundColor(Color.textSecondary)
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textSecondary)
                     .frame(width: 44, alignment: .leading)
                 
                 Circle()
@@ -328,14 +326,14 @@ extension HomeView {
                 
                 Text(event.title)
                     .font(DS.Typography.bodySmall())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Spacer()
                 
                 Image(systemName: event.icon)
-                    .font(.system(size: 10))
-                    .foregroundColor(event.color)
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(event.color)
             }
             .padding(.vertical, DS.Spacing.xs)
         }
@@ -348,8 +346,8 @@ extension HomeView {
             // Section header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "folder.fill")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -358,7 +356,7 @@ extension HomeView {
                 
                 Text(L10n.taskGroups)
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
             }
@@ -406,20 +404,20 @@ extension HomeView {
                         .frame(width: 44, height: 44)
                     
                     Image(systemName: group.icon)
-                        .font(.system(size: 18))
-                        .foregroundColor(Color(hex: group.color))
+                        .font(DS.Typography.heading())
+                        .foregroundStyle(Color(hex: group.color))
                 }
                 
                 // Content
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(group.name)
                         .font(DS.Typography.label())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     Text("\(group.taskCount) tasks")
                         .font(DS.Typography.caption())
-                        .foregroundColor(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Spacer()
@@ -431,15 +429,15 @@ extension HomeView {
                 }
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .fill(Color.themeCardBackground)
             )
-            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+            .elevation1()
         }
         .buttonStyle(.plain)
         .hoverEffect()
@@ -452,8 +450,8 @@ extension HomeView {
             // Header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "calendar")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -462,11 +460,11 @@ extension HomeView {
                 
                 Text("This Week")
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text("\(derived.weekEvents.count)")
                     .font(DS.Typography.captionMedium())
-                    .foregroundColor(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
@@ -487,7 +485,7 @@ extension HomeView {
                 if derived.weekEvents.count > 5 {
                     Text("+\(derived.weekEvents.count - 5) more")
                         .font(DS.Typography.captionMedium())
-                        .foregroundColor(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.top, DS.Spacing.xs)
                 }
@@ -495,10 +493,10 @@ extension HomeView {
         }
         .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
                 .fill(Color.themeCardBackground)
         )
-        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+        .elevation1()
         .tourTarget("home.upcomingEvents")
     }
     
@@ -511,20 +509,20 @@ extension HomeView {
                 .frame(width: 8, height: 8)
             
             Image(systemName: event.icon)
-                .font(.system(size: 12))
-                .foregroundColor(event.color)
+                .font(DS.Typography.bodySmall())
+                .foregroundStyle(event.color)
                 .frame(width: 20)
             
             Text(event.title)
                 .font(DS.Typography.body())
-                .foregroundColor(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .lineLimit(1)
             
             Spacer()
             
             Text(event.countdownText)
                 .font(DS.Typography.captionMedium())
-                .foregroundColor(event.daysUntil <= 2 ? .white : Color.accentPrimary)
+                .foregroundStyle(event.daysUntil <= 2 ? .textOnAccent : .accentPrimary)
                 .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, 3)
                 .background(
@@ -542,8 +540,8 @@ extension HomeView {
             // Header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.seal")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -552,7 +550,7 @@ extension HomeView {
                 
                 Text(L10n.awaitingVerification)
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Circle()
                     .fill(Color.accentPrimary)
@@ -570,10 +568,10 @@ extension HomeView {
         }
         .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
                 .fill(Color.themeCardBackground)
         )
-        .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
+        .elevation1()
     }
 }
 
@@ -582,8 +580,8 @@ extension HomeView {
 private extension FamilyTask.TaskPriority {
     var color: Color {
         switch self {
-        case .urgent: return .accentRed
-        case .high: return .accentOrange
+        case .urgent: return Color.accentRed
+        case .high: return Color.accentOrange
         case .medium: return Color.accentPrimary
         case .low: return Color.textTertiary
         }
@@ -595,10 +593,10 @@ private extension FamilyTask.TaskPriority {
 private extension FamilyTask.TaskStatus {
     var color: Color {
         switch self {
-        case .todo: return .statusTodo
+        case .todo: return Color.statusTodo
         case .inProgress: return Color.statusInProgress
         case .pendingVerification: return Color.statusPending
-        case .completed: return .statusCompleted
+        case .completed: return Color.statusCompleted
         }
     }
 }

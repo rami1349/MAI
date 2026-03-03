@@ -151,7 +151,7 @@ struct HomeworkVerificationView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                .foregroundStyle(.blue)
+                .foregroundStyle(.statusInfo)
             
             Text("MAI")
                 .font(.headline)
@@ -168,7 +168,7 @@ struct HomeworkVerificationView: View {
                 // Additional warning
                 HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.statusWarning)
                     
                     Text("MAI may make mistakes reading handwriting or solving problems. Always verify important answers yourself.")
                         .font(.caption)
@@ -215,7 +215,7 @@ struct HomeworkVerificationView: View {
             // Reminder during loading
             Text("Remember: MAI suggestions may be inaccurate")
                 .font(.caption2)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
                 .padding(.top, 8)
         }
         .frame(maxWidth: .infinity)
@@ -268,11 +268,11 @@ struct HomeworkVerificationView: View {
             HStack(spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.title2)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.statusWarning)
                 
                 Text("Low Confidence Analysis")
                     .font(.headline)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.statusWarning)
             }
             
             Text(result.confidenceReason ?? "The AI is uncertain about this analysis. Please review carefully before making a decision.")
@@ -283,7 +283,7 @@ struct HomeworkVerificationView: View {
             Text("Manual review strongly recommended")
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -309,12 +309,12 @@ struct HomeworkVerificationView: View {
                         
                         Text("(Suggestion)")
                             .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
+                            .foregroundStyle(.textOnAccent.opacity(0.8))
                     }
                     
                     Text(result.subject)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(.textOnAccent.opacity(0.9))
                 }
                 
                 Spacer()
@@ -326,11 +326,11 @@ struct HomeworkVerificationView: View {
             if let message = result.recommendationMessage {
                 Text(message)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.95))
+                    .foregroundStyle(.textOnAccent.opacity(0.95))
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(.textOnAccent)
         .padding()
         .background(result.recommendation.color.gradient)
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
@@ -344,10 +344,10 @@ struct HomeworkVerificationView: View {
         VStack(alignment: .trailing, spacing: 2) {
             Text("AI Confidence")
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.textOnAccent.opacity(0.7))
             
             HStack(spacing: 4) {
-                ForEach(0..<5) { index in
+                ForEach(0..<5, id: \.self) { index in
                     Circle()
                         .fill(index < Int(confidence * 5) ? Color.white : Color.white.opacity(0.3))
                         .frame(width: 6, height: 6)
@@ -357,7 +357,7 @@ struct HomeworkVerificationView: View {
             Text("\(Int(confidence * 100))%")
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundStyle(confidence < 0.7 ? .yellow : .white)
+                .foregroundStyle(confidence < 0.7 ? .accentYellow : .textOnAccent)
         }
     }
     
@@ -479,7 +479,7 @@ struct HomeworkVerificationView: View {
                     Text("MAI suggests: ")
                         .foregroundStyle(.secondary)
                     Text(expected)
-                        .foregroundStyle(.green)
+                        .foregroundStyle(.statusSuccess)
                 }
                 .font(.caption)
             }
@@ -502,7 +502,7 @@ struct HomeworkVerificationView: View {
         HStack(spacing: 12) {
             Image(systemName: "star.fill")
                 .font(.title2)
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.accentYellow)
             
             Text(result.encouragement)
                 .font(.subheadline)
@@ -520,7 +520,7 @@ struct HomeworkVerificationView: View {
             Label("Suggested Practice Areas", systemImage: "lightbulb.fill")
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
             
             ForEach(areas, id: \.self) { area in
                 HStack(spacing: 8) {
@@ -544,7 +544,7 @@ struct HomeworkVerificationView: View {
         VStack(spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: "info.circle.fill")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(.statusInfo)
                 
                 Text("MAI Limitations")
                     .font(.caption)
@@ -572,10 +572,10 @@ struct HomeworkVerificationView: View {
             if confidence < 0.7 {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.statusWarning)
                     Text("Low AI confidence – please review carefully")
                         .font(.caption)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.statusWarning)
                 }
             }
             
@@ -619,7 +619,7 @@ struct HomeworkVerificationView: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(DS.Typography.displayLarge())
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
             
             Text("Could Not Analyze")
                 .font(.headline)

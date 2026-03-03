@@ -107,7 +107,7 @@ final class TourManager {
     
     // MARK: - Persistence
     
-    private let hasCompletedKey = "featureTour_completed_v3"
+    @ObservationIgnored private let hasCompletedKey = "featureTour_completed_v3"
     
     var hasCompletedTour: Bool {
         UserDefaults.standard.bool(forKey: hasCompletedKey)
@@ -324,11 +324,11 @@ struct TourTooltip: View {
                 VStack(spacing: DS.Spacing.xs) {
                     Text(step.title)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Text(step.message)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -338,7 +338,7 @@ struct TourTooltip: View {
                     // Step counter
                     Text("\(tourManager.stepIndex + 1) of \(tourManager.totalSteps)")
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     
                     Spacer()
                     
@@ -346,7 +346,7 @@ struct TourTooltip: View {
                     Button(action: tourManager.skip) {
                         Text("Skip")
                             .font(DS.Typography.label())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                     .padding(.trailing, DS.Spacing.sm)
                     
@@ -354,7 +354,7 @@ struct TourTooltip: View {
                     Button(action: tourManager.next) {
                         Text(tourManager.isLastStep ? "Done" : "Next")
                             .font(DS.Typography.label())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, DS.Spacing.lg)
                             .padding(.vertical, DS.Spacing.sm)
                             .background(Capsule().fill(Color.accentPrimary))

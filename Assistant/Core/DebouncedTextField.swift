@@ -112,7 +112,7 @@ struct DebouncedTextEditor: View {
             // Placeholder
             if let placeholder = placeholder, localText.isEmpty {
                 Text(placeholder)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .padding(.leading, 4)
                     .padding(.top, 8)
                     .allowsHitTesting(false)

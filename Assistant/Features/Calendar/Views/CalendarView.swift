@@ -1,7 +1,7 @@
 //
 //  CalendarView.swift
 //
-//  DS CALM REDESIGN
+//  LUXURY CALM REDESIGN
 //  - Clean, minimal navigation
 //  - Elegant week strip with soft interactions
 //  - Refined agenda display
@@ -16,7 +16,7 @@ struct CalendarView: View {
     @Environment(TaskViewModel.self) var taskVM
     @Environment(CalendarViewModel.self) var calendarVM
     @Environment(AuthViewModel.self) var authViewModel
-    private var eventKitService = EventKitCalendarService.shared
+    private var eventKitService: EventKitCalendarService { .shared }
     
     // MARK: - Environment
     
@@ -111,7 +111,7 @@ struct CalendarView: View {
             
             VStack(spacing: 0) {
                 // Clean header
-                DSHeader
+                calendarHeader
                 
                 // Content scroll
                 ScrollView(showsIndicators: false) {
@@ -144,9 +144,9 @@ struct CalendarView: View {
         }
     }
     
-    // MARK: - DS Header
+    // MARK: - Calendar Header
     
-    private var DSHeader: some View {
+    private var calendarHeader: some View {
         HStack(spacing: DS.Spacing.md) {
             // Month title button
             Button(action: {
@@ -160,11 +160,11 @@ struct CalendarView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Text(headerMonthLabel)
                         .font(DS.Typography.heading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     Image(systemName: showMonthGrid ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                 }
             }
             
@@ -175,7 +175,7 @@ struct CalendarView: View {
                 Button(action: jumpToToday) {
                     Text(L10n.today)
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -189,7 +189,7 @@ struct CalendarView: View {
             Button(action: { showMemberFilter = true }) {
                 Image(systemName: selectedMemberIds.isEmpty ? "person.2" : "person.2.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(selectedMemberIds.isEmpty ? Color.textSecondary : Color.accentPrimary)
+                    .foregroundStyle(selectedMemberIds.isEmpty ? .textSecondary : .accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -265,7 +265,7 @@ struct CalendarView: View {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .frame(width: 36, height: 36)
             }
             
@@ -273,7 +273,7 @@ struct CalendarView: View {
             
             Text(SharedFormatters.monthYear.string(from: monthGridMonth))
                 .font(DS.Typography.subheading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Spacer()
             
@@ -283,7 +283,7 @@ struct CalendarView: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .frame(width: 36, height: 36)
             }
         }
@@ -299,7 +299,7 @@ struct CalendarView: View {
                     Text(day)
                         .font(DS.Typography.micro())
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -331,7 +331,7 @@ struct CalendarView: View {
                         Text("\(calendar.component(.day, from: date))")
                             .font(DS.Typography.bodySmall())
                             .fontWeight(isToday ? .semibold : .regular)
-                            .foregroundStyle(isSelected ? .white : (isToday ? Color.accentPrimary : Color.textPrimary))
+                            .foregroundStyle(isSelected ? .textOnAccent : (isToday ? .accentPrimary : .textPrimary))
                         
                         if itemCount > 0 {
                             Circle()
@@ -360,11 +360,11 @@ struct CalendarView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(selectedDay.formatted(.dateTime.weekday(.wide)))
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Text(selectedDay.formatted(.dateTime.month().day()))
                     .font(DS.Typography.heading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
             }
             
             Spacer()
@@ -375,7 +375,7 @@ struct CalendarView: View {
                 } label: {
                     Text(L10n.today)
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -388,7 +388,7 @@ struct CalendarView: View {
             Button { showMemberFilter = true } label: {
                 Image(systemName: selectedMemberIds.isEmpty ? "person.2" : "person.2.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(selectedMemberIds.isEmpty ? Color.textSecondary : Color.accentPrimary)
+                    .foregroundStyle(selectedMemberIds.isEmpty ? .textSecondary : .accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -482,12 +482,12 @@ struct CalendarView: View {
                     HStack {
                         Text(L10n.showAllMembers)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         Spacer()
                         if selectedMemberIds.isEmpty {
                             Image(systemName: "checkmark")
                                 .font(DS.Typography.label())
-                                .foregroundStyle(Color.accentPrimary)
+                                .foregroundStyle(.accentPrimary)
                         }
                     }
                 }
@@ -497,12 +497,12 @@ struct CalendarView: View {
                             AvatarView(user: member, size: DS.Avatar.sm)
                             Text(member.displayName)
                                 .font(DS.Typography.body())
-                                .foregroundStyle(Color.textPrimary)
+                                .foregroundStyle(.textPrimary)
                             Spacer()
                             if selectedMemberIds.contains(member.id ?? "") {
                                 Image(systemName: "checkmark")
                                     .font(DS.Typography.label())
-                                    .foregroundStyle(Color.accentPrimary)
+                                    .foregroundStyle(.accentPrimary)
                             }
                         }
                     }

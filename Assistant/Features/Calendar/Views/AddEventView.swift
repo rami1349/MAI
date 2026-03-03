@@ -72,12 +72,12 @@ struct AddEventView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.cancel) { dismiss() }
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
                     Text(L10n.addEvent)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: createEvent) {
@@ -90,7 +90,7 @@ struct AddEventView: View {
                                 .fontWeight(.semibold)
                         }
                     }
-                    .foregroundStyle(title.isEmpty ? Color.textTertiary : Color.accentPrimary)
+                    .foregroundStyle(title.isEmpty ? .textTertiary : .accentPrimary)
                     .disabled(title.isEmpty || isLoading)
                 }
             }
@@ -110,11 +110,11 @@ struct AddEventView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
             Text(L10n.eventWhatHappening)
                 .font(DS.Typography.caption())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             
             TextField(L10n.eventTitlePlaceholder, text: $title)
                 .font(DS.Typography.displayMedium())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .focused($isTitleFocused)
                 .padding(.vertical, DS.Spacing.sm)
                 .onChange(of: title) { _, newValue in
@@ -140,18 +140,18 @@ struct AddEventView: View {
                 HStack {
                     Image(systemName: "clock.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(formattedDateRange)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         if isAllDay {
                             Text(L10n.allDay)
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                     
@@ -160,11 +160,11 @@ struct AddEventView: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Text(L10n.change)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                         
                         Image(systemName: showDatePicker ? "chevron.up" : "chevron.down")
                             .font(DS.Typography.bodySmall())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                     }
                 }
                 .padding(DS.Spacing.md)
@@ -238,12 +238,12 @@ struct AddEventView: View {
                 HStack(spacing: DS.Spacing.md) {
                     Image(systemName: "sun.max.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
                     Text(L10n.allDay)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
             }
             .tint(Color.accentPrimary)
@@ -265,12 +265,12 @@ struct AddEventView: View {
             HStack {
                 Image(systemName: "calendar")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
                 Text(L10n.starts)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -294,12 +294,12 @@ struct AddEventView: View {
             HStack {
                 Image(systemName: "calendar.badge.clock")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
                 Text(L10n.ends)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -320,18 +320,18 @@ struct AddEventView: View {
                 HStack {
                     Image(systemName: "hourglass")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.duration)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
                     Spacer()
                     
                     Text(durationText)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -367,18 +367,18 @@ struct AddEventView: View {
                 HStack {
                     Image(systemName: "ellipsis.circle.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(showMoreOptions ? Color.accentPrimary : Color.textTertiary)
+                        .foregroundStyle(showMoreOptions ? .accentPrimary : .textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.moreOptions)
                         .font(DS.Typography.body())
-                        .foregroundStyle(showMoreOptions ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(showMoreOptions ? .textPrimary : .textSecondary)
                     
                     Spacer()
                     
                     Image(systemName: showMoreOptions ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -408,12 +408,12 @@ struct AddEventView: View {
                 HStack {
                     Image(systemName: "note.text")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
                     Text(L10n.notes)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 TextField(L10n.addNotes, text: $notes, axis: .vertical)
@@ -430,12 +430,12 @@ struct AddEventView: View {
             HStack {
                 Image(systemName: "paintpalette.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
                 Text(L10n.color)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 
@@ -450,7 +450,7 @@ struct AddEventView: View {
                                 if selectedColor == color {
                                     Image(systemName: "checkmark")
                                         .font(DS.Typography.captionMedium())
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(.textOnAccent)
                                 }
                             }
                         }
@@ -706,11 +706,11 @@ private struct QuickTimeChip: View {
             VStack(spacing: 2) {
                 Text(label)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(isSelected ? .white : Color.textPrimary)
+                    .foregroundStyle(isSelected ? .textOnAccent : .textPrimary)
                 
                 Text(sublabel)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? .white.opacity(0.8) : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .textOnAccent.opacity(0.8) : .textTertiary)
             }
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.sm)
@@ -744,17 +744,17 @@ private struct CollapsibleParticipantsRow: View {
                 HStack {
                     Image(systemName: selectedIds.isEmpty ? "person.2" : "person.2.fill")
                         .font(DS.Typography.body())
-                        .foregroundStyle(selectedIds.isEmpty ? Color.textTertiary : Color.accentPrimary)
+                        .foregroundStyle(selectedIds.isEmpty ? .textTertiary : .accentPrimary)
                         .frame(width: 24)
                     
                     if selectedIds.isEmpty {
                         Text(L10n.addParticipants)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     } else {
                         Text(participantsSummary)
                             .font(DS.Typography.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                             .lineLimit(1)
                     }
                     
@@ -763,7 +763,7 @@ private struct CollapsibleParticipantsRow: View {
                     if !selectedIds.isEmpty {
                         Text("\(selectedIds.count)")
                             .font(DS.Typography.badge())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
                             .background(Capsule().fill(Color.accentPrimary))
@@ -771,7 +771,7 @@ private struct CollapsibleParticipantsRow: View {
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(DS.Spacing.md)
             }
@@ -795,14 +795,14 @@ private struct CollapsibleParticipantsRow: View {
                                 
                                 Text(member.displayName)
                                     .font(DS.Typography.body())
-                                    .foregroundStyle(Color.textPrimary)
+                                    .foregroundStyle(.textPrimary)
                                 
                                 Spacer()
                                 
                                 if let id = member.id, selectedIds.contains(id) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .font(DS.Typography.heading())
-                                        .foregroundStyle(Color.accentPrimary)
+                                        .foregroundStyle(.accentPrimary)
                                 } else {
                                     Circle()
                                         .stroke(Color.textTertiary.opacity(0.3), lineWidth: 1.5)
@@ -837,8 +837,9 @@ private struct CollapsibleParticipantsRow: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     AddEventView()
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
 }

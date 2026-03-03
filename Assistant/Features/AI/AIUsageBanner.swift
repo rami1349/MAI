@@ -37,11 +37,11 @@ struct AIUsageBanner: View {
         VStack(spacing: DS.Spacing.md) {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.statusWarning)
                 
                 Text("You've used all \(dailyLimit) daily AI actions")
                     .font(.caption)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
             }
             
             HStack(spacing: DS.Spacing.md) {
@@ -55,7 +55,7 @@ struct AIUsageBanner: View {
                             .font(.caption)
                             .fontWeight(.semibold)
                     }
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(
@@ -74,7 +74,7 @@ struct AIUsageBanner: View {
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
-                        .foregroundStyle(Color.textOnAccent)
+                        .foregroundStyle(.textOnAccent)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(
@@ -103,11 +103,11 @@ struct AIUsageBanner: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "bolt.fill")
                 .font(.caption2)
-                .foregroundStyle(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
             
             Text("Using credits · \(store.aiCredits) remaining")
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             Spacer()
             
@@ -116,7 +116,7 @@ struct AIUsageBanner: View {
             } label: {
                 Text("Get more")
                     .font(.caption)
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
             }
         }
         .padding(.horizontal, DS.Spacing.lg)
@@ -129,11 +129,11 @@ struct AIUsageBanner: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "gauge.low")
                 .font(.caption)
-                .foregroundStyle(.orange)
+                .foregroundStyle(.statusWarning)
             
             Text("\(remainingDaily) actions left today")
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
             
             Spacer()
             
@@ -144,7 +144,7 @@ struct AIUsageBanner: View {
                     Text("Upgrade")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                 }
             }
         }

@@ -22,7 +22,7 @@ struct CustomTextField: View {
             // Icon
             Image(systemName: icon)
                 .font(DS.Typography.body())
-                .foregroundStyle(hasError ? Color(hex: "E57373") : (isFocused ? Color.accentPrimary : Color.textTertiary))
+                .foregroundStyle(hasError ? .statusError : (isFocused ? .accentPrimary : .textTertiary))
                 .frame(width: 24)
             
             // Text field - direct approach, no ZStack overlay
@@ -34,7 +34,7 @@ struct CustomTextField: View {
                 }
             }
             .font(DS.Typography.body())
-            .foregroundStyle(Color.textPrimary)
+            .foregroundStyle(.textPrimary)
             .submitLabel(submitLabel)
             .onSubmit { onSubmit?() }
             .focused($isFocused)
@@ -44,7 +44,7 @@ struct CustomTextField: View {
                 Button(action: { showPassword.toggle() }) {
                     Image(systemName: showPassword ? "eye.slash" : "eye")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .frame(width: 24, height: 24)
                 }
                 .buttonStyle(.plain)
@@ -59,7 +59,7 @@ struct CustomTextField: View {
         .overlay(
             RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .stroke(
-                    hasError ? Color(hex: "E57373").opacity(0.5) :
+                    hasError ? Color.statusError.opacity(0.5) :
                     (isFocused ? Color.accentPrimary.opacity(0.3) : Color.clear),
                     lineWidth: 1.5
                 )

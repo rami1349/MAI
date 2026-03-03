@@ -93,15 +93,15 @@ class AuthViewModel {
     
     /// Handle to the Firebase Auth state listener. Retained so it can be
     /// deregistered on `deinit` to prevent memory leaks.
-    private var authStateListener: AuthStateDidChangeListenerHandle?
+    @ObservationIgnored private var authStateListener: AuthStateDidChangeListenerHandle?
     
     /// Firestore real-time listener for the current user's profile document.
     /// Removed and re-established each time a different user signs in.
-    private var userListener: ListenerRegistration?
+    @ObservationIgnored private var userListener: ListenerRegistration?
     
-    /// Lazy Firestore instance — deferred until first database access to avoid
-    /// initializing Firebase before it is configured.
-    private lazy var db = Firestore.firestore()
+    /// Firestore singleton accessor. @ObservationIgnored because db access
+    /// is infrastructure — not UI state that views should observe.
+    @ObservationIgnored private let db = Firestore.firestore()
     
     // MARK: - Initialization
     

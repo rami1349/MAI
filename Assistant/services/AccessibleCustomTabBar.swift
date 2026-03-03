@@ -90,12 +90,12 @@ struct AccessibleCustomTabBar: View {
         .background(
             RoundedRectangle(cornerRadius: DS.Spacing.xxxl)
                 .fill(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.1), radius: 15, x: 0, y: -3)
+                .elevation2()
         )
         .padding(.horizontal, DS.Spacing.lg)
         .padding(.bottom, DS.Spacing.sm)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Tab bar")
+        .accessibilityLabel(L10n.tabBar)
     }
     
     // MARK: - FAB Button
@@ -117,7 +117,7 @@ struct AccessibleCustomTabBar: View {
                 Image(systemName: "plus")
                     .font(dynamicTypeSize.isAccessibilitySize ? .title : .title2)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.textOnAccent)
             }
         }
         .accessibilityLabel("Add new \(currentContext.rawValue)")

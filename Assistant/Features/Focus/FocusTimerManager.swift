@@ -3,18 +3,10 @@
 //  Assistant
 //
 //  Created by Ramiro  on 1/25/26.
-//
-
-
-//
-//  FocusTimerManager.swift
-//  FamilyHub
-//
 //  Manages Pomodoro timer state, background notifications, and persistence
 //
 
 import SwiftUI
-import Combine
 import UserNotifications
 import AVFoundation
 
@@ -34,21 +26,21 @@ class FocusTimerManager {
     
     // MARK: - Private Properties
     @ObservationIgnored private var timer: Timer?
-    private var startTime: Date?
-    private var pausedTime: Date?
-    private var accumulatedPauseTime: TimeInterval = 0
-    private var audioPlayer: AVAudioPlayer?
-    private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
-    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+@ObservationIgnored     private var startTime: Date?
+    @ObservationIgnored private var pausedTime: Date?
+@ObservationIgnored     private var accumulatedPauseTime: TimeInterval = 0
+    @ObservationIgnored private var audioPlayer: AVAudioPlayer?
+@ObservationIgnored     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    @ObservationIgnored private var lifecycleTasks: [Task<Void, Never>] = []
     
     // PERFORMANCE: Reusable haptic generators (avoid allocation per feedback)
-    private let notificationGenerator = UINotificationFeedbackGenerator()
-    private let lightImpactGenerator = UIImpactFeedbackGenerator(style: .light)
-    private let mediumImpactGenerator = UIImpactFeedbackGenerator(style: .medium)
-    private let heavyImpactGenerator = UIImpactFeedbackGenerator(style: .heavy)
+    @ObservationIgnored private let notificationGenerator = UINotificationFeedbackGenerator()
+@ObservationIgnored     private let lightImpactGenerator = UIImpactFeedbackGenerator(style: .light)
+    @ObservationIgnored private let mediumImpactGenerator = UIImpactFeedbackGenerator(style: .medium)
+@ObservationIgnored     private let heavyImpactGenerator = UIImpactFeedbackGenerator(style: .heavy)
     
     // Notification identifiers
-    private let timerNotificationID = "com.familyhub.focustimer.completion"
+    @ObservationIgnored private let timerNotificationID = "com.familyhub.focustimer.completion"
     
     // MARK: - Computed Properties
     var progress: Double {
@@ -99,23 +91,23 @@ class FocusTimerManager {
     
     // MARK: - App Lifecycle Observers
     private func setupNotificationObservers() {
-        NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)
-            .sink { [weak self] _ in
+        lifecycleTasks.append(Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification) {
                 self?.handleAppBackgrounded()
             }
-            .store(in: &cancellables)
+        })
         
-        NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
-            .sink { [weak self] _ in
+        lifecycleTasks.append(Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification) {
                 self?.handleAppForegrounded()
             }
-            .store(in: &cancellables)
+        })
         
-        NotificationCenter.default.publisher(for: UIApplication.willTerminateNotification)
-            .sink { [weak self] _ in
+        lifecycleTasks.append(Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: UIApplication.willTerminateNotification) {
                 self?.persistState()
             }
-            .store(in: &cancellables)
+        })
     }
     
     // MARK: - Timer Controls
@@ -347,7 +339,7 @@ class FocusTimerManager {
     
     // MARK: - Sound & Haptics
     
-    /// Refined completion chime - uses pleasant system sounds for a calm/DS feel
+    /// Refined completion chime - uses pleasant system sounds for a calm feel
     private func playCompletionSound() {
         // First, try custom bundled sound (singing bowl / meditation chime)
         if let soundURL = Bundle.main.url(forResource: "timer_complete", withExtension: "aiff") {
@@ -357,7 +349,8 @@ class FocusTimerManager {
                 audioPlayer?.play()
                 
                 // Auto-stop after sound completes (max 5 seconds)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                Task { [weak self] in
+                    try? await Task.sleep(for: .seconds(5))
                     self?.audioPlayer?.stop()
                 }
                 return
@@ -375,7 +368,8 @@ class FocusTimerManager {
         AudioServicesPlaySystemSound(1057)  // Gentle "tink"
         
         // Add a second gentle tone after a brief pause for richness
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        Task {
+            try? await Task.sleep(for: .milliseconds(300))
             AudioServicesPlaySystemSound(1075)  // Soft confirmation tone
         }
     }
@@ -390,16 +384,15 @@ class FocusTimerManager {
         // A satisfying three-beat pattern: strong → medium → light (like a "ta-da!")
         heavyImpactGenerator.impactOccurred(intensity: 1.0)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(100))
             self?.mediumImpactGenerator.impactOccurred(intensity: 0.7)
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            
+            try? await Task.sleep(for: .milliseconds(100))
             self?.lightImpactGenerator.impactOccurred(intensity: 0.5)
-        }
-        
-        // Final success notification after the pattern
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            
+            // Final success notification after the pattern
+            try? await Task.sleep(for: .milliseconds(200))
             self?.notificationGenerator.notificationOccurred(.success)
         }
     }
@@ -408,7 +401,8 @@ class FocusTimerManager {
     private func playBreakEndHaptic() {
         mediumImpactGenerator.impactOccurred(intensity: 0.6)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [weak self] in
+        Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(150))
             self?.notificationGenerator.notificationOccurred(.warning)
         }
     }
@@ -485,7 +479,7 @@ class FocusTimerManager {
     }
     
     // MARK: - Persistence
-    private let persistenceKey = "com.familyhub.focustimer.state"
+    @ObservationIgnored private let persistenceKey = "com.familyhub.focustimer.state"
     
     private func persistState() {
         guard state == .running || state == .paused else { return }

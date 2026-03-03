@@ -2,7 +2,6 @@
 //  PaletteKey.swift
 //  Assistant
 //
-//  Created by Ramiro  on 3/2/26.
 //  ThemeEnvironment - Lightweight, SwiftUI-native theme solution
 //  Uses Environment for color scheme and custom EnvironmentKey for palette
 //
@@ -12,21 +11,14 @@
 import SwiftUI
 
 // MARK: - Palette Environment Key
-private struct PaletteKey: EnvironmentKey {
-    static let defaultValue: ColorPalette = AppTheme.cremeMatcha.palette
-}
-
 extension EnvironmentValues {
-    var palette: ColorPalette {
-        get { self[PaletteKey.self] }
-        set { self[PaletteKey.self] = newValue }
-    }
+    @Entry var palette: ColorPalette = AppTheme.cremeMatcha.palette
 }
 
 // MARK: - Theme Modifier
 /// Injects theme into environment - colors resolve dynamically, no rebuilds
 struct ThemeModifier: ViewModifier {
-    @ObservedObject var themeManager: ThemeManager
+    var themeManager: ThemeManager
     
     func body(content: Content) -> some View {
         content
@@ -114,6 +106,7 @@ private struct PaletteForegroundModifier: ViewModifier {
     let keyPath: KeyPath<ColorPalette, String>
     
     func body(content: Content) -> some View {
-        content.foregroundColor(Color(hex: palette[keyPath: keyPath]))
+        content.foregroundStyle(Color(hex: palette[keyPath: keyPath]))
     }
 }
+
