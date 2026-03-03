@@ -2,10 +2,8 @@
 //  DebouncedTextField.swift
 //  Assistant
 //
-//  Created by Ramiro  on 3/2/26.
+//  Created by Ramiro  on 2/2/26.
 //
-
-
 //  High-performance text field that debounces updates to parent state
 //  Prevents full view hierarchy re-renders on every keystroke
 //
@@ -14,7 +12,6 @@
 //
 
 import SwiftUI
-import Combine
 
 // MARK: - Debounced TextField
 struct DebouncedTextField: View {
@@ -115,7 +112,7 @@ struct DebouncedTextEditor: View {
             // Placeholder
             if let placeholder = placeholder, localText.isEmpty {
                 Text(placeholder)
-                    .foregroundColor(.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .padding(.leading, 4)
                     .padding(.top, 8)
                     .allowsHitTesting(false)
@@ -218,7 +215,7 @@ struct DebouncedNumberField: View {
                 DebouncedTextField("Task title", text: $text)
                     .padding()
                     .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.Radius.sm))
                 
                 Text("Bound value: \(text)")
                     .font(.caption)
@@ -230,7 +227,7 @@ struct DebouncedNumberField: View {
                 }
                 .padding()
                 .background(Color.green.opacity(0.1))
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: DS.Radius.sm))
                 
                 Text("Bound value: \(number, specifier: "%.2f")")
                     .font(.caption)
@@ -240,7 +237,7 @@ struct DebouncedNumberField: View {
                     .frame(height: 100)
                     .padding()
                     .background(Color.blue.opacity(0.1))
-                    .cornerRadius(8)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.Radius.sm))
             }
             .padding()
         }
