@@ -83,7 +83,7 @@ struct iPadSidebarLayout: View {
             .zIndex(3)
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: sidebarExpanded)
-        .tint(.accentPrimary)
+        .tint(Color.accentPrimary)
     }
     
     // MARK: - iPad Floating Chat Button
@@ -94,7 +94,7 @@ struct iPadSidebarLayout: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [.accentPrimary, .purple],
+                            colors: [Color.accentPrimary, .purple],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -216,7 +216,7 @@ struct iPadSidebarLayout: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: isSelected ? item.selectedIcon : item.icon)
                         .font(DS.Typography.body()).fontWeight(isSelected ? .semibold : .regular)
-                        .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
+                        .foregroundStyle(isSelected ? Color.accentPrimary : Color.textSecondary)
                         .frame(width: 28, height: 28)
                     
                     // Badge dot (collapsed) / count is shown as trailing text (expanded)
@@ -232,7 +232,7 @@ struct iPadSidebarLayout: View {
                 if sidebarExpanded {
                     Text(item.title)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
+                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -273,7 +273,7 @@ struct iPadSidebarLayout: View {
                         HStack {
                             Text(L10n.folders.uppercased())
                                 .font(DS.Typography.micro())
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                                 .tracking(0.8)
                             
                             Spacer()
@@ -287,7 +287,7 @@ struct iPadSidebarLayout: View {
                         if sidebarExpanded {
                             Text(L10n.noFoldersYet)
                                 .font(DS.Typography.bodySmall())
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                                 .padding(.horizontal, DS.Spacing.lg)
                                 .padding(.vertical, DS.Spacing.md)
                         }
@@ -344,7 +344,7 @@ struct iPadSidebarLayout: View {
                 if sidebarExpanded {
                     Text(group.name)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
+                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -352,7 +352,7 @@ struct iPadSidebarLayout: View {
                     if count > 0 {
                         Text("\(count)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -385,14 +385,14 @@ struct iPadSidebarLayout: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: icon)
                     .font(DS.Typography.body()).fontWeight(isAccented ? .semibold : .regular)
-                    .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
+                    .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
                     .frame(width: 28, height: 28)
                     .frame(width: 32)
                 
                 if sidebarExpanded {
                     Text(label)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
+                        .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
                         .lineLimit(1)
                     
                     Spacer()

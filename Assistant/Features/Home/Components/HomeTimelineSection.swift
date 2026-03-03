@@ -30,13 +30,13 @@ struct HomeTimelineSection: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
             Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() } }) {
-                HStack(spacing: Luxury.Spacing.sm) {
+                HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "clock")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.accentPrimary)
+                        .foregroundColor(Color.accentPrimary)
                         .frame(width: 28, height: 28)
                         .background(
                             Circle()
@@ -44,14 +44,14 @@ struct HomeTimelineSection: View {
                         )
                     
                     Text("Today & Tomorrow")
-                        .font(Luxury.Typography.subheading())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.subheading())
+                        .foregroundColor(Color.textPrimary)
                     
                     if !items.isEmpty {
                         Text("\(items.count)")
-                            .font(Luxury.Typography.captionMedium())
-                            .foregroundColor(.accentPrimary)
-                            .padding(.horizontal, Luxury.Spacing.sm)
+                            .font(DS.Typography.captionMedium())
+                            .foregroundColor(Color.accentPrimary)
+                            .padding(.horizontal, DS.Spacing.sm)
                             .padding(.vertical, 2)
                             .background(
                                 Capsule()
@@ -63,18 +63,18 @@ struct HomeTimelineSection: View {
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.textTertiary)
+                        .foregroundColor(Color.textTertiary)
                 }
                 .frame(minHeight: 44)
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.horizontal, DS.Spacing.screenH)
             
             if isExpanded {
                 if items.isEmpty {
                     emptyState
                 } else {
-                    VStack(alignment: .leading, spacing: Luxury.Spacing.lg) {
+                    VStack(alignment: .leading, spacing: DS.Spacing.lg) {
                         // Today section
                         if !todayItems.isEmpty {
                             timelineGroup(title: "Today", items: todayItems)
@@ -85,7 +85,7 @@ struct HomeTimelineSection: View {
                             timelineGroup(title: "Tomorrow", items: tomorrowItems)
                         }
                     }
-                    .padding(.horizontal, Luxury.Spacing.screenH)
+                    .padding(.horizontal, DS.Spacing.screenH)
                 }
             }
         }
@@ -94,15 +94,15 @@ struct HomeTimelineSection: View {
     // MARK: - Timeline Group
     
     private func timelineGroup(title: String, items: [TimelineItem]) -> some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.sm) {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             // Group header
             Text(title)
-                .font(Luxury.Typography.captionMedium())
-                .foregroundColor(.textSecondary)
+                .font(DS.Typography.captionMedium())
+                .foregroundColor(Color.textSecondary)
                 .textCase(.uppercase)
             
             // Items
-            VStack(spacing: Luxury.Spacing.xs) {
+            VStack(spacing: DS.Spacing.xs) {
                 ForEach(items) { item in
                     timelineRow(for: item)
                 }
@@ -134,7 +134,7 @@ struct HomeTimelineSection: View {
     // MARK: - Empty State
     
     private var emptyState: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             ZStack {
                 Circle()
                     .fill(Color.accentPrimary.opacity(0.08))
@@ -142,27 +142,27 @@ struct HomeTimelineSection: View {
                 
                 Image(systemName: "sun.max")
                     .font(.system(size: 16))
-                    .foregroundColor(.accentPrimary.opacity(0.6))
+                    .foregroundColor(Color.accentPrimary.opacity(0.6))
             }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("Clear schedule")
-                    .font(Luxury.Typography.body())
-                    .foregroundColor(.textSecondary)
+                    .font(DS.Typography.body())
+                    .foregroundColor(Color.textSecondary)
                 
                 Text("Nothing scheduled for today or tomorrow")
-                    .font(Luxury.Typography.caption())
-                    .foregroundColor(.textTertiary)
+                    .font(DS.Typography.caption())
+                    .foregroundColor(Color.textTertiary)
             }
             
             Spacer()
         }
-        .padding(Luxury.Spacing.md)
+        .padding(DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.md)
                 .fill(Color.themeCardBackground)
         )
-        .padding(.horizontal, Luxury.Spacing.screenH)
+        .padding(.horizontal, DS.Spacing.screenH)
     }
 }
 
@@ -183,19 +183,19 @@ struct TimelineTaskRow: View {
     private var statusColor: Color {
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Time column (fixed width for alignment)
                 Text(timeText ?? "--:--")
                     .font(.system(size: 13, weight: .medium, design: .monospaced))
-                    .foregroundColor(timeText != nil ? .textSecondary : .textTertiary)
+                    .foregroundColor(timeText != nil ? Color.textSecondary : Color.textTertiary)
                     .frame(width: 50, alignment: .leading)
                 
                 // Status dot
@@ -206,14 +206,14 @@ struct TimelineTaskRow: View {
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.title)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
                     if let groupName = groupName {
                         Text(groupName)
-                            .font(Luxury.Typography.micro())
-                            .foregroundColor(.textTertiary)
+                            .font(DS.Typography.micro())
+                            .foregroundColor(Color.textTertiary)
                             .lineLimit(1)
                     }
                 }
@@ -223,12 +223,12 @@ struct TimelineTaskRow: View {
                 // Task type icon
                 Image(systemName: "checklist")
                     .font(.system(size: 12))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(.vertical, Luxury.Spacing.sm)
-            .padding(.horizontal, Luxury.Spacing.md)
+            .padding(.vertical, DS.Spacing.sm)
+            .padding(.horizontal, DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.sm)
+                RoundedRectangle(cornerRadius: DS.Radius.sm)
                     .fill(Color.themeCardBackground)
             )
         }
@@ -248,11 +248,11 @@ struct TimelineEventRow: View {
     }
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             // Time column
             Text(timeText)
                 .font(.system(size: 13, weight: .medium, design: .monospaced))
-                .foregroundColor(.textSecondary)
+                .foregroundColor(Color.textSecondary)
                 .frame(width: 50, alignment: .leading)
             
             // Color indicator
@@ -263,14 +263,14 @@ struct TimelineEventRow: View {
             // Content
             VStack(alignment: .leading, spacing: 2) {
                 Text(event.title)
-                    .font(Luxury.Typography.label())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.label())
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(1)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
-                        .font(Luxury.Typography.micro())
-                        .foregroundColor(.textTertiary)
+                        .font(DS.Typography.micro())
+                        .foregroundColor(Color.textTertiary)
                         .lineLimit(1)
                 }
             }
@@ -282,10 +282,10 @@ struct TimelineEventRow: View {
                 .font(.system(size: 12))
                 .foregroundColor(event.color)
         }
-        .padding(.vertical, Luxury.Spacing.sm)
-        .padding(.horizontal, Luxury.Spacing.md)
+        .padding(.vertical, DS.Spacing.sm)
+        .padding(.horizontal, DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.sm)
+            RoundedRectangle(cornerRadius: DS.Radius.sm)
                 .fill(Color.themeCardBackground)
         )
         .if(canDelete) { view in

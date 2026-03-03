@@ -29,15 +29,15 @@ struct FamilyMembersListView: View {
                     VStack(spacing: DS.Spacing.sm) {
                         Image(systemName: "person.3.fill")
                             .font(.system(size: DS.IconSize.xxl)) // DT-exempt: decorative icon
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                         
                         Text("\(familyMemberVM.familyMembers.count) Members")
                             .font(.headline)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         Text(familyMemberVM.family?.name ?? "My Family")
                             .font(.subheadline)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .padding(.top, DS.Spacing.xl)
                     .padding(.bottom, DS.Spacing.sm)
@@ -46,13 +46,13 @@ struct FamilyMembersListView: View {
                         VStack(spacing: DS.Spacing.md) {
                             Image(systemName: "person.badge.plus")
                                 .font(.largeTitle)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                             Text(L10n.noOtherMembers)
                                 .font(.subheadline)
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                             Text(L10n.inviteFamilyMember)
                                 .font(.caption)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.jumbo)
@@ -112,14 +112,14 @@ struct FamilyMemberCard: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                         Text(member.displayName)
                             .font(.headline)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         HStack(spacing: DS.Spacing.sm) {
                             RoleBadge(role: member.role)
                             if member.isAdult {
                                 Text(L10n.adult)
                                     .font(.caption)
-                                    .foregroundStyle(.textSecondary)
+                                    .foregroundStyle(Color.textSecondary)
                             }
                         }
                     }
@@ -128,7 +128,7 @@ struct FamilyMemberCard: View {
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
                 
                 HStack(spacing: 0) {
@@ -138,7 +138,7 @@ struct FamilyMemberCard: View {
                             .fontWeight(.bold)
                         Text(L10n.tasks)
                             .font(.caption2)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .frame(maxWidth: .infinity)
                     
@@ -148,10 +148,10 @@ struct FamilyMemberCard: View {
                         Text("\(completedCount)")
                             .font(.subheadline)
                             .fontWeight(.bold)
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                         Text(L10n.done)
                             .font(.caption2)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .frame(maxWidth: .infinity)
                     
@@ -161,10 +161,10 @@ struct FamilyMemberCard: View {
                         Text(member.balance.currencyString)
                             .font(.subheadline)
                             .fontWeight(.bold)
-                            .foregroundStyle(.accentOrange)
+                            .foregroundStyle(Color.accentOrange)
                         Text(L10n.balance)
                             .font(.caption2)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                     .frame(maxWidth: .infinity)
                 }

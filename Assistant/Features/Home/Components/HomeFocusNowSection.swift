@@ -22,12 +22,12 @@ struct HomeFocusNowSection: View {
     @State private var completingTasks: Set<String> = []
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "target")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -35,18 +35,18 @@ struct HomeFocusNowSection: View {
                     )
                 
                 Text("Focus Now")
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Spacer()
             }
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.horizontal, DS.Spacing.screenH)
             
             // Task list
             if tasks.isEmpty {
                 emptyState
             } else {
-                VStack(spacing: Luxury.Spacing.xs) {
+                VStack(spacing: DS.Spacing.xs) {
                     ForEach(tasks, id: \.stableId) { task in
                         FocusTaskRow(
                             task: task,
@@ -67,13 +67,13 @@ struct HomeFocusNowSection: View {
                         )
                     }
                 }
-                .padding(.horizontal, Luxury.Spacing.screenH)
+                .padding(.horizontal, DS.Spacing.screenH)
             }
         }
     }
     
     private var emptyState: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             ZStack {
                 Circle()
                     .fill(Color.accentGreen.opacity(0.1))
@@ -86,22 +86,22 @@ struct HomeFocusNowSection: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("All caught up!")
-                    .font(Luxury.Typography.body())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("No urgent tasks right now")
-                    .font(Luxury.Typography.caption())
-                    .foregroundColor(.textTertiary)
+                    .font(DS.Typography.caption())
+                    .foregroundColor(Color.textTertiary)
             }
             
             Spacer()
         }
-        .padding(Luxury.Spacing.md)
+        .padding(DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.md)
                 .fill(Color.themeCardBackground)
         )
-        .padding(.horizontal, Luxury.Spacing.screenH)
+        .padding(.horizontal, DS.Spacing.screenH)
     }
 }
 
@@ -118,8 +118,8 @@ struct FocusTaskRow: View {
         switch task.priority {
         case .urgent: return .accentRed
         case .high: return .accentOrange
-        case .medium: return .accentPrimary
-        case .low: return .textTertiary
+        case .medium: return Color.accentPrimary
+        case .low: return Color.textTertiary
         }
     }
     
@@ -138,12 +138,12 @@ struct FocusTaskRow: View {
     private var dueBadgeColor: Color {
         if task.isOverdue { return .accentRed }
         if Calendar.current.isDateInToday(task.dueDate) { return .accentOrange }
-        return .textSecondary
+        return Color.textSecondary
     }
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Complete button
                 Button(action: onComplete) {
                     ZStack {
@@ -163,35 +163,35 @@ struct FocusTaskRow: View {
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.title)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
-                    HStack(spacing: Luxury.Spacing.sm) {
+                    HStack(spacing: DS.Spacing.sm) {
                         // Due badge
                         Text(dueBadgeText)
-                            .font(Luxury.Typography.micro())
+                            .font(DS.Typography.micro())
                             .foregroundColor(dueBadgeColor)
                         
                         // Group name
                         if let groupName = groupName {
                             Text("•")
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                             Text(groupName)
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                                 .lineLimit(1)
                         }
                         
                         // Scheduled time
                         if let time = task.scheduledTime {
                             Text("•")
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                             Text(time.formatted(.dateTime.hour().minute()))
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textSecondary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textSecondary)
                         }
                     }
                 }
@@ -207,15 +207,15 @@ struct FocusTaskRow: View {
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(Luxury.Spacing.md)
+            .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(Color.themeCardBackground)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .stroke(task.isOverdue ? Color.accentRed.opacity(0.3) : Color.clear, lineWidth: 1)
             )
         }

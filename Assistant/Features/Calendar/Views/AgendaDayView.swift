@@ -41,12 +41,12 @@ struct AgendaDayView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(selectedDay.isToday ? L10n.today : selectedDay.formattedDate)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 if selectedDay.isToday {
                     Text(selectedDay.formattedShortDate)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             
@@ -56,11 +56,11 @@ struct AgendaDayView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Text("\(agenda.totalCount)")
                         .font(DS.Typography.labelSmall())
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                     
                     Text(agenda.totalCount == 1 ? "item" : "items")
                         .font(DS.Typography.caption())
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.xs)
@@ -92,11 +92,11 @@ struct AgendaDayView: View {
             VStack(spacing: DS.Spacing.xs) {
                 Text(L10n.noEvents)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Text("This day is clear")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             
             Spacer()
@@ -185,11 +185,11 @@ struct AgendaDayView: View {
             
             Text(title)
                 .font(DS.Typography.labelSmall())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             Text("(\(count))")
                 .font(DS.Typography.caption())
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
             
             Spacer()
         }

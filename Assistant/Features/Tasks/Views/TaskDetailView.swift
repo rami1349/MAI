@@ -85,8 +85,8 @@ struct TaskDetailView: View {
         guard let task = task else { return .gray }
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
@@ -133,10 +133,10 @@ struct TaskDetailView: View {
                     VStack(spacing: DS.Spacing.lg) {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.largeTitle)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         Text(L10n.taskNotFound)
                             .font(.headline)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
             }
@@ -205,7 +205,7 @@ struct TaskDetailView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundStyle(task.taskType == .homework ? .accentPrimary : .textSecondary)
+            .foregroundStyle(task.taskType == .homework ? Color.accentPrimary : Color.textSecondary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.xs)
             .background(
@@ -241,12 +241,12 @@ struct TaskDetailView: View {
             Text(task.title)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             if let description = task.description, !description.isEmpty {
                 Text(description)
                     .font(.body)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -261,20 +261,20 @@ struct TaskDetailView: View {
                     HStack(spacing: DS.Spacing.xs) {
                         AvatarView(user: assignee, size: 24)
                         Text(assignee.displayName)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                     }
                 }
             }
             
             infoRow(icon: "calendar", label: L10n.dueDate) {
                 Text(task.dueDate.formattedDate)
-                    .foregroundStyle(task.isOverdue ? .red : .textPrimary)
+                    .foregroundStyle(task.isOverdue ? .red : Color.textPrimary)
             }
             
             if let scheduledTime = task.scheduledTime {
                 infoRow(icon: "clock.fill", label: L10n.scheduledTime) {
                     Text(scheduledTime.formatted(date: .omitted, time: .shortened))
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                 }
             }
             
@@ -284,7 +284,7 @@ struct TaskDetailView: View {
                         Image(systemName: group.icon)
                             .foregroundStyle(Color(hex: group.color))
                         Text(group.name)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                     }
                 }
             }
@@ -292,7 +292,7 @@ struct TaskDetailView: View {
             if task.hasReward, let amount = task.rewardAmount {
                 infoRow(icon: "dollarsign.circle.fill", label: L10n.reward) {
                     Text(amount.currencyString)
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                         .fontWeight(.semibold)
                 }
             }
@@ -301,7 +301,7 @@ struct TaskDetailView: View {
             if task.taskType == .homework, let subject = task.homeworkSubject {
                 infoRow(icon: "book.fill", label: "Subject") {
                     Text(subject.displayName)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                 }
             }
         }
@@ -313,7 +313,7 @@ struct TaskDetailView: View {
         HStack {
             Label(label, systemImage: icon)
                 .font(.subheadline)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             Spacer()
             content()
                 .font(.subheadline)
@@ -327,7 +327,7 @@ struct TaskDetailView: View {
             // Header
             HStack {
                 Image(systemName: "doc.text.image")
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                 Text("Submitted Proof")
                     .font(.headline)
                 Spacer()
@@ -352,10 +352,10 @@ struct TaskDetailView: View {
             if task.status == .completed, let verifiedAt = task.proofVerifiedAt {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                     Text(L10n.verifiedOnDate(verifiedAt.formattedDate))
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             
@@ -474,7 +474,7 @@ struct TaskDetailView: View {
                             .font(.caption)
                             .fontWeight(.medium)
                     }
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     
                     Text(recommendationMessage(computedStats.recommendation))
                         .font(.subheadline)
@@ -493,7 +493,7 @@ struct TaskDetailView: View {
                             .foregroundStyle(confidenceColor(Double(computedStats.scorePercent) / 100.0))
                         Text("score")
                             .font(.caption2)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 } else {
                     VStack(spacing: 2) {
@@ -503,7 +503,7 @@ struct TaskDetailView: View {
                             .foregroundStyle(confidenceColor(verification.confidence))
                         Text("conf.")
                             .font(.caption2)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -519,7 +519,7 @@ struct TaskDetailView: View {
                         statItem(value: "\(computedStats.uncertain)", label: "Uncertain", color: .orange)
                     }
                     Spacer()
-                    statItem(value: "\(computedStats.correct)/\(computedStats.total)", label: "Score", color: .textPrimary)
+                    statItem(value: "\(computedStats.correct)/\(computedStats.total)", label: "Score", color: Color.textPrimary)
                 }
             }
             
@@ -532,7 +532,7 @@ struct TaskDetailView: View {
             if let encouragement = verification.encouragement, !encouragement.isEmpty {
                 Text(encouragement)
                     .font(.caption)
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
@@ -543,7 +543,7 @@ struct TaskDetailView: View {
                 Text("MAI may make mistakes. Parent has final say.")
                     .font(.caption2)
             }
-            .foregroundStyle(.textTertiary)
+            .foregroundStyle(Color.textTertiary)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
@@ -650,7 +650,7 @@ struct TaskDetailView: View {
                     Text("\(correct.count) correct answers")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                 }
                 .tint(.accentGreen)
             }
@@ -661,7 +661,7 @@ struct TaskDetailView: View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
                 .font(.caption)
-                .foregroundStyle(isCorrect ? .accentGreen : .red)
+                .foregroundStyle(isCorrect ? Color.accentGreen : .red)
                 .padding(.top, 2)
             
             VStack(alignment: .leading, spacing: 2) {
@@ -669,12 +669,12 @@ struct TaskDetailView: View {
                 if let text = q.questionText, !text.isEmpty {
                     Text("Q\(q.questionNumber): \(text)")
                         .font(.caption)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .lineLimit(2)
                 } else {
                     Text("Question \(q.questionNumber)")
                         .font(.caption)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                 }
                 
                 // Student answer vs expected
@@ -682,11 +682,11 @@ struct TaskDetailView: View {
                     HStack(spacing: 4) {
                         Text("Answer:")
                             .font(.caption2)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                         Text(student)
                             .font(.caption2)
                             .fontWeight(.medium)
-                            .foregroundStyle(isCorrect ? .accentGreen : .red)
+                            .foregroundStyle(isCorrect ? Color.accentGreen : .red)
                     }
                 }
                 
@@ -694,11 +694,11 @@ struct TaskDetailView: View {
                     HStack(spacing: 4) {
                         Text("Expected:")
                             .font(.caption2)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                         Text(expected)
                             .font(.caption2)
                             .fontWeight(.medium)
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                     }
                 }
                 
@@ -706,7 +706,7 @@ struct TaskDetailView: View {
                 if let note = q.note, !note.isEmpty, !isCorrect {
                     Text(note)
                         .font(.caption2)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .italic()
                 }
             }
@@ -722,7 +722,7 @@ struct TaskDetailView: View {
                 .foregroundStyle(color)
             Text(label)
                 .font(.caption2)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
     
@@ -731,7 +731,7 @@ struct TaskDetailView: View {
     private func aiLoadingCard() -> some View {
         HStack(spacing: DS.Spacing.md) {
             ProgressView()
-                .tint(.accentPrimary)
+                .tint(Color.accentPrimary)
             
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: DS.Spacing.xs) {
@@ -743,11 +743,11 @@ struct TaskDetailView: View {
                         .fontWeight(.medium)
                 }
                 .font(.caption)
-                .foregroundStyle(.accentPrimary)
+                .foregroundStyle(Color.accentPrimary)
                 
                 Text("Checking homework...")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             
             Spacer()
@@ -795,10 +795,10 @@ struct TaskDetailView: View {
                 // Chores: simple guidance
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "eye.fill")
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                     Text("Review the photo and decide if the chore is done")
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -859,7 +859,7 @@ struct TaskDetailView: View {
             
             Text(guidanceMessage(recommendation))
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -891,7 +891,7 @@ struct TaskDetailView: View {
         case "review": return .orange
         case "unclear": return .yellow
         case "cannot_verify": return .gray
-        default: return .textSecondary
+        default: return Color.textSecondary
         }
     }
     
@@ -945,7 +945,7 @@ struct TaskDetailView: View {
                         .padding(16)
                         .background(
                             LinearGradient(
-                                colors: [.accentPrimary, .accentBlue],
+                                colors: [Color.accentPrimary, .accentBlue],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -972,9 +972,9 @@ struct TaskDetailView: View {
                     
                 case .pendingVerification:
                     if canVerifyProof {
-                        statusMessage("Review the submitted proof above", color: .statusPending)
+                        statusMessage("Review the submitted proof above", color: Color.statusPending)
                     } else {
-                        statusMessage(L10n.waitingForVerification, color: .statusPending)
+                        statusMessage(L10n.waitingForVerification, color: Color.statusPending)
                     }
                     
                 case .completed:
@@ -1057,7 +1057,7 @@ struct TaskDetailView: View {
     private func statusMessage(_ text: String, color: Color) -> some View {
         Text(text)
             .font(.subheadline)
-            .foregroundStyle(.textSecondary)
+            .foregroundStyle(Color.textSecondary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(color.opacity(0.1)))
@@ -1066,12 +1066,12 @@ struct TaskDetailView: View {
     private var completedMessage: some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.statusCompleted)
+                .foregroundStyle(Color.statusCompleted)
             Text(L10n.taskCompleted)
                 .fontWeight(.semibold)
         }
         .font(.subheadline)
-        .foregroundStyle(.statusCompleted)
+        .foregroundStyle(Color.statusCompleted)
         .frame(maxWidth: .infinity)
         .padding()
         .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.statusCompleted.opacity(0.1)))

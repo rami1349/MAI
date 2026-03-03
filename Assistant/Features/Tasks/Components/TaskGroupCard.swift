@@ -16,22 +16,22 @@ struct TaskGroupCard: View {
             HStack(spacing: DS.Spacing.lg) {
                 Image(systemName: group.icon)
                     .font(.system(size: DS.IconSize.lg)) // DT-exempt: icon sizing
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .frame(width: DS.IconContainer.lg, height: DS.IconContainer.lg)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.themeHighlight))
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                     Text(group.name)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     Text("\(group.taskCount) \(L10n.tasks)")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 
                 Spacer()
                 
-                ProgressRing(progress: group.completionPercentage, size: 50, lineWidth: 5, color: .accentPrimary)
+                ProgressRing(progress: group.completionPercentage, size: 50, lineWidth: 5, color: Color.accentPrimary)
             }
             .padding(DS.Spacing.cardPadding)
             .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.themeCardBackground))

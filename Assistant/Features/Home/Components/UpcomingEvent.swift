@@ -74,13 +74,13 @@ struct CountdownCard: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(event.title)
                     .font(DS.Typography.label())
-                    .foregroundColor(.textPrimary)
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(1)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
                         .font(DS.Typography.micro())
-                        .foregroundColor(.textSecondary)
+                        .foregroundColor(Color.textSecondary)
                 }
             }
             
@@ -90,11 +90,11 @@ struct CountdownCard: View {
                 Text(event.countdownText)
                     .font(DS.Typography.badge())
                     .fontWeight(.bold)
-                    .foregroundColor(event.daysUntil <= 3 ? event.color : .accentPrimary)
+                    .foregroundColor(event.daysUntil <= 3 ? event.color : Color.accentPrimary)
                 
                 Text(event.date.formattedShortDate)
                     .font(DS.Typography.micro())
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(Color.textSecondary)
             }
         }
         .padding(DS.Spacing.md)

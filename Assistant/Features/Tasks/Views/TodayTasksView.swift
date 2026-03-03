@@ -118,7 +118,7 @@ struct TodayTasksView: View {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
@@ -132,7 +132,7 @@ struct TodayTasksView: View {
             // Title
             Text("Schedule")
                 .font(DS.Typography.subheading())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             Spacer()
             
@@ -145,7 +145,7 @@ struct TodayTasksView: View {
             } label: {
                 Text("Today")
                     .font(DS.Typography.captionMedium())
-                    .foregroundStyle(isSelectedToday ? .textTertiary : .accentPrimary)
+                    .foregroundStyle(isSelectedToday ? Color.textTertiary : Color.accentPrimary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -168,7 +168,7 @@ struct TodayTasksView: View {
                 Button { previousWeek() } label: {
                     Image(systemName: "chevron.left")
                         .font(DS.Typography.label())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(width: 32, height: 32)
                 }
                 
@@ -176,14 +176,14 @@ struct TodayTasksView: View {
                 
                 Text(Self.monthYearFormatter.string(from: currentWeekStart))
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                 
                 Spacer()
                 
                 Button { nextWeek() } label: {
                     Image(systemName: "chevron.right")
                         .font(DS.Typography.label())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(width: 32, height: 32)
                 }
             }
@@ -217,7 +217,7 @@ struct TodayTasksView: View {
             // Date title
             Text(Self.fullDateFormatter.string(from: selectedDate))
                 .font(DS.Typography.heading())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             // Stats row
             HStack(spacing: DS.Spacing.lg) {
@@ -225,20 +225,20 @@ struct TodayTasksView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "checklist")
                         .font(DS.Typography.body())
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                     
                     Text("\(taskCount) \(taskCount == 1 ? "task" : "tasks")")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 
                 if completedCount > 0 {
                     Text("•")
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                     
                     Text("\(completedCount) done")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                 }
                 
                 Spacer()
@@ -280,18 +280,18 @@ struct TodayTasksView: View {
                 
                 Image(systemName: "leaf")
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(.accentPrimary.opacity(0.5))
+                    .foregroundStyle(Color.accentPrimary.opacity(0.5))
             }
             
             // Text
             VStack(spacing: DS.Spacing.xs) {
                 Text(isSelectedToday ? "Nothing scheduled" : "No tasks")
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Text(isSelectedToday ? "Enjoy your free time" : "This day is clear")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             
             Spacer()
@@ -380,12 +380,12 @@ struct LuxuryWeekDayCell: View {
                 // Day name
                 Text(Self.dayFormatter.string(from: date).prefix(3).uppercased())
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
+                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
                 
                 // Date number
                 Text(Self.dateFormatter.string(from: date))
                     .font(DS.Typography.body()).fontWeight(isSelected ? .semibold : .regular)
-                    .foregroundStyle(isSelected ? .accentPrimary : (isToday ? .textPrimary : .textSecondary))
+                    .foregroundStyle(isSelected ? Color.accentPrimary : (isToday ? Color.textPrimary : Color.textSecondary))
                 
                 // Indicator dot
                 Circle()
@@ -405,12 +405,12 @@ struct LuxuryWeekDayCell: View {
     
     private var indicatorColor: Color {
         if isSelected {
-            return .accentPrimary
+            return Color.accentPrimary
         }
         if isToday {
-            return .accentPrimary.opacity(0.5)
+            return Color.accentPrimary.opacity(0.5)
         }
-        return hasTask ? .textTertiary : .clear
+        return hasTask ? Color.textTertiary : .clear
     }
 }
 
@@ -444,7 +444,7 @@ struct LuxuryTaskCard: View {
                     if let time = timeString {
                         Text(time)
                             .font(DS.Typography.captionMedium())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                     
                     Spacer()
@@ -456,8 +456,8 @@ struct LuxuryTaskCard: View {
                 // Title
                 Text(task.title)
                     .font(DS.Typography.label())
-                    .foregroundStyle(isCompleted ? .textTertiary : .textPrimary)
-                    .strikethrough(isCompleted, color: .textTertiary)
+                    .foregroundStyle(isCompleted ? Color.textTertiary : Color.textPrimary)
+                    .strikethrough(isCompleted, color: Color.textTertiary)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
                 
@@ -470,7 +470,7 @@ struct LuxuryTaskCard: View {
                             Text(name)
                                 .font(DS.Typography.caption())
                         }
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                     }
                     
                     Spacer()
@@ -483,7 +483,7 @@ struct LuxuryTaskCard: View {
                             Text(amount.currencyString)
                                 .font(DS.Typography.captionMedium())
                         }
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                     }
                 }
                 
@@ -521,7 +521,7 @@ struct LuxuryTaskCard: View {
                     .frame(width: 6, height: 6)
                 Text("In Progress")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.statusInProgress)
+                    .foregroundStyle(Color.statusInProgress)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
@@ -537,7 +537,7 @@ struct LuxuryTaskCard: View {
                     .frame(width: 6, height: 6)
                 Text("Pending")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.statusPending)
+                    .foregroundStyle(Color.statusPending)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
@@ -549,7 +549,7 @@ struct LuxuryTaskCard: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(DS.Typography.heading())
-                .foregroundStyle(.accentGreen)
+                .foregroundStyle(Color.accentGreen)
         }
     }
     
@@ -564,7 +564,7 @@ struct LuxuryTaskCard: View {
                     if isLoading {
                         ProgressView()
                             .scaleEffect(0.6)
-                            .tint(.accentPrimary)
+                            .tint(Color.accentPrimary)
                     } else {
                         Image(systemName: "play.fill")
                             .font(DS.Typography.micro())
@@ -572,7 +572,7 @@ struct LuxuryTaskCard: View {
                     Text("Start")
                         .font(DS.Typography.captionMedium())
                 }
-                .foregroundStyle(.accentPrimary)
+                .foregroundStyle(Color.accentPrimary)
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)
                 .background(
@@ -592,7 +592,7 @@ struct LuxuryTaskCard: View {
                         Text("Focus")
                             .font(DS.Typography.captionMedium())
                     }
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(

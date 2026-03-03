@@ -432,19 +432,15 @@ struct CalendarViewSkeleton: View {
 #Preview("Skeletons") {
     ScrollView {
         VStack(spacing: 24) {
-            Text("Task Card").font(.caption).foregroundColor(.textSecondary)
+            Text("Task Card").font(.caption).foregroundColor(Color.textSecondary)
             TaskCardSkeleton()
-            
-            Text("Summary Card").font(.caption).foregroundColor(.textSecondary)
+            Text("Summary Card").font(.caption).foregroundColor(Color.textSecondary)
             SummaryCardSkeleton()
-            
-            Text("Habit Widget").font(.caption).foregroundColor(.textSecondary)
+            Text("Habit Widget").font(.caption).foregroundColor(Color.textSecondary)
             HabitWidgetSkeleton()
-            
-            Text("Group Card").font(.caption).foregroundColor(.textSecondary)
+            Text("Group Card").font(.caption).foregroundColor(Color.textSecondary)
             GroupCardSkeleton()
-            
-            Text("Stat Cards").font(.caption).foregroundColor(.textSecondary)
+            Text("Stat Cards").font(.caption).foregroundColor(Color.textSecondary)
             HStack(spacing: DS.Spacing.md) {
                 StatCardSkeleton()
                 StatCardSkeleton()

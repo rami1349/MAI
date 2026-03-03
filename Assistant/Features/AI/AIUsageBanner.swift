@@ -41,7 +41,7 @@ struct AIUsageBanner: View {
                 
                 Text("You've used all \(dailyLimit) daily AI actions")
                     .font(.caption)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
             }
             
             HStack(spacing: DS.Spacing.md) {
@@ -55,7 +55,7 @@ struct AIUsageBanner: View {
                             .font(.caption)
                             .fontWeight(.semibold)
                     }
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(
@@ -74,7 +74,7 @@ struct AIUsageBanner: View {
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
-                        .foregroundStyle(.textOnAccent)
+                        .foregroundStyle(Color.textOnAccent)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(
@@ -103,11 +103,11 @@ struct AIUsageBanner: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "bolt.fill")
                 .font(.caption2)
-                .foregroundStyle(.accentPrimary)
+                .foregroundStyle(Color.accentPrimary)
             
             Text("Using credits · \(store.aiCredits) remaining")
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             
             Spacer()
             
@@ -116,7 +116,7 @@ struct AIUsageBanner: View {
             } label: {
                 Text("Get more")
                     .font(.caption)
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
             }
         }
         .padding(.horizontal, DS.Spacing.lg)
@@ -133,7 +133,7 @@ struct AIUsageBanner: View {
             
             Text("\(remainingDaily) actions left today")
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             
             Spacer()
             
@@ -144,7 +144,7 @@ struct AIUsageBanner: View {
                     Text("Upgrade")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                 }
             }
         }

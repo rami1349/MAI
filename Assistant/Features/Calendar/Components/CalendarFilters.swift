@@ -23,13 +23,13 @@ struct MemberFilterChip: View {
                 } else {
                     Image(systemName: "person.3.fill")
                         .font(DS.Typography.micro())
-                        .foregroundStyle(isSelected ? .white : .textSecondary)
+                        .foregroundStyle(isSelected ? .white : Color.textSecondary)
                 }
                 
                 Text(name)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(isSelected ? .white : .textPrimary)
+                    .foregroundStyle(isSelected ? .white : Color.textPrimary)
                     .lineLimit(1)
             }
             .padding(.horizontal, 12)
@@ -65,7 +65,7 @@ struct MemberFilterSheet: View {
                                 .frame(width: 32)
                             
                             Text(L10n.showAllMembers)
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             
                             Spacer()
                             
@@ -88,10 +88,10 @@ struct MemberFilterSheet: View {
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(member.displayName)
-                                        .foregroundStyle(.textPrimary)
+                                        .foregroundStyle(Color.textPrimary)
                                     Text(member.isAdult ? L10n.adult : L10n.member)
                                         .font(.caption)
-                                        .foregroundStyle(.textSecondary)
+                                        .foregroundStyle(Color.textSecondary)
                                 }
                                 
                                 Spacer()
@@ -101,7 +101,7 @@ struct MemberFilterSheet: View {
                                         .foregroundStyle(.primary)
                                 } else {
                                     Image(systemName: "circle")
-                                        .foregroundStyle(.textTertiary)
+                                        .foregroundStyle(Color.textTertiary)
                                 }
                             }
                         }

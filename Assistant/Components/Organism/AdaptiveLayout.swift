@@ -258,7 +258,7 @@ struct HoverEffectModifier: ViewModifier {
     let scale: CGFloat
     let highlightColor: Color
     
-    init(scale: CGFloat = 1.02, highlightColor: Color = .accentPrimary.opacity(0.1)) {
+    init(scale: CGFloat = 1.02, highlightColor: Color = Color.accentPrimary.opacity(0.1)) {
         self.scale = scale
         self.highlightColor = highlightColor
     }
@@ -280,7 +280,7 @@ struct HoverEffectModifier: ViewModifier {
 
 extension View {
     /// Adds subtle hover effect for trackpad/mouse users
-    func hoverEffect(scale: CGFloat = 1.02, highlight: Color = .accentPrimary.opacity(0.1)) -> some View {
+    func hoverEffect(scale: CGFloat = 1.02, highlight: Color = Color.accentPrimary.opacity(0.1)) -> some View {
         modifier(HoverEffectModifier(scale: scale, highlightColor: highlight))
     }
 }

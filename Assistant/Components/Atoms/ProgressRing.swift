@@ -15,7 +15,7 @@ struct ProgressRing: View {
     let progress: Double
     var size: CGFloat = DS.IconSize.jumbo
     var lineWidth: CGFloat = DS.ProgressBar.standard
-    var color: Color = .accentPrimary
+    var color: Color = Color.accentPrimary
     var showPercentage = true
     
     var body: some View {
@@ -31,7 +31,7 @@ struct ProgressRing: View {
             if showPercentage {
                 Text("\(Int(progress))%")
                     .font(.system(size: size * 0.25, weight: .bold))
-                    .foregroundColor(color == .white ? .white : .textPrimary)
+                    .foregroundColor(color == .white ? .white : Color.textPrimary)
             }
         }
         .frame(width: size, height: size)
@@ -41,7 +41,7 @@ struct ProgressRing: View {
 
 #Preview {
     HStack(spacing: 20) {
-        ProgressRing(progress: 25, size: 60, color: .accentPrimary)
+        ProgressRing(progress: 25, size: 60, color: Color.accentPrimary)
         ProgressRing(progress: 50, size: 80, color: .accentSecondary)
         ProgressRing(progress: 75, size: 100, color: .accentTertiary)
     }

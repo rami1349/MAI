@@ -23,11 +23,11 @@ struct TaskGroupPicker: View {
                     Button(action: { selectedGroupId = nil; dismiss() }) {
                         HStack {
                             Text(L10n.noGroup)
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if selectedGroupId == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.accentPrimary)
+                                    .foregroundStyle(Color.accentPrimary)
                             }
                         }
                     }
@@ -51,13 +51,13 @@ struct TaskGroupPicker: View {
                                 }
                                 
                                 Text(group.name)
-                                    .foregroundStyle(.textPrimary)
+                                    .foregroundStyle(Color.textPrimary)
                                 
                                 Spacer()
                                 
                                 if selectedGroupId == group.id {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accentPrimary)
+                                        .foregroundStyle(Color.accentPrimary)
                                 }
                             }
                         }
@@ -69,9 +69,9 @@ struct TaskGroupPicker: View {
                     Button(action: { showCreateGroup = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(.accentPrimary)
+                                .foregroundStyle(Color.accentPrimary)
                             Text(L10n.createGroup)
-                                .foregroundStyle(.accentPrimary)
+                                .foregroundStyle(Color.accentPrimary)
                         }
                     }
                     .listRowBackground(Color.backgroundCard)
@@ -114,7 +114,7 @@ struct MultiMemberPicker: View {
                         HStack {
                             Text("\(selectedMemberIds.count) selected")
                                 .font(DS.Typography.label())
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                             
                             Spacer()
                             
@@ -124,7 +124,7 @@ struct MultiMemberPicker: View {
                                 }
                             }
                             .font(DS.Typography.label())
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                         }
                     }
                     .listRowBackground(Color.backgroundCard)
@@ -214,10 +214,10 @@ private struct MultiMemberPickerRow: View {
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(member.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     Text(member.isAdult ? L10n.adult : L10n.member)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -243,11 +243,11 @@ struct MemberPicker: View {
                     Button(action: { selectedMemberId = nil; dismiss() }) {
                         HStack {
                             Text(L10n.unassigned)
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if selectedMemberId == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.accentPrimary)
+                                    .foregroundStyle(Color.accentPrimary)
                             }
                         }
                     }
@@ -262,17 +262,17 @@ struct MemberPicker: View {
                                 
                                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                                     Text(member.displayName)
-                                        .foregroundStyle(.textPrimary)
+                                        .foregroundStyle(Color.textPrimary)
                                     Text(member.isAdult ? L10n.adult : L10n.member)
                                         .font(.caption)
-                                        .foregroundStyle(.textSecondary)
+                                        .foregroundStyle(Color.textSecondary)
                                 }
                                 
                                 Spacer()
                                 
                                 if selectedMemberId == member.id {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accentPrimary)
+                                        .foregroundStyle(Color.accentPrimary)
                                 }
                             }
                         }
@@ -329,7 +329,7 @@ struct CreateTaskGroupView: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
                         Text(L10n.icon)
                             .font(.headline)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                             ForEach(TaskGroupColors.icons, id: \.systemName) { icon in
@@ -344,7 +344,7 @@ struct CreateTaskGroupView: View {
                                         Image(systemName: icon.systemName)
                                             .foregroundStyle(selectedIcon == icon.systemName ?
                                                            Color(hex: selectedColor) :
-                                                           .textSecondary)
+                                                           Color.textSecondary)
                                     }
                                 }
                             }
@@ -355,7 +355,7 @@ struct CreateTaskGroupView: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
                         Text(L10n.color)
                             .font(.headline)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                             ForEach(TaskGroupColors.colors, id: \.hex) { color in

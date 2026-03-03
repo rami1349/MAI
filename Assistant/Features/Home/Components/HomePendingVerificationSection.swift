@@ -16,12 +16,12 @@ struct HomePendingVerificationSection: View {
     let tasks: [FamilyTask]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Section header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -29,8 +29,8 @@ struct HomePendingVerificationSection: View {
                     )
                 
                 Text(L10n.awaitingVerification)
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 Circle()
                     .fill(Color.accentPrimary)
                     .frame(width: 8, height: 8)
@@ -39,13 +39,13 @@ struct HomePendingVerificationSection: View {
             }
             
             // Verification cards
-            VStack(spacing: Luxury.Spacing.sm) {
+            VStack(spacing: DS.Spacing.sm) {
                 ForEach(tasks, id: \.stableId) { task in
                     PendingVerificationCard(task: task)
                 }
             }
         }
-        .padding(.horizontal, Luxury.Spacing.screenH)
+        .padding(.horizontal, DS.Spacing.screenH)
     }
 }
 
@@ -56,7 +56,7 @@ struct CalendarPermissionPrompt: View {
     let onRequestAccess: () -> Void
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             // Icon
             ZStack {
                 Circle()
@@ -65,18 +65,18 @@ struct CalendarPermissionPrompt: View {
                 
                 Image(systemName: "calendar.badge.exclamationmark")
                     .font(.system(size: 18))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
             }
             
             // Text
-            VStack(alignment: .leading, spacing: Luxury.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(L10n.calendarAccess)
-                    .font(Luxury.Typography.label())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.label())
+                    .foregroundColor(Color.textPrimary)
                 
                 Text(L10n.enableCalendarMessage)
-                    .font(Luxury.Typography.caption())
-                    .foregroundColor(.textSecondary)
+                    .font(DS.Typography.caption())
+                    .foregroundColor(Color.textSecondary)
             }
             
             Spacer()
@@ -92,19 +92,19 @@ struct CalendarPermissionPrompt: View {
                 }
             }) {
                 Text(authStatus == .denied ? "Settings" : "Enable")
-                    .font(Luxury.Typography.captionMedium())
+                    .font(DS.Typography.captionMedium())
                     .foregroundColor(.white)
-                    .padding(.horizontal, Luxury.Spacing.md)
-                    .padding(.vertical, Luxury.Spacing.sm)
+                    .padding(.horizontal, DS.Spacing.md)
+                    .padding(.vertical, DS.Spacing.sm)
                     .background(
                         Capsule()
                             .fill(Color.accentPrimary)
                     )
             }
         }
-        .padding(Luxury.Spacing.md)
+        .padding(DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.md)
                 .fill(Color.accentPrimary.opacity(0.06))
         )
     }
@@ -132,7 +132,7 @@ struct PendingVerificationCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header: Avatar + Name + Reward
             HStack {
                 if let assignee = assignee {
@@ -140,12 +140,12 @@ struct PendingVerificationCard: View {
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text(assignee.displayName)
-                            .font(Luxury.Typography.label())
-                            .foregroundColor(.textPrimary)
+                            .font(DS.Typography.label())
+                            .foregroundColor(Color.textPrimary)
                         
                         Text(L10n.submittedProof)
-                            .font(Luxury.Typography.micro())
-                            .foregroundColor(.textTertiary)
+                            .font(DS.Typography.micro())
+                            .foregroundColor(Color.textTertiary)
                     }
                 }
                 
@@ -153,39 +153,39 @@ struct PendingVerificationCard: View {
                 
                 if task.hasReward, let amount = task.rewardAmount {
                     Text(amount.currencyString)
-                        .font(Luxury.Typography.label())
+                        .font(DS.Typography.label())
                         .foregroundColor(.accentGreen)
                 }
             }
             
             // Task title
             Text(task.title)
-                .font(Luxury.Typography.body())
-                .foregroundColor(.textPrimary)
+                .font(DS.Typography.body())
+                .foregroundColor(Color.textPrimary)
             
             // View proof button (supports multiple proof images)
             if task.hasProofUploaded {
                 Button(action: { showProof = true }) {
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: task.proofType == .video ? "play.circle.fill" : "doc.fill")
                             .font(.system(size: 14))
                         
                         Text(L10n.viewProof)
-                            .font(Luxury.Typography.captionMedium())
+                            .font(DS.Typography.captionMedium())
                         
                         // Show count if multiple proofs
                         if task.allProofURLs.count > 1 {
                             Text("(\(task.allProofURLs.count))")
-                                .font(Luxury.Typography.caption())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.caption())
+                                .foregroundColor(Color.textTertiary)
                         }
                     }
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                 }
             }
             
             // Action buttons
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Reject
                 Button(action: {
                     print(" Reject button tapped")
@@ -203,20 +203,20 @@ struct PendingVerificationCard: View {
                         UINotificationFeedbackGenerator().notificationOccurred(.warning)
                     }
                 }) {
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         if actionInFlight {
                             ProgressView()
                                 .scaleEffect(0.6)
                                 .tint(Color(hex: "E57373"))
                         }
                         Text(L10n.reject)
-                            .font(Luxury.Typography.captionMedium())
+                            .font(DS.Typography.captionMedium())
                     }
                     .foregroundColor(Color(hex: "E57373"))
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, Luxury.Spacing.sm)
+                    .padding(.vertical, DS.Spacing.sm)
                     .background(
-                        RoundedRectangle(cornerRadius: Luxury.Radius.sm)
+                        RoundedRectangle(cornerRadius: DS.Radius.sm)
                             .stroke(Color(hex: "E57373").opacity(0.5), lineWidth: 1)
                     )
                 }
@@ -239,29 +239,29 @@ struct PendingVerificationCard: View {
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                     }
                 }) {
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         if actionInFlight {
                             ProgressView()
                                 .scaleEffect(0.6)
                                 .tint(.white)
                         }
                         Text(L10n.approveLabel)
-                            .font(Luxury.Typography.captionMedium())
+                            .font(DS.Typography.captionMedium())
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, Luxury.Spacing.sm)
+                    .padding(.vertical, DS.Spacing.sm)
                     .background(
-                        RoundedRectangle(cornerRadius: Luxury.Radius.sm)
+                        RoundedRectangle(cornerRadius: DS.Radius.sm)
                             .fill(Color.accentGreen)
                     )
                 }
                 .disabled(actionInFlight)
             }
         }
-        .padding(Luxury.Spacing.lg)
+        .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
@@ -294,8 +294,8 @@ struct ProofViewerSheet: View {
                 
                 if isVideo {
                     Text(L10n.videoPlayer)
-                        .font(Luxury.Typography.body())
-                        .foregroundColor(.textSecondary)
+                        .font(DS.Typography.body())
+                        .foregroundColor(Color.textSecondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.black)
                 } else {
@@ -313,7 +313,7 @@ struct ProofViewerSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.close) { dismiss() }
-                        .font(Luxury.Typography.body())
+                        .font(DS.Typography.body())
                 }
             }
         }

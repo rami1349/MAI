@@ -63,7 +63,12 @@ final class NotificationViewModel {
     // MARK: - Private
     
     /// PERFORMANCE: Lazy Firestore initialization.
-    private lazy var db = Firestore.firestore()
+    /// (`lazy` is incompatible with @Observable; use nillable backing store instead.)
+    @ObservationIgnored private var _db: Firestore?
+    private var db: Firestore {
+        if _db == nil { _db = Firestore.firestore() }
+        return _db!
+    }
     
     /// Real-time snapshot listener for the current user's notifications.
     @ObservationIgnored private var listener: ListenerRegistration?

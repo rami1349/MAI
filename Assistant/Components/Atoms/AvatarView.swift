@@ -35,7 +35,7 @@ struct AvatarView: View {
     private var initialsView: some View {
         ZStack {
             LinearGradient(
-                colors: [.accentPrimary, .accentBlue],
+                colors: [Color.accentPrimary, .accentBlue],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -70,7 +70,7 @@ struct MemberAvatarSmall: View {
     private var initialsView: some View {
         ZStack {
             LinearGradient(
-                colors: [.accentPrimary, .accentBlue],
+                colors: [Color.accentPrimary, .accentBlue],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

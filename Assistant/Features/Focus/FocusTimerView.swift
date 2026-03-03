@@ -11,10 +11,9 @@ import UIKit
 struct FocusTimerView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @EnvironmentObject var familyViewModel: FamilyViewModel
-    // PERFORMANCE FIX: Use @ObservedObject for singleton (not @StateObject)
-    // @StateObject is for owned objects; singletons should use @ObservedObject
-    @ObservedObject private var timerManager = FocusTimerManager.shared
+    @Environment(FamilyViewModel.self) var familyViewModel
+    // PERFORMANCE FIX: Plain property for @Observable singleton
+    private var timerManager = FocusTimerManager.shared
     
     let task: FamilyTask
     
@@ -86,11 +85,11 @@ struct FocusTimerView: View {
             VStack(spacing: DS.Spacing.sm) {
                 Text(L10n.focusTimer)
                     .font(DS.Typography.displayMedium())
-                    .foregroundColor(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Text(task.title)
                     .font(.subheadline)
-                    .foregroundColor(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, DS.Spacing.jumbo)
@@ -114,7 +113,7 @@ struct FocusTimerView: View {
                         Image(systemName: "minus")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundColor(selectedMinutes <= minTime ? .textTertiary : .textPrimary)
+                            .foregroundStyle(selectedMinutes <= minTime ? Color.textTertiary : Color.textPrimary)
                     }
                 }
                 .disabled(selectedMinutes <= minTime)
@@ -122,7 +121,7 @@ struct FocusTimerView: View {
                 // Time display
                 Text("\(selectedMinutes) mins")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
-                    .foregroundColor(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .frame(minWidth: 140)
                 
                 // Plus button
@@ -139,7 +138,7 @@ struct FocusTimerView: View {
                         Image(systemName: "plus")
                             .font(.title2)
                             .fontWeight(.semibold)
-                            .foregroundColor(selectedMinutes >= maxTime ? .textTertiary : .textPrimary)
+                            .foregroundStyle(selectedMinutes >= maxTime ? Color.textTertiary : Color.textPrimary)
                     }
                 }
                 .disabled(selectedMinutes >= maxTime)
@@ -154,7 +153,7 @@ struct FocusTimerView: View {
                     Text(L10n.startFocus)
                 }
                 .font(DS.Typography.heading())
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DS.Spacing.lg)
                 .background(
@@ -172,7 +171,7 @@ struct FocusTimerView: View {
         withAnimation(.spring(response: 0.2)) {
             selectedMinutes -= timeStep
         }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        DS.Haptics.light()
     }
     
     private func incrementTime() {
@@ -180,7 +179,7 @@ struct FocusTimerView: View {
         withAnimation(.spring(response: 0.2)) {
             selectedMinutes += timeStep
         }
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        DS.Haptics.light()
     }
     
     // MARK: - Active Timer View
@@ -195,7 +194,7 @@ struct FocusTimerView: View {
             }
             .font(.subheadline)
             .fontWeight(.medium)
-            .foregroundColor(.accentPrimary)
+            .foregroundStyle(Color.accentPrimary)
             .padding(.horizontal, DS.Spacing.lg)
             .padding(.vertical, DS.Spacing.sm)
             .background(Capsule().fill(Color.accentPrimary.opacity(0.12)))
@@ -241,7 +240,7 @@ struct FocusTimerView: View {
                     // Time display
                     Text(timerManager.formattedTime)
                         .font(.system(size: DS.Timer.displayFont, weight: .bold, design: .rounded))
-                        .foregroundColor(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .contentTransition(.numericText())
                     
                     // State indicator
@@ -251,7 +250,7 @@ struct FocusTimerView: View {
                             .frame(width: 8, height: 8)
                         Text(stateText)
                             .font(.caption)
-                            .foregroundColor(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
             }
@@ -259,7 +258,7 @@ struct FocusTimerView: View {
             // Task title
             Text(task.title)
                 .font(.headline)
-                .foregroundColor(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DS.Spacing.jumbo)
@@ -304,7 +303,7 @@ struct FocusTimerView: View {
             }) {
                 Image(systemName: "arrow.counterclockwise")
                     .font(.system(size: DS.IconSize.lg))
-                    .foregroundColor(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .frame(width: DS.Control.standard, height: DS.Control.standard)
                     .background(Circle().fill(Color.fill))
             }
@@ -313,7 +312,7 @@ struct FocusTimerView: View {
             Button(action: toggleTimer) {
                 Image(systemName: timerManager.state == .running ? "pause.fill" : "play.fill")
                     .font(.system(size: DS.IconSize.xl)) // DT-exempt: decorative icon
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(width: DS.Control.fab, height: DS.Control.fab)
                     .background(
                         Circle()
@@ -328,7 +327,7 @@ struct FocusTimerView: View {
             }) {
                 Image(systemName: "checkmark")
                     .font(.system(size: DS.IconSize.lg))
-                    .foregroundColor(.statusSuccess)
+                    .foregroundStyle(Color.statusSuccess)
                     .frame(width: DS.Control.standard, height: DS.Control.standard)
                     .background(Circle().fill(Color.statusSuccess.opacity(0.15)))
             }
@@ -347,7 +346,7 @@ struct FocusTimerView: View {
                 
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: DS.EmptyState.icon))
-                    .foregroundColor(.statusSuccess)
+                    .foregroundStyle(Color.statusSuccess)
                     .scaleEffect(animateRing ? 1.0 : 0.5)
                     .animation(.spring(response: 0.5, dampingFraction: 0.6), value: animateRing)
             }
@@ -357,12 +356,12 @@ struct FocusTimerView: View {
             VStack(spacing: DS.Spacing.xs) {
                 Text(timerManager.isBreakMode ? "Break Complete!" : "Focus Session Complete!")
                     .font(DS.Typography.heading())
-                    .foregroundColor(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 if !timerManager.isBreakMode {
                     Text("\(timerManager.totalSeconds / 60) minutes of focused work")
                         .font(.subheadline)
-                        .foregroundColor(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             
@@ -382,7 +381,7 @@ struct FocusTimerView: View {
                             Text(L10n.shortBreak)
                         }
                         .font(.headline)
-                        .foregroundColor(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -400,7 +399,7 @@ struct FocusTimerView: View {
                             Text(L10n.longBreak)
                         }
                         .font(.headline)
-                        .foregroundColor(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -428,7 +427,7 @@ struct FocusTimerView: View {
                             Text(L10n.submitProof)
                         }
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -451,7 +450,7 @@ struct FocusTimerView: View {
                             Text(L10n.completeTask)
                         }
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.lg)
                         .background(
@@ -468,7 +467,7 @@ struct FocusTimerView: View {
                 }) {
                     Text(L10n.continueLater)
                         .font(.subheadline)
-                        .foregroundColor(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.top, DS.Spacing.sm)
             }
@@ -488,7 +487,7 @@ struct FocusTimerView: View {
         }
         
         timerManager.start(taskId: taskId, durationMinutes: selectedMinutes)
-        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        DS.Haptics.heavy()
     }
     
     private func toggleTimer() {
@@ -500,7 +499,7 @@ struct FocusTimerView: View {
         default:
             break
         }
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        DS.Haptics.medium()
     }
     
     private func handleClose() {
@@ -526,7 +525,7 @@ struct FocusTimerView: View {
         // Mark task as complete then dismiss entire sheet stack
         Task {
             await familyViewModel.updateTaskStatus(task, to: .completed)
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            DS.Haptics.success()
             
             timerManager.clearSession()
             timerManager.reset()
@@ -581,27 +580,11 @@ struct AnimatedProgressRing: View {
 }
 
 // MARK: - Preview
-#Preview {
-    FocusTimerView(
-        task: FamilyTask(
-            familyId: "test",
-            title: "Complete project review",
-            assignedBy: "user1",
-            dueDate: Date(),
-            status: .inProgress,
-            priority: .high,
-            createdAt: Date(),
-            hasReward: false,
-            requiresProof: false,
-            rewardPaid: false,
-            isRecurring: false
-        )
-    )
-    
-        .environmentObject({ let vm = FamilyViewModel(); return vm }())
-        .environmentObject({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environmentObject({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environmentObject({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environmentObject({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environmentObject({ let vm = FamilyViewModel(); return vm.notificationVM }())
+#Preview {    
+        .environment({ let vm = FamilyViewModel(); return vm }())
+        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
+        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
+        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
+        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
+        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
 }

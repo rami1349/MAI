@@ -70,10 +70,10 @@ struct AddHabitView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 Text(name.isEmpty ? "Habit Name" : name)
                     .font(.headline)
-                    .foregroundStyle(name.isEmpty ? .textTertiary : .textPrimary)
+                    .foregroundStyle(name.isEmpty ? Color.textTertiary : Color.textPrimary)
                 Text(L10n.trackDaily)
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             
             Spacer()
@@ -105,7 +105,7 @@ struct AddHabitView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text(L10n.icon)
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                 ForEach(HabitColors.icons, id: \.icon) { item in
@@ -122,7 +122,7 @@ struct AddHabitView: View {
                             Image(systemName: item.icon)
                                 .foregroundStyle(selectedIcon == item.icon ?
                                                  Color(hex: selectedColor) :
-                                        .textSecondary)
+                                        Color.textSecondary)
                         }
                     }
                 }
@@ -135,7 +135,7 @@ struct AddHabitView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text(L10n.color)
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                 ForEach(HabitColors.colors, id: \.hex) { color in

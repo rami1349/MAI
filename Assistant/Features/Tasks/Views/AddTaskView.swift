@@ -119,7 +119,7 @@ struct AddTaskView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L10n.cancel) { dismiss() }
                         .font(DS.Typography.body())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             .sheet(isPresented: $showDatePicker) {
@@ -153,7 +153,7 @@ struct AddTaskView: View {
                         Text(type.displayName)
                             .font(DS.Typography.label())
                     }
-                    .foregroundStyle(taskType == type ? .textOnAccent : .textPrimary)
+                    .foregroundStyle(taskType == type ? .textOnAccent : Color.textPrimary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, DS.Spacing.lg)
                     .background(
@@ -197,7 +197,7 @@ struct AddTaskView: View {
                     Text(L10n.aiWillIdentifySubject)
                         .font(DS.Typography.caption())
                 }
-                .foregroundStyle(.accentPrimary)
+                .foregroundStyle(Color.accentPrimary)
             }
         }
     }
@@ -212,17 +212,17 @@ struct AddTaskView: View {
             HStack {
                 Image(systemName: "calendar")
                     .font(DS.Typography.body())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                 
                 Text(formattedDueDate)
                     .font(DS.Typography.body())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Spacer()
                 
                 Image(systemName: "chevron.down")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(DS.Spacing.md)
             .background(
@@ -258,13 +258,13 @@ struct AddTaskView: View {
             HStack {
                 Text(L10n.assignTo)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                 
                 Spacer()
                 if selectedAssignees.isEmpty {
                     Text(L10n.assignedToMe)
                         .font(DS.Typography.caption())
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
             }
             
@@ -308,36 +308,36 @@ struct AddTaskView: View {
             HStack {
                 Text(L10n.incentives)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                 
                 Spacer()
                 
                 Text(L10n.optional)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             
             // Reward — number input
             HStack {
                 Image(systemName: "dollarsign.circle.fill")
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.accentGreen)
+                    .foregroundStyle(Color.accentGreen)
                 
                 Text(L10n.reward)
                     .font(DS.Typography.body())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Spacer()
                 
                 HStack(spacing: 4) {
                     Text("$")
                         .font(DS.Typography.body())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                     
                     TextField("0", text: $rewardAmount)
                         .keyboardType(.numberPad)
                         .font(DS.Typography.heading()) // was .rounded
-                        .foregroundStyle(parsedReward > 0 ? .accentGreen : .textTertiary)
+                        .foregroundStyle(parsedReward > 0 ? .accentGreen : Color.textTertiary)
                         .frame(width: 70)
                         .multilineTextAlignment(.trailing)
                         .onChange(of: rewardAmount) { _, newValue in
@@ -355,17 +355,17 @@ struct AddTaskView: View {
             HStack {
                 Image(systemName: "camera.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(.accentTertiary)
+                    .foregroundStyle(Color.accentTertiary)
                 
                 Text(L10n.requireProof)
                     .font(DS.Typography.body())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Spacer()
                 
                 Toggle("", isOn: $requiresProof)
                     .labelsHidden()
-                    .tint(.accentPrimary)
+                    .tint(Color.accentPrimary)
                     .onChange(of: requiresProof) { _, _ in
                         DS.Haptics.light()
                     }
@@ -379,7 +379,7 @@ struct AddTaskView: View {
                     Text(L10n.proofAutoEnabledHint)
                         .font(DS.Typography.caption())
                 }
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
             }
         }
     }
@@ -401,7 +401,7 @@ struct AddTaskView: View {
                     Text(L10n.createTask)
                         .font(DS.Typography.label())
                 }
-                .foregroundStyle(.textOnAccent)
+                .foregroundStyle(Color.textOnAccent)
                 .frame(maxWidth: isRegularWidth ? 400 : .infinity)
                 .frame(height: 48)
                 .background(
@@ -427,11 +427,11 @@ struct AddTaskView: View {
             VStack(spacing: DS.Spacing.md) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(DS.Typography.displayLarge())
-                    .foregroundStyle(.statusSuccess)
+                    .foregroundStyle(Color.statusSuccess)
                 
                 Text(L10n.taskCreated)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
             }
             .padding(DS.Spacing.xxl)
             .background(
@@ -542,7 +542,7 @@ private struct AddTaskAssigneeChip: View {
                         .font(DS.Typography.micro())
                 }
             }
-            .foregroundStyle(isSelected ? .textOnAccent : .textPrimary)
+            .foregroundStyle(isSelected ? .textOnAccent : Color.textPrimary)
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xs)
             .background(
@@ -576,7 +576,7 @@ private struct AddTaskAssigneeChip: View {
             .overlay(
                 Text(String(name.prefix(1)).uppercased())
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
             )
     }
 }
@@ -684,10 +684,10 @@ private struct AddTaskQuickDateButton: View {
             VStack(spacing: DS.Spacing.xxs) {
                 Text(title)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 Text(formattedDate)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.sm)

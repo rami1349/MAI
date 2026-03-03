@@ -151,7 +151,7 @@ struct AccessibleTabBarButton: View {
         }) {
             Image(systemName: icon)
                 .font(.system(size: iconSize)) // DT-exempt: icon sizing
-                .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
+                .foregroundStyle(isSelected ? Color.accentPrimary : Color.textSecondary)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 44) // Minimum touch target
         }

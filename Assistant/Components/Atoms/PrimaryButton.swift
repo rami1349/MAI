@@ -58,13 +58,13 @@ struct SecondaryButton: View {
             HStack(spacing: DS.Spacing.sm) {
                 if isLoading {
                     ProgressView()
-                        .tint(.accentPrimary)
+                        .tint(Color.accentPrimary)
                         .scaleEffect(0.8)
                 }
                 Text(title)
                     .font(DS.Typography.label())
             }
-            .foregroundColor(isDisabled ? .textTertiary : .accentPrimary)
+            .foregroundColor(isDisabled ? Color.textTertiary : Color.accentPrimary)
             .frame(maxWidth: .infinity, minHeight: DS.Control.large)
             .background(
                 RoundedRectangle(cornerRadius: DS.Radius.sm)
@@ -72,7 +72,7 @@ struct SecondaryButton: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: DS.Radius.sm)
-                    .stroke(isDisabled ? Color.DSDivider : Color.accentPrimary.opacity(0.3), lineWidth: 1)
+                    .stroke(isDisabled ? Color.themeDivider : Color.accentPrimary.opacity(0.3), lineWidth: 1)
             )
         }
         .disabled(isDisabled || isLoading)
@@ -93,7 +93,7 @@ struct TertiaryButton: View {
             HStack(spacing: DS.Spacing.xs) {
                 if isLoading {
                     ProgressView()
-                        .tint(.accentPrimary)
+                        .tint(Color.accentPrimary)
                         .scaleEffect(0.7)
                 }
                 if let icon {
@@ -103,7 +103,7 @@ struct TertiaryButton: View {
                 Text(title)
                     .font(DS.Typography.labelSmall())
             }
-            .foregroundColor(isDisabled ? .textTertiary : .accentPrimary)
+            .foregroundColor(isDisabled ? Color.textTertiary : Color.accentPrimary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.sm)
         }

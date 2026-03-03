@@ -18,10 +18,10 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(Luxury.Typography.labelSmall())
-                .foregroundColor(isSelected ? .white : .textSecondary)
-                .padding(.horizontal, Luxury.Spacing.md)
-                .padding(.vertical, Luxury.Spacing.xs)
+                .font(DS.Typography.labelSmall())
+                .foregroundColor(isSelected ? .white : Color.textSecondary)
+                .padding(.horizontal, DS.Spacing.md)
+                .padding(.vertical, DS.Spacing.xs)
                 .background(
                     Capsule()
                         .fill(isSelected ? Color.accentPrimary : Color.themeCardBackground)
@@ -29,7 +29,7 @@ struct FilterChip: View {
                 .overlay(
                     Capsule()
                         .stroke(
-                            isSelected ? Color.clear : Color.luxuryCardBorder,
+                            isSelected ? Color.clear : Color.themeCardBorder,
                             lineWidth: 0.5
                         )
                 )
@@ -42,7 +42,7 @@ struct FilterChip: View {
                 )
         }
         .buttonStyle(.plain)
-        .animation(Luxury.Animation.micro, value: isSelected)
+        .animation(DS.Animation.micro, value: isSelected)
     }
 }
 
@@ -56,15 +56,15 @@ struct IconFilterChip: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: Luxury.Spacing.xs) {
+            HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: icon)
                     .font(.system(size: 12, weight: .medium))
                 Text(title)
-                    .font(Luxury.Typography.labelSmall())
+                    .font(DS.Typography.labelSmall())
             }
-            .foregroundColor(isSelected ? .white : .textSecondary)
-            .padding(.horizontal, Luxury.Spacing.md)
-            .padding(.vertical, Luxury.Spacing.xs)
+            .foregroundColor(isSelected ? .white : Color.textSecondary)
+            .padding(.horizontal, DS.Spacing.md)
+            .padding(.vertical, DS.Spacing.xs)
             .background(
                 Capsule()
                     .fill(isSelected ? Color.accentPrimary : Color.themeCardBackground)
@@ -72,7 +72,7 @@ struct IconFilterChip: View {
             .overlay(
                 Capsule()
                     .stroke(
-                        isSelected ? Color.clear : Color.luxuryCardBorder,
+                        isSelected ? Color.clear : Color.themeCardBorder,
                         lineWidth: 0.5
                     )
             )
@@ -84,7 +84,7 @@ struct IconFilterChip: View {
             )
         }
         .buttonStyle(.plain)
-        .animation(Luxury.Animation.micro, value: isSelected)
+        .animation(DS.Animation.micro, value: isSelected)
     }
 }
 
@@ -92,15 +92,15 @@ struct IconFilterChip: View {
 
 struct CompactChip: View {
     let title: String
-    var color: Color = .accentPrimary
+    var color: Color = Color.accentPrimary
     var isOutlined: Bool = false
     
     var body: some View {
         Text(title)
-            .font(Luxury.Typography.caption())
+            .font(DS.Typography.caption())
             .foregroundColor(isOutlined ? color : .white)
-            .padding(.horizontal, Luxury.Spacing.sm)
-            .padding(.vertical, Luxury.Spacing.xxs)
+            .padding(.horizontal, DS.Spacing.sm)
+            .padding(.vertical, DS.Spacing.xxs)
             .background(
                 Capsule()
                     .fill(isOutlined ? color.opacity(0.10) : color)
@@ -109,39 +109,39 @@ struct CompactChip: View {
 }
 
 #Preview {
-    VStack(spacing: Luxury.Spacing.lg) {
+    VStack(spacing: DS.Spacing.lg) {
         // Standard filter chips
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 FilterChip(title: "All", isSelected: true, action: {})
                 FilterChip(title: "To Do", isSelected: false, action: {})
                 FilterChip(title: "In Progress", isSelected: false, action: {})
                 FilterChip(title: "Completed", isSelected: false, action: {})
             }
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.horizontal, DS.Spacing.screenH)
         }
         
-        LuxuryDivider()
+        ThemeDivider()
         
         // Icon filter chips
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 IconFilterChip(title: "Today", icon: "sun.max.fill", isSelected: true, action: {})
                 IconFilterChip(title: "Week", icon: "calendar", isSelected: false, action: {})
                 IconFilterChip(title: "Month", icon: "calendar.badge.clock", isSelected: false, action: {})
             }
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.horizontal, DS.Spacing.screenH)
         }
         
-        LuxuryDivider()
+        ThemeDivider()
         
         // Compact chips
-        HStack(spacing: Luxury.Spacing.sm) {
-            CompactChip(title: "Work", color: .accentPrimary)
+        HStack(spacing: DS.Spacing.sm) {
+            CompactChip(title: "Work", color: Color.accentPrimary)
             CompactChip(title: "Personal", color: .accentOrange)
             CompactChip(title: "Health", color: .accentGreen, isOutlined: true)
         }
     }
-    .padding(.vertical, Luxury.Spacing.lg)
+    .padding(.vertical, DS.Spacing.lg)
     .background(Color.themeSurfacePrimary)
 }

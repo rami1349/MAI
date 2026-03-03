@@ -112,7 +112,7 @@ struct MyTasksView: View {
                 } label: {
                     Text(filter.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedFilter == filter ? .textPrimary : .textSecondary)
+                        .foregroundStyle(selectedFilter == filter ? Color.textPrimary : Color.textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -153,7 +153,7 @@ struct MyTasksView: View {
                 
                 HStack(spacing: DS.Spacing.md) {
                     StatCard(title: L10n.todo, count: todoCount, color: .statusTodo)
-                    StatCard(title: L10n.inProgress, count: inProgressCount, color: .statusInProgress)
+                    StatCard(title: L10n.inProgress, count: inProgressCount, color: Color.statusInProgress)
                     StatCard(title: L10n.done, count: doneCount, color: .statusCompleted)
                 }
             }
@@ -253,7 +253,7 @@ struct StatCard: View {
             
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, DS.Spacing.lg)

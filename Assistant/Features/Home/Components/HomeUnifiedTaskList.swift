@@ -59,17 +59,17 @@ struct HomeUnifiedTaskList: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "checklist")
                 .font(.subheadline)
-                .foregroundColor(.accentPrimary)
+                .foregroundColor(Color.accentPrimary)
             
             Text(L10n.myTasks)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundColor(.textPrimary)
+                .foregroundColor(Color.textPrimary)
             
             Text("\(totalActive)")
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(.accentPrimary)
+                .foregroundColor(Color.accentPrimary)
                 .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, DS.Spacing.xxs)
                 .background(Capsule().fill(Color.accentPrimary.opacity(0.1)))
@@ -84,11 +84,11 @@ struct HomeUnifiedTaskList: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "magnifyingglass")
                 .font(.subheadline)
-                .foregroundColor(.textTertiary)
+                .foregroundColor(Color.textTertiary)
             
             TextField(L10n.search, text: $searchText)
                 .font(.subheadline)
-                .foregroundColor(.textPrimary)
+                .foregroundColor(Color.textPrimary)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
             
@@ -96,7 +96,7 @@ struct HomeUnifiedTaskList: View {
                 Button(action: { searchText = "" }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.subheadline)
-                        .foregroundColor(.textTertiary)
+                        .foregroundColor(Color.textTertiary)
                 }
                 .frame(minWidth: DS.Control.minTapTarget, minHeight: DS.Control.minTapTarget)
             }
@@ -127,9 +127,9 @@ struct HomeUnifiedTaskList: View {
                     .font(.caption)
                 Text("(\(completedCount))")
                     .font(.caption)
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .foregroundColor(.accentPrimary)
+            .foregroundColor(Color.accentPrimary)
         }
         .controlSize(.small)
         .frame(minHeight: 36)
@@ -185,10 +185,10 @@ struct HomeUnifiedTaskList: View {
             VStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "magnifyingglass")
                     .font(.title2)
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
                 Text(L10n.noTasksFilter)
                     .font(.subheadline)
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.xxl)
@@ -197,13 +197,13 @@ struct HomeUnifiedTaskList: View {
             VStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.circle")
                     .font(.title2)
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
                 Text(L10n.noTasks)
                     .font(.subheadline)
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(Color.textSecondary)
                 Text(L10n.addTasksToStart)
                     .font(.caption)
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.xxl)

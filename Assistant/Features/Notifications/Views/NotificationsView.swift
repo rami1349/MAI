@@ -107,7 +107,7 @@ struct NotificationCardView: View {
     
     private var iconColor: Color {
         switch notification.type {
-        case .taskAssigned: return .accentPrimary
+        case .taskAssigned: return Color.accentPrimary
         case .taskCompleted: return .statusCompleted
         case .taskDeleted: return .accentRed
         case .proofSubmitted: return .accentOrange
@@ -115,10 +115,10 @@ struct NotificationCardView: View {
         case .rewardReceived: return .accentGreen
         case .reminder: return .accentTertiary
         case .familyInvite: return .accentSecondary
-        case .eventCreated: return .accentPrimary
+        case .eventCreated: return Color.accentPrimary
         case .taskOverdue: return .accentRed
         case .dailySummary: return .accentTertiary
-        case .eventUpdated: return .accentPrimary
+        case .eventUpdated: return Color.accentPrimary
         case .eventCanceled: return .accentRed
         }
     }
@@ -139,17 +139,17 @@ struct NotificationCardView: View {
                 Text(notification.title)
                     .font(.subheadline)
                     .fontWeight(notification.isRead ? .regular : .semibold)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .lineLimit(1)
                 
                 Text(notification.message)
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .lineLimit(2)
                 
                 Text(notification.createdAt.timeAgo())
                     .font(.caption2)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             
             Spacer()

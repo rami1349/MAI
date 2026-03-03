@@ -1,8 +1,6 @@
 //
 //  InfoRow.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  Information row with icon, title and value
 //  UPDATED: Luxury card styling with refined typography
@@ -18,27 +16,27 @@ struct InfoRow: View {
     let value: String
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             // Luxury icon box with soft background
-            LuxuryIconBox(
+            IconBox(
                 icon: icon,
                 color: iconColor,
                 size: 36,
                 iconSize: 16
             )
             
-            VStack(alignment: .leading, spacing: Luxury.Spacing.xxs) {
+            VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(title)
-                    .font(Luxury.Typography.caption())
-                    .foregroundColor(.textTertiary)
+                    .font(DS.Typography.caption())
+                    .foregroundStyle(Color.textTertiary)
                 Text(value)
-                    .font(Luxury.Typography.bodyMedium())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.bodyMedium())
+                    .foregroundStyle(Color.textPrimary)
             }
             
             Spacer()
         }
-        .luxuryCard()
+        .standardCard()
     }
 }
 
@@ -51,49 +49,49 @@ struct CompactInfoRow: View {
     let value: String
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.sm) {
+        HStack(spacing: DS.Spacing.sm) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(iconColor)
+                .font(DS.Typography.label())
+                .foregroundStyle(iconColor)
                 .frame(width: 20)
             
             Text(title)
-                .font(Luxury.Typography.bodySmall())
-                .foregroundColor(.textSecondary)
+                .font(DS.Typography.bodySmall())
+                .foregroundStyle(Color.textSecondary)
             
             Spacer()
             
             Text(value)
-                .font(Luxury.Typography.bodyMedium())
-                .foregroundColor(.textPrimary)
+                .font(DS.Typography.bodyMedium())
+                .foregroundStyle(Color.textPrimary)
         }
-        .padding(.vertical, Luxury.Spacing.xs)
+        .padding(.vertical, DS.Spacing.xs)
     }
 }
 
 #Preview {
-    VStack(spacing: Luxury.Spacing.md) {
-        InfoRow(icon: "calendar", iconColor: .accentPrimary, title: "Due Date", value: "Jan 15, 2026")
+    VStack(spacing: DS.Spacing.md) {
+        InfoRow(icon: "calendar", iconColor: Color.accentPrimary, title: "Due Date", value: "Jan 15, 2026")
         InfoRow(icon: "clock", iconColor: .accentOrange, title: "Time", value: "3:00 PM")
         InfoRow(icon: "camera.fill", iconColor: .accentBlue, title: "Proof Required", value: "Photo")
         
-        LuxuryDivider()
-            .padding(.vertical, Luxury.Spacing.sm)
+        ThemeDivider()
+            .padding(.vertical, DS.Spacing.sm)
         
         VStack(spacing: 0) {
-            CompactInfoRow(icon: "calendar", iconColor: .accentPrimary, title: "Due Date", value: "Jan 15")
-            LuxuryDivider()
+            CompactInfoRow(icon: "calendar", iconColor: Color.accentPrimary, title: "Due Date", value: "Jan 15")
+            ThemeDivider()
             CompactInfoRow(icon: "clock", iconColor: .accentOrange, title: "Time", value: "3:00 PM")
-            LuxuryDivider()
+            ThemeDivider()
             CompactInfoRow(icon: "person.fill", iconColor: .accentBlue, title: "Assigned", value: "Mom")
         }
-        .padding(Luxury.Spacing.md)
+        .padding(DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
-        .luxuryLevel2()
+        .elevation2()
     }
-    .padding(Luxury.Spacing.screenH)
+    .padding(DS.Spacing.screenH)
     .background(Color.themeSurfacePrimary)
 }

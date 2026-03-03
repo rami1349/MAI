@@ -403,7 +403,7 @@ enum UpcomingEventsBuilder {
                         date: nextBirthday,
                         daysUntil: daysUntil,
                         icon: "gift.fill",
-                        color: .accentPrimary,
+                        color: Color.accentPrimary,
                         type: .birthday,
                         source: .birthday(memberId: member.id ?? "")
                     ))
@@ -555,7 +555,7 @@ enum UpcomingEventsBuilder {
                         date: nextBirthday,
                         daysUntil: daysUntil,
                         icon: "gift.fill",
-                        color: .accentPrimary,
+                        color: Color.accentPrimary,
                         type: .birthday,
                         source: .birthday(memberId: member.id ?? "")
                     ))

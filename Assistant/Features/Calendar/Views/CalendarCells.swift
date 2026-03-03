@@ -32,7 +32,7 @@ struct YearMonthCell: View {
                 Text(monthName)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundStyle(isCurrentMonth ? .accentRed : .textPrimary)
+                    .foregroundStyle(isCurrentMonth ? .accentRed : Color.textPrimary)
                 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 2) {
                     ForEach(Array(generateDaysInMonth().enumerated()), id: \.offset) { index, day in
@@ -106,11 +106,11 @@ struct YearMonthCell: View {
         if let date = calendar.date(from: components) {
             let weekday = calendar.component(.weekday, from: date)
             if weekday == 1 || weekday == 7 {
-                return .textSecondary.opacity(0.6)
+                return Color.textSecondary.opacity(0.6)
             }
         }
         
-        return .textSecondary
+        return Color.textSecondary
     }
 }
 
@@ -133,7 +133,7 @@ struct CalendarDayCell: View {
                     .foregroundStyle(
                         isSelected ? .white :
                             isToday ? .accentRed :
-                                .textPrimary
+                                Color.textPrimary
                     )
                 
                 HStack(spacing: 2) {

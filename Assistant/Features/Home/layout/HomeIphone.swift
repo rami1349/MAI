@@ -22,7 +22,7 @@ extension HomeView {
     
     var iPhoneLayout: some View {
         ScrollView(showsIndicators: false) {
-            LazyVStack(spacing: Luxury.Spacing.xl) {
+            LazyVStack(spacing: DS.Spacing.xl) {
                 // Header (includes date + greeting)
                 headerSection
                 
@@ -39,17 +39,17 @@ extension HomeView {
                     .tourTarget("home.focusNow")
                 } else if derived.activeTasks.isEmpty {
                     addTaskCTA
-                        .padding(.horizontal, Luxury.Spacing.screenH)
+                        .padding(.horizontal, DS.Spacing.screenH)
                 }
                 
                 // ── Habits Section ──
                 if !habitVM.habits.isEmpty {
                     QuickHabitsWidget()
                         .tourTarget("home.habitsWidget")
-                        .padding(.horizontal, Luxury.Spacing.screenH)
+                        .padding(.horizontal, DS.Spacing.screenH)
                 } else {
                     addHabitCTA
-                        .padding(.horizontal, Luxury.Spacing.screenH)
+                        .padding(.horizontal, DS.Spacing.screenH)
                 }
                 
                 // Calendar Permission (if needed)
@@ -63,7 +63,7 @@ extension HomeView {
                             }
                         }
                     )
-                    .padding(.horizontal, Luxury.Spacing.screenH)
+                    .padding(.horizontal, DS.Spacing.screenH)
                 }
                 
                 // ── Events / Timeline Section ──
@@ -87,7 +87,7 @@ extension HomeView {
                     .tourTarget("home.upcomingEvents")
                 } else if derived.timelineItems.isEmpty {
                     addEventCTA
-                        .padding(.horizontal, Luxury.Spacing.screenH)
+                        .padding(.horizontal, DS.Spacing.screenH)
                 }
                 
                 // All Tasks (search + full list) — only show when tasks exist
@@ -131,7 +131,7 @@ extension HomeView {
                 
                 Spacer().frame(height: 120)
             }
-            .padding(.top, Luxury.Spacing.md)
+            .padding(.top, DS.Spacing.md)
         }
         .refreshable {
             await refreshData()
@@ -152,8 +152,8 @@ struct HomeInlineCTA: View {
     let action: () -> Void
     
     var body: some View {
-        VStack(spacing: Luxury.Spacing.md) {
-            HStack(spacing: Luxury.Spacing.md) {
+        VStack(spacing: DS.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Icon
                 ZStack {
                     Circle()
@@ -168,12 +168,12 @@ struct HomeInlineCTA: View {
                 // Text
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                     
                     Text(subtitle)
-                        .font(Luxury.Typography.caption())
-                        .foregroundColor(.textSecondary)
+                        .font(DS.Typography.caption())
+                        .foregroundColor(Color.textSecondary)
                         .lineLimit(2)
                 }
                 
@@ -182,7 +182,7 @@ struct HomeInlineCTA: View {
             
             // Action button
             Button(action: action) {
-                HStack(spacing: Luxury.Spacing.xs) {
+                HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "plus")
                         .font(.system(size: 13, weight: .semibold))
                     Text(buttonLabel)
@@ -190,17 +190,17 @@ struct HomeInlineCTA: View {
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, Luxury.Spacing.md)
+                .padding(.vertical, DS.Spacing.md)
                 .background(
-                    RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
                         .fill(iconColor)
                 )
             }
             .buttonStyle(.plain)
         }
-        .padding(Luxury.Spacing.lg)
+        .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.04), radius: 8, x: 0, y: 2)

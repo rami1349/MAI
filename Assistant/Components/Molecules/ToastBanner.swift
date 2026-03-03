@@ -33,7 +33,7 @@ enum ToastStyle {
         switch self {
         case .success: return .accentGreen
         case .error: return .accentRed
-        case .info: return .accentPrimary
+        case .info: return Color.accentPrimary
         }
     }
     
@@ -41,7 +41,7 @@ enum ToastStyle {
         switch self {
         case .success: return .accentGreen
         case .error: return .accentRed
-        case .info: return .accentPrimary
+        case .info: return Color.accentPrimary
         }
     }
 }
@@ -219,7 +219,7 @@ struct SuccessDismissOverlay: View {
             
             Text(message)
                 .font(DS.Typography.subheading())
-                .foregroundColor(.textPrimary)
+                .foregroundColor(Color.textPrimary)
         }
         .padding(DS.Spacing.xxl)
         .background(

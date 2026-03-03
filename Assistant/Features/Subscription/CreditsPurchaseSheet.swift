@@ -34,11 +34,11 @@ struct CreditsPurchaseSheet: View {
                     
                     Text("Need more messages?")
                         .font(DS.Typography.heading())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text("Buy credits to keep chatting. Credits never expire.")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, DS.Spacing.lg)
@@ -48,10 +48,10 @@ struct CreditsPurchaseSheet: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: "circle.fill")
                             .font(DS.Typography.micro()) // DT-exempt: tiny indicator
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                         Text("\(store.aiCredits) credits remaining")
                             .font(DS.Typography.caption())
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
                 
@@ -105,7 +105,7 @@ struct CreditsPurchaseSheet: View {
                             Text("Or upgrade to Premium for 300/day")
                                 .font(DS.Typography.bodySmall())
                         }
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                     }
                 }
                 
@@ -120,7 +120,7 @@ struct CreditsPurchaseSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -153,10 +153,10 @@ struct CreditsPurchaseSheet: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Text("\(pkg.credits)")
                             .font(DS.Typography.stat()) // was .rounded
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         Text("credits")
                             .font(DS.Typography.bodySmall())
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         
                         if pkg.isBestValue {
                             Text("Best Value")
@@ -172,7 +172,7 @@ struct CreditsPurchaseSheet: View {
                         let perCredit = product.price / Decimal(pkg.credits)
                         Text("\(perCredit.formatted(.currency(code: "USD")))/credit")
                             .font(DS.Typography.subheading())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
                 
@@ -181,7 +181,7 @@ struct CreditsPurchaseSheet: View {
                 // Price
                 Text(pkg.displayPrice)
                     .font(DS.Typography.heading()) // was .rounded
-                    .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
+                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textPrimary)
             }
             .padding(DS.Spacing.lg)
             .background(

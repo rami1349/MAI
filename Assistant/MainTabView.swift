@@ -212,7 +212,7 @@ struct MainTabView: View {
             .zIndex(3)
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: sidebarExpanded)
-        .tint(.accentPrimary)
+        .tint(Color.accentPrimary)
     }
     
     // MARK: - iPad Floating Chat Button
@@ -223,7 +223,7 @@ struct MainTabView: View {
                 Circle()
                     .fill(
                         LinearGradient(
-                            colors: [.accentPrimary, .accentSecondary],
+                            colors: [Color.accentPrimary, .accentSecondary],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -359,7 +359,7 @@ struct MainTabView: View {
                 if sidebarExpanded {
                     Text(item.title)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
+                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -480,7 +480,7 @@ struct MainTabView: View {
                     if count > 0 {
                         Text("\(count)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -520,7 +520,7 @@ struct MainTabView: View {
                 if sidebarExpanded {
                     Text(label)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
+                        .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -916,7 +916,7 @@ struct MainTabView: View {
                         .fill(
                             LinearGradient(
                                 colors: isSelected
-                                ? [.accentPrimary, .purple]
+                                ? [Color.accentPrimary, .purple]
                                 : [Color.accentPrimary.opacity(0.8), Color.purple.opacity(0.6)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing

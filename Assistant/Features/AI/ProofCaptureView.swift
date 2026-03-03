@@ -235,7 +235,7 @@ struct ProofCaptureView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundStyle(task.taskType == .homework ? .accentPrimary : .textSecondary)
+            .foregroundStyle(task.taskType == .homework ? Color.accentPrimary : Color.textSecondary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.xs)
             .background(
@@ -254,12 +254,12 @@ struct ProofCaptureView: View {
             if task.hasReward, let amount = task.rewardAmount {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "dollarsign.circle.fill")
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                     Text("Earn \(amount.currencyString)")
                         .fontWeight(.medium)
                 }
                 .font(.subheadline)
-                .foregroundStyle(.accentGreen)
+                .foregroundStyle(Color.accentGreen)
             }
             
             // Show what will happen after submit
@@ -270,7 +270,7 @@ struct ProofCaptureView: View {
                 Text("\(proofItems.count) file\(proofItems.count == 1 ? "" : "s") · \(formatBytes(currentTotalBytes)) / \(formatBytes(maxTotalBytes))")
             }
             .font(.caption)
-            .foregroundStyle(.textSecondary)
+            .foregroundStyle(Color.textSecondary)
         }
         .padding(.horizontal)
     }
@@ -291,7 +291,7 @@ struct ProofCaptureView: View {
             }
         }
         .font(.caption)
-        .foregroundStyle(willAutoVerify ? .purple : .textSecondary)
+        .foregroundStyle(willAutoVerify ? .purple : Color.textSecondary)
         .padding(.horizontal, DS.Spacing.md)
         .padding(.vertical, DS.Spacing.xs)
         .background(
@@ -314,7 +314,7 @@ struct ProofCaptureView: View {
                 
                 Image(systemName: "doc.badge.plus")
                     .font(DS.Typography.displayLarge())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
             }
             
             VStack(spacing: DS.Spacing.xs) {
@@ -323,7 +323,7 @@ struct ProofCaptureView: View {
                 
                 Text("Upload photos, videos, or documents to show your work")
                     .font(.subheadline)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
             }
             
@@ -333,7 +333,7 @@ struct ProofCaptureView: View {
                     Text("Tips for homework photos:")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                     
                     VStack(alignment: .leading, spacing: 4) {
                         tipRow("Good lighting – avoid shadows")
@@ -357,7 +357,7 @@ struct ProofCaptureView: View {
                             .foregroundStyle(type.color)
                         Text(type.rawValue.capitalized)
                             .font(.caption2)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
             }
@@ -377,10 +377,10 @@ struct ProofCaptureView: View {
         HStack(spacing: DS.Spacing.xs) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.caption2)
-                .foregroundStyle(.accentGreen)
+                .foregroundStyle(Color.accentGreen)
             Text(text)
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
     
@@ -413,7 +413,7 @@ struct ProofCaptureView: View {
         VStack(spacing: DS.Spacing.md) {
             Text("Add More")
                 .font(.subheadline)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
             
             HStack(spacing: DS.Spacing.lg) {
                 // Camera (captures photo or video)
@@ -451,7 +451,7 @@ struct ProofCaptureView: View {
             // Size budget indicator
             Text("\(formatBytes(remainingBytes)) remaining")
                 .font(.caption2)
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
         }
         .padding(.horizontal)
     }
@@ -487,10 +487,10 @@ struct ProofCaptureView: View {
     private var uploadProgressView: some View {
         VStack(spacing: DS.Spacing.sm) {
             ProgressView(value: uploadProgress)
-                .tint(.accentPrimary)
+                .tint(Color.accentPrimary)
             Text("\(Int(uploadProgress * 100))% uploaded")
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
     
@@ -834,7 +834,7 @@ struct ProofPreviewCard: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Text(item.fileSizeString)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                     
                     if item.wasEnhanced {
                         HStack(spacing: 2) {
@@ -842,7 +842,7 @@ struct ProofPreviewCard: View {
                             Text("Enhanced")
                         }
                         .font(.caption2)
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                     }
                 }
             }
@@ -852,7 +852,7 @@ struct ProofPreviewCard: View {
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
         }
         .padding()
@@ -922,7 +922,7 @@ struct ProofActionButtonContent: View {
             
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
         }
     }
 }

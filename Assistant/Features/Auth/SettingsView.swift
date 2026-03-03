@@ -87,13 +87,13 @@ struct SettingsView: View {
                     HStack {
                         Text(L10n.email)
                         Spacer()
-                        Text(user.email).foregroundStyle(.textSecondary)
+                        Text(user.email).foregroundStyle(Color.textSecondary)
                     }
                     .listRowBackground(Color.themeCardBackground)
                     HStack {
                         Text(L10n.role)
                         Spacer()
-                        Text(user.role.rawValue.capitalized).foregroundStyle(.textSecondary)
+                        Text(user.role.rawValue.capitalized).foregroundStyle(Color.textSecondary)
                     }
                     .listRowBackground(Color.themeCardBackground)
                 }
@@ -110,18 +110,18 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Image(systemName: store.tier.isPremium ? "crown.fill" : "sparkles")
-                            .foregroundStyle(store.tier.isPremium ? .yellow : .accentPrimary)
+                            .foregroundStyle(store.tier.isPremium ? .yellow : Color.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
                         Text("Plan")
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         Spacer()
                         Text(store.tier.displayName)
-                            .foregroundStyle(store.tier.isPremium ? .yellow : .textSecondary)
+                            .foregroundStyle(store.tier.isPremium ? .yellow : Color.textSecondary)
                             .fontWeight(store.tier.isPremium ? .semibold : .regular)
                         if !store.tier.isPremium {
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
                 }
@@ -133,10 +133,10 @@ struct SettingsView: View {
                         .foregroundStyle(.orange)
                         .frame(width: DS.IconContainer.sm)
                     Text("AI Credits")
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     Spacer()
                     Text("\(store.aiCredits)")
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .fontWeight(.medium)
                 }
                 .listRowBackground(Color.themeCardBackground)
@@ -150,10 +150,10 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "gear")
-                                .foregroundStyle(.accentPrimary)
+                                .foregroundStyle(Color.accentPrimary)
                                 .frame(width: DS.IconContainer.sm)
                             Text("Manage Subscription")
-                                .foregroundStyle(.accentPrimary)
+                                .foregroundStyle(Color.accentPrimary)
                         }
                     }
                     .listRowBackground(Color.themeCardBackground)
@@ -164,10 +164,10 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.clockwise")
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
                         Text("Restore Purchases")
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
@@ -177,16 +177,16 @@ struct SettingsView: View {
                 Button(action: { showAppearancePicker = true }) {
                     HStack {
                         Image(systemName: themeManager.appearanceMode.icon)
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
                         Text(L10n.appearance)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         Spacer()
                         Text(themeManager.appearanceMode.displayName)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
@@ -194,10 +194,10 @@ struct SettingsView: View {
                 Button(action: { showThemePicker = true }) {
                     HStack {
                         Image(systemName: "paintpalette.fill")
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
                         Text(L10n.themeColor)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         Spacer()
                         
                         // Show 3 preview colors
@@ -211,7 +211,7 @@ struct SettingsView: View {
                         
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
@@ -221,29 +221,29 @@ struct SettingsView: View {
                 Button(action: { showLanguagePicker = true }) {
                     HStack {
                         Image(systemName: "globe")
-                            .foregroundStyle(.accentPrimary)
+                            .foregroundStyle(Color.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
                         Text(L10n.language)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         Spacer()
                         Text(localization.selectedLanguage == .system
                              ? "System (\(localization.currentLanguageShortName))"
                              : localization.currentLanguageShortName)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
                 
                 HStack {
                     Image(systemName: "info.circle")
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                         .frame(width: DS.IconContainer.sm)
                     Text(L10n.version)
                     Spacer()
-                    Text("1.0.0").foregroundStyle(.textSecondary)
+                    Text("1.0.0").foregroundStyle(Color.textSecondary)
                 }
                 .listRowBackground(Color.themeCardBackground)
             }
@@ -303,25 +303,25 @@ struct AppearancePickerView: View {
                                 
                                 Image(systemName: mode.icon)
                                     .font(.title3)
-                                    .foregroundStyle(themeManager.appearanceMode == mode ? .accentPrimary : .textSecondary)
+                                    .foregroundStyle(themeManager.appearanceMode == mode ? Color.accentPrimary : Color.textSecondary)
                             }
                             
                             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                                 Text(mode.displayName)
                                     .font(.body)
                                     .fontWeight(themeManager.appearanceMode == mode ? .semibold : .regular)
-                                    .foregroundStyle(.textPrimary)
+                                    .foregroundStyle(Color.textPrimary)
                                 
                                 Text(modeDescription(mode))
                                     .font(.caption)
-                                    .foregroundStyle(.textSecondary)
+                                    .foregroundStyle(Color.textSecondary)
                             }
                             
                             Spacer()
                             
                             if themeManager.appearanceMode == mode {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.accentPrimary)
+                                    .foregroundStyle(Color.accentPrimary)
                                     .font(.title3)
                             }
                         }
@@ -423,7 +423,7 @@ struct ThemeCard: View {
                     Text(theme.displayName)
                         .font(DS.Typography.body())
                         .fontWeight(isSelected ? .semibold : .regular)
-                        .foregroundStyle(isSelected ? Color(hex: theme.palette.primary) : .textPrimary)
+                        .foregroundStyle(isSelected ? Color(hex: theme.palette.primary) : Color.textPrimary)
                     
                     if isSelected {
                         Image(systemName: "checkmark.circle.fill")
@@ -456,13 +456,13 @@ struct LanguagePickerView: View {
                         }) {
                             HStack {
                                 Text(language.displayName)
-                                    .foregroundStyle(.textPrimary)
+                                    .foregroundStyle(Color.textPrimary)
                                 
                                 Spacer()
                                 
                                 if localization.selectedLanguage == language {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accentPrimary)
+                                        .foregroundStyle(Color.accentPrimary)
                                         .fontWeight(.semibold)
                                 }
                             }
@@ -473,7 +473,7 @@ struct LanguagePickerView: View {
                 footer: {
                     Text(L10n.languageDescription)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             .scrollContentBackground(.hidden)

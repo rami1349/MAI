@@ -26,7 +26,7 @@ struct TaskCard: View {
         case .urgent: return .statusError      // Red
         case .high: return .accentOrange       // Orange
         case .medium: return .statusWarning    // Yellow
-        case .low: return .textTertiary        // Gray
+        case .low: return Color.textTertiary        // Gray
         }
     }
     
@@ -34,8 +34,8 @@ struct TaskCard: View {
     private var statusColor: Color {
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
@@ -55,7 +55,7 @@ struct TaskCard: View {
                         if let groupName {
                             Text(groupName)
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                         
                         Spacer()
@@ -68,7 +68,7 @@ struct TaskCard: View {
                                 Text(L10n.overdue)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(.statusError)
+                            .foregroundStyle(Color.statusError)
                         } else if task.isDueSoon {
                             HStack(spacing: DS.Spacing.xxs) {
                                 Image(systemName: "clock.fill")
@@ -76,18 +76,18 @@ struct TaskCard: View {
                                 Text(task.timeUntilDueText)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(.accentOrange)
+                           .foregroundStyle(Color.accentOrange)
                         } else if let time = task.scheduledTime {
                             Label(time.formattedTime, systemImage: "clock")
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                         }
                     }
                     
                     // Task title
                     Text(task.title)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
@@ -101,7 +101,7 @@ struct TaskCard: View {
                                 Text(taskType.displayName)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(taskType == .homework ? .accentBlue : .textTertiary)
+                            .foregroundStyle(taskType == .homework ? .accentBlue : Color.textTertiary)
                         }
                         
                         if task.isRecurring {
@@ -111,7 +111,7 @@ struct TaskCard: View {
                                 Text(L10n.repeats)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(.accentTertiary)
+                            .foregroundStyle(Color.accentTertiary)
                         }
                         
                         Spacer()
@@ -124,7 +124,7 @@ struct TaskCard: View {
                                 Text(amount.currencyString)
                                     .font(DS.Typography.captionMedium())
                             }
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                         }
                     }
                     
@@ -176,7 +176,7 @@ struct TaskCard: View {
                     Capsule()
                         .fill(isLoading ? Color.gray : Color.accentPrimary)
                 )
-                .elevationAccent(isLoading ? .gray : .accentPrimary)
+                .elevationAccent(isLoading ? .gray : Color.accentPrimary)
             }
             .disabled(isLoading)
             
@@ -232,7 +232,7 @@ struct TaskCard: View {
                 Text(L10n.awaitingVerification)
                     .font(DS.Typography.caption())
             }
-            .foregroundStyle(.statusPending)
+            .foregroundStyle(Color.statusPending)
             
         case .completed:
             HStack(spacing: DS.Spacing.xs) {
@@ -241,7 +241,7 @@ struct TaskCard: View {
                 Text(L10n.completed)
                     .font(DS.Typography.caption())
             }
-            .foregroundStyle(.statusCompleted)
+            .foregroundStyle(Color.statusCompleted)
         }
     }
 }
@@ -257,7 +257,7 @@ struct CompactTaskCard: View {
         case .urgent: return .statusError
         case .high: return .accentOrange
         case .medium: return .statusWarning
-        case .low: return .textTertiary
+        case .low: return Color.textTertiary
         }
     }
     
@@ -278,7 +278,7 @@ struct CompactTaskCard: View {
                     // Title
                     Text(task.title)
                         .font(DS.Typography.body())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -287,20 +287,20 @@ struct CompactTaskCard: View {
                     if task.isOverdue {
                         Text(L10n.overdue)
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.statusError)
+                            .foregroundStyle(Color.statusError)
                     } else if task.hasReward, let amount = task.rewardAmount {
                         Text(amount.currencyString)
                             .font(DS.Typography.captionMedium())
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                     } else if let time = task.scheduledTime {
                         Text(time.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                     
                     Image(systemName: "chevron.right")
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)

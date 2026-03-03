@@ -24,12 +24,12 @@ struct QuickHabitsWidget: View {
             // Header
             HStack {
                 Image(systemName: "flame.fill")
-                    .foregroundStyle(.accentOrange)
+                   .foregroundStyle(Color.accentOrange)
                 
                 Text(L10n.todaysHabits)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Spacer()
                 
@@ -40,7 +40,7 @@ struct QuickHabitsWidget: View {
                     Text("\(completed)/\(total)")
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(completed == total ? .accentGreen : .textSecondary)
+                        .foregroundStyle(completed == total ? .accentGreen : Color.textSecondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
                         .background(
@@ -84,7 +84,7 @@ struct QuickHabitsWidget: View {
                               Image(systemName: "chevron.down")
                                   .font(DS.Typography.micro())
                           }
-                          .foregroundStyle(.textTertiary)
+                          .foregroundStyle(Color.textTertiary)
                           .padding(.top, 4)
                       }
                   }
@@ -115,14 +115,14 @@ struct QuickHabitsWidget: View {
         VStack(spacing: 8) {
             Image(systemName: "plus.circle.dashed")
                 .font(.title)
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
             Text(L10n.noHabitsShort)
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             Text(L10n.addHabitsToTrack)
                 .font(.caption)
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 24)
@@ -183,8 +183,8 @@ struct QuickHabitRow: View {
                 Text(habit.name)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(isCompleted ? .textSecondary : .textPrimary)
-                    .strikethrough(isCompleted, color: .textSecondary)
+                    .foregroundStyle(isCompleted ? Color.textSecondary : Color.textPrimary)
+                    .strikethrough(isCompleted, color: Color.textSecondary)
                 
                 Spacer()
             }

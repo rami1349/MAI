@@ -18,7 +18,7 @@ struct HomePendingVerificationSection: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.seal")
                     .font(DS.Typography.body())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -27,7 +27,7 @@ struct HomePendingVerificationSection: View {
                 
                 Text(L10n.awaitingVerification)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 Circle()
                     .fill(Color.accentPrimary)
                     .frame(width: 8, height: 8)
@@ -62,18 +62,18 @@ struct CalendarPermissionPrompt: View {
                 
                 Image(systemName: "calendar.badge.exclamationmark")
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
             }
             
             // Text
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(L10n.calendarAccess)
                     .font(DS.Typography.label())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 Text(L10n.enableCalendarMessage)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             
             Spacer()
@@ -138,11 +138,11 @@ struct PendingVerificationCard: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(assignee.displayName)
                             .font(DS.Typography.label())
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         Text(L10n.submittedProof)
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
                 
@@ -151,14 +151,14 @@ struct PendingVerificationCard: View {
                 if task.hasReward, let amount = task.rewardAmount {
                     Text(amount.currencyString)
                         .font(DS.Typography.label())
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                 }
             }
             
             // Task title
             Text(task.title)
                 .font(DS.Typography.body())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             // View proof button (supports multiple proof images)
             if task.hasProofUploaded {
@@ -174,10 +174,10 @@ struct PendingVerificationCard: View {
                         if task.allProofURLs.count > 1 {
                             Text("(\(task.allProofURLs.count))")
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                 }
             }
             
@@ -292,7 +292,7 @@ struct ProofViewerSheet: View {
                 if isVideo {
                     Text(L10n.videoPlayer)
                         .font(DS.Typography.body())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.black)
                 } else {

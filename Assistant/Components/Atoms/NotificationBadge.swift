@@ -18,7 +18,7 @@ struct NotificationBadge: View {
         ZStack(alignment: .topTrailing) {
             Image(systemName: "bell.fill")
                 .font(.title3)
-                .foregroundColor(.textPrimary)
+                .foregroundColor(Color.textPrimary)
             
             if count > 0 {
                 ZStack {

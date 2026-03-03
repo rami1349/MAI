@@ -311,7 +311,7 @@ extension View {
     }
     
     /// Accent glow (primary buttons)
-    func elevationAccent(_ color: Color = .accentPrimary) -> some View {
+    func elevationAccent(_ color: Color = Color.accentPrimary) -> some View {
         let s = DS.Shadow.accent(color)
         return self.shadow(color: s.color, radius: s.radius, x: s.x, y: s.y)
     }
@@ -427,7 +427,7 @@ struct ConstrainedContainer<Content: View>: View {
 /// Rounded-rect icon container with tinted background.
 struct IconBox: View {
     let icon: String
-    var color: Color = .accentPrimary
+    var color: Color = Color.accentPrimary
     var size: CGFloat = DS.IconContainer.md
     var iconSize: CGFloat = DS.IconSize.sm
     var cornerRadius: CGFloat = DS.Radius.sm

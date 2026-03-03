@@ -28,9 +28,9 @@ extension HomeView {
                     .adaptiveHorizontalPadding()
                 
                 // Two-column grid
-                HStack(alignment: .top, spacing: Luxury.Spacing.xl) {
+                HStack(alignment: .top, spacing: DS.Spacing.xl) {
                     // Left Column - Main Content
-                    VStack(spacing: Luxury.Spacing.xl) {
+                    VStack(spacing: DS.Spacing.xl) {
                         // Focus Now
                         if !derived.focusTasks.isEmpty {
                             iPadFocusNowCard
@@ -67,7 +67,7 @@ extension HomeView {
                     .frame(maxWidth: .infinity)
                     
                     // Right Column - Sidebar Widgets
-                    VStack(spacing: Luxury.Spacing.xl) {
+                    VStack(spacing: DS.Spacing.xl) {
                         // Habits Widget
                         if !habitVM.habits.isEmpty {
                             QuickHabitsWidget()
@@ -113,7 +113,7 @@ extension HomeView {
                 
                 Spacer().frame(height: 40)
             }
-            .padding(.top, Luxury.Spacing.md)
+            .padding(.top, DS.Spacing.md)
         }
         .refreshable {
             await refreshData()
@@ -123,12 +123,12 @@ extension HomeView {
     // MARK: - iPad Focus Now Card
     
     var iPadFocusNowCard: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "target")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -136,13 +136,13 @@ extension HomeView {
                     )
                 
                 Text("Focus Now")
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("\(derived.focusTasks.count)")
-                    .font(Luxury.Typography.captionMedium())
-                    .foregroundColor(.accentPrimary)
-                    .padding(.horizontal, Luxury.Spacing.sm)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundColor(Color.accentPrimary)
+                    .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
                         Capsule()
@@ -154,9 +154,9 @@ extension HomeView {
             
             // Tasks grid (2 columns for iPad)
             LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: Luxury.Spacing.md),
-                GridItem(.flexible(), spacing: Luxury.Spacing.md)
-            ], spacing: Luxury.Spacing.sm) {
+                GridItem(.flexible(), spacing: DS.Spacing.md),
+                GridItem(.flexible(), spacing: DS.Spacing.md)
+            ], spacing: DS.Spacing.sm) {
                 ForEach(derived.focusTasks, id: \.stableId) { task in
                     iPadFocusTaskCard(task: task)
                 }
@@ -169,7 +169,7 @@ extension HomeView {
         Button {
             selectedTask = task
         } label: {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Priority indicator
                 Circle()
                     .fill(task.priority.color)
@@ -177,31 +177,31 @@ extension HomeView {
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.title)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         if task.isOverdue {
                             Text("Overdue")
-                                .font(Luxury.Typography.micro())
+                                .font(DS.Typography.micro())
                                 .foregroundColor(.accentRed)
                         } else if Calendar.current.isDateInToday(task.dueDate) {
                             Text("Today")
-                                .font(Luxury.Typography.micro())
+                                .font(DS.Typography.micro())
                                 .foregroundColor(.accentOrange)
                         } else {
                             Text(task.dueDate.formatted(.dateTime.weekday(.abbreviated)))
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                         }
                         
                         if let time = task.scheduledTime {
                             Text("•")
-                                .foregroundColor(.textTertiary)
+                                .foregroundColor(Color.textTertiary)
                             Text(time.formatted(.dateTime.hour().minute()))
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textSecondary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textSecondary)
                         }
                     }
                 }
@@ -210,15 +210,15 @@ extension HomeView {
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(Luxury.Spacing.md)
+            .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(Color.themeCardBackground)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .stroke(task.isOverdue ? Color.accentRed.opacity(0.3) : Color.clear, lineWidth: 1)
             )
         }
@@ -229,12 +229,12 @@ extension HomeView {
     // MARK: - iPad Timeline Card
     
     var iPadTimelineCard: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "clock")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -242,13 +242,13 @@ extension HomeView {
                     )
                 
                 Text("Today & Tomorrow")
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("\(derived.timelineItems.count)")
-                    .font(Luxury.Typography.captionMedium())
-                    .foregroundColor(.accentPrimary)
-                    .padding(.horizontal, Luxury.Spacing.sm)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundColor(Color.accentPrimary)
+                    .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
                         Capsule()
@@ -259,23 +259,23 @@ extension HomeView {
             }
             
             // Timeline items
-            VStack(spacing: Luxury.Spacing.xs) {
+            VStack(spacing: DS.Spacing.xs) {
                 ForEach(derived.timelineItems.prefix(6)) { item in
                     iPadTimelineRow(item: item)
                 }
                 
                 if derived.timelineItems.count > 6 {
                     Text("+\(derived.timelineItems.count - 6) more")
-                        .font(Luxury.Typography.captionMedium())
-                        .foregroundColor(.accentPrimary)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundColor(Color.accentPrimary)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.top, Luxury.Spacing.xs)
+                        .padding(.top, DS.Spacing.xs)
                 }
             }
         }
-        .padding(Luxury.Spacing.lg)
+        .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
@@ -289,11 +289,11 @@ extension HomeView {
             Button {
                 selectedTask = task
             } label: {
-                HStack(spacing: Luxury.Spacing.sm) {
+                HStack(spacing: DS.Spacing.sm) {
                     // Time
                     Text(task.scheduledTime?.formatted(.dateTime.hour().minute()) ?? "--:--")
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
-                        .foregroundColor(.textSecondary)
+                        .foregroundColor(Color.textSecondary)
                         .frame(width: 44, alignment: .leading)
                     
                     Circle()
@@ -301,25 +301,25 @@ extension HomeView {
                         .frame(width: 6, height: 6)
                     
                     Text(task.title)
-                        .font(Luxury.Typography.bodySmall())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.bodySmall())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
                     Spacer()
                     
                     Image(systemName: "checklist")
                         .font(.system(size: 10))
-                        .foregroundColor(.textTertiary)
+                        .foregroundColor(Color.textTertiary)
                 }
-                .padding(.vertical, Luxury.Spacing.xs)
+                .padding(.vertical, DS.Spacing.xs)
             }
             .buttonStyle(.plain)
             
         case .event(let event):
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Text(event.date.formatted(.dateTime.hour().minute()))
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundColor(.textSecondary)
+                    .foregroundColor(Color.textSecondary)
                     .frame(width: 44, alignment: .leading)
                 
                 Circle()
@@ -327,8 +327,8 @@ extension HomeView {
                     .frame(width: 6, height: 6)
                 
                 Text(event.title)
-                    .font(Luxury.Typography.bodySmall())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.bodySmall())
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(1)
                 
                 Spacer()
@@ -337,19 +337,19 @@ extension HomeView {
                     .font(.system(size: 10))
                     .foregroundColor(event.color)
             }
-            .padding(.vertical, Luxury.Spacing.xs)
+            .padding(.vertical, DS.Spacing.xs)
         }
     }
     
     // MARK: - iPad Task Groups Grid
     
     var iPadTaskGroupsGrid: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Section header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "folder.fill")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -357,16 +357,16 @@ extension HomeView {
                     )
                 
                 Text(L10n.taskGroups)
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Spacer()
             }
             
             LazyVGrid(columns: [
-                GridItem(.flexible(), spacing: Luxury.Spacing.md),
-                GridItem(.flexible(), spacing: Luxury.Spacing.md)
-            ], spacing: Luxury.Spacing.md) {
+                GridItem(.flexible(), spacing: DS.Spacing.md),
+                GridItem(.flexible(), spacing: DS.Spacing.md)
+            ], spacing: DS.Spacing.md) {
                 ForEach(derived.myVisibleGroups) { group in
                     iPadGroupCard(group: group)
                         .contextMenu {
@@ -398,7 +398,7 @@ extension HomeView {
         Button {
             showTaskGroup = group
         } label: {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Icon
                 ZStack {
                     Circle()
@@ -411,15 +411,15 @@ extension HomeView {
                 }
                 
                 // Content
-                VStack(alignment: .leading, spacing: Luxury.Spacing.xxs) {
+                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(group.name)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
                     Text("\(group.taskCount) tasks")
-                        .font(Luxury.Typography.caption())
-                        .foregroundColor(.textTertiary)
+                        .font(DS.Typography.caption())
+                        .foregroundColor(Color.textTertiary)
                 }
                 
                 Spacer()
@@ -432,11 +432,11 @@ extension HomeView {
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(Luxury.Spacing.md)
+            .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(Color.themeCardBackground)
             )
             .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
@@ -448,12 +448,12 @@ extension HomeView {
     // MARK: - iPad Week Events Card
     
     var iPadWeekEventsCard: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "calendar")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -461,13 +461,13 @@ extension HomeView {
                     )
                 
                 Text("This Week")
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Text("\(derived.weekEvents.count)")
-                    .font(Luxury.Typography.captionMedium())
-                    .foregroundColor(.accentPrimary)
-                    .padding(.horizontal, Luxury.Spacing.sm)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundColor(Color.accentPrimary)
+                    .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, 2)
                     .background(
                         Capsule()
@@ -478,7 +478,7 @@ extension HomeView {
             }
             
             // Content
-            VStack(spacing: Luxury.Spacing.xs) {
+            VStack(spacing: DS.Spacing.xs) {
                 ForEach(derived.weekEvents.prefix(5)) { event in
                     iPadEventRow(event: event)
                         .hoverEffect(scale: 1.01)
@@ -486,16 +486,16 @@ extension HomeView {
                 
                 if derived.weekEvents.count > 5 {
                     Text("+\(derived.weekEvents.count - 5) more")
-                        .font(Luxury.Typography.captionMedium())
-                        .foregroundColor(.accentPrimary)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundColor(Color.accentPrimary)
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.top, Luxury.Spacing.xs)
+                        .padding(.top, DS.Spacing.xs)
                 }
             }
         }
-        .padding(Luxury.Spacing.lg)
+        .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
@@ -505,7 +505,7 @@ extension HomeView {
     // MARK: - iPad Event Row
     
     func iPadEventRow(event: UpcomingEvent) -> some View {
-        HStack(spacing: Luxury.Spacing.sm) {
+        HStack(spacing: DS.Spacing.sm) {
             Circle()
                 .fill(event.color)
                 .frame(width: 8, height: 8)
@@ -516,34 +516,34 @@ extension HomeView {
                 .frame(width: 20)
             
             Text(event.title)
-                .font(Luxury.Typography.body())
-                .foregroundColor(.textPrimary)
+                .font(DS.Typography.body())
+                .foregroundColor(Color.textPrimary)
                 .lineLimit(1)
             
             Spacer()
             
             Text(event.countdownText)
-                .font(Luxury.Typography.captionMedium())
-                .foregroundColor(event.daysUntil <= 2 ? .white : .accentPrimary)
-                .padding(.horizontal, Luxury.Spacing.sm)
+                .font(DS.Typography.captionMedium())
+                .foregroundColor(event.daysUntil <= 2 ? .white : Color.accentPrimary)
+                .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, 3)
                 .background(
                     Capsule()
                         .fill(event.daysUntil <= 2 ? event.color : Color.accentPrimary.opacity(0.1))
                 )
         }
-        .padding(.vertical, Luxury.Spacing.xs)
+        .padding(.vertical, DS.Spacing.xs)
     }
     
     // MARK: - iPad Pending Verification Card
     
     var iPadPendingVerificationCard: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.md) {
+        VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.seal")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -551,8 +551,8 @@ extension HomeView {
                     )
                 
                 Text(L10n.awaitingVerification)
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 Circle()
                     .fill(Color.accentPrimary)
@@ -561,16 +561,16 @@ extension HomeView {
                 Spacer()
             }
             
-            VStack(spacing: Luxury.Spacing.sm) {
+            VStack(spacing: DS.Spacing.sm) {
                 ForEach(derived.myPendingVerificationTasks.prefix(3), id: \.id) { task in
                     PendingVerificationCard(task: task)
                         .hoverEffect(scale: 1.01)
                 }
             }
         }
-        .padding(Luxury.Spacing.lg)
+        .padding(DS.Spacing.lg)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.lg)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 2)
@@ -584,8 +584,8 @@ private extension FamilyTask.TaskPriority {
         switch self {
         case .urgent: return .accentRed
         case .high: return .accentOrange
-        case .medium: return .accentPrimary
-        case .low: return .textTertiary
+        case .medium: return Color.accentPrimary
+        case .low: return Color.textTertiary
         }
     }
 }
@@ -596,8 +596,8 @@ private extension FamilyTask.TaskStatus {
     var color: Color {
         switch self {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }

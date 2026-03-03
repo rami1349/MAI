@@ -77,7 +77,7 @@ struct FieldHint: View {
         case .valid(let message):
             hintRow(icon: "checkmark.circle.fill", text: message, color: .accentGreen)
         case .info(let message):
-            hintRow(icon: "info.circle.fill", text: message, color: .textSecondary)
+            hintRow(icon: "info.circle.fill", text: message, color: Color.textSecondary)
         }
     }
     

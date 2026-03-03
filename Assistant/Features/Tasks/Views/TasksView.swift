@@ -92,7 +92,7 @@ struct TasksView: View {
                 }) {
                     Text(tab.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedMainTab == tab ? .white : .textSecondary)
+                        .foregroundStyle(selectedMainTab == tab ? .white : Color.textSecondary)
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: DS.Control.standard)
                         .padding(.vertical, DS.Spacing.sm)

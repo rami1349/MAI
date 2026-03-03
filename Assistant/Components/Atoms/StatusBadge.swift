@@ -19,10 +19,10 @@ struct StatusBadge: View {
     
     var body: some View {
         Text(statusText)
-            .font(Luxury.Typography.captionMedium())
+            .font(DS.Typography.captionMedium())
             .foregroundColor(color)
-            .padding(.horizontal, Luxury.Spacing.sm)
-            .padding(.vertical, Luxury.Spacing.xxs)
+            .padding(.horizontal, DS.Spacing.sm)
+            .padding(.vertical, DS.Spacing.xxs)
             .background(
                 Capsule()
                     .fill(color.opacity(0.10))
@@ -43,21 +43,21 @@ struct StatusBadge: View {
 
 struct LuxuryBadge: View {
     let text: String
-    var color: Color = .accentPrimary
+    var color: Color = Color.accentPrimary
     var icon: String? = nil
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.xxs) {
+        HStack(spacing: DS.Spacing.xxs) {
             if let icon {
                 Image(systemName: icon)
                     .font(.system(size: 10, weight: .semibold))
             }
             Text(text)
-                .font(Luxury.Typography.captionMedium())
+                .font(DS.Typography.captionMedium())
         }
         .foregroundColor(color)
-        .padding(.horizontal, Luxury.Spacing.sm)
-        .padding(.vertical, Luxury.Spacing.xxs)
+        .padding(.horizontal, DS.Spacing.sm)
+        .padding(.vertical, DS.Spacing.xxs)
         .background(
             Capsule()
                 .fill(color.opacity(0.10))
@@ -87,33 +87,33 @@ struct CountBadge: View {
 }
 
 #Preview {
-    VStack(spacing: Luxury.Spacing.md) {
+    VStack(spacing: DS.Spacing.md) {
         // Status badges
-        HStack(spacing: Luxury.Spacing.sm) {
+        HStack(spacing: DS.Spacing.sm) {
             StatusBadge(status: .todo, color: .statusTodo)
-            StatusBadge(status: .inProgress, color: .statusInProgress)
-            StatusBadge(status: .pendingVerification, color: .statusPending)
+            StatusBadge(status: .inProgress, color: Color.statusInProgress)
+            StatusBadge(status: .pendingVerification, color: Color.statusPending)
             StatusBadge(status: .completed, color: .statusCompleted)
         }
         
-        LuxuryDivider()
+        ThemeDivider()
         
         // Generic badges
-        HStack(spacing: Luxury.Spacing.sm) {
+        HStack(spacing: DS.Spacing.sm) {
             LuxuryBadge(text: "High", color: .accentOrange, icon: "exclamationmark.triangle.fill")
             LuxuryBadge(text: "Reward", color: .accentGreen, icon: "dollarsign.circle.fill")
             LuxuryBadge(text: "Recurring", color: .accentBlue, icon: "repeat")
         }
         
-        LuxuryDivider()
+        ThemeDivider()
         
         // Count badges
-        HStack(spacing: Luxury.Spacing.lg) {
+        HStack(spacing: DS.Spacing.lg) {
             CountBadge(count: 3)
             CountBadge(count: 12)
             CountBadge(count: 150)
         }
     }
-    .padding(Luxury.Spacing.lg)
+    .padding(DS.Spacing.lg)
     .background(Color.themeSurfacePrimary)
 }

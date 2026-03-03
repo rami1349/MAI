@@ -21,7 +21,7 @@ struct HomeWeekEventsSection: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.sm) {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             sectionHeader
             
             if isExpanded {
@@ -37,11 +37,11 @@ struct HomeWeekEventsSection: View {
     
     private var sectionHeader: some View {
         Button(action: { isExpanded.toggle() }) {
-            HStack(spacing: Luxury.Spacing.sm) {
+            HStack(spacing: DS.Spacing.sm) {
                 // Icon badge
                 Image(systemName: "calendar")
                     .font(.system(size: 14))
-                    .foregroundColor(.accentPrimary)
+                    .foregroundColor(Color.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -49,15 +49,15 @@ struct HomeWeekEventsSection: View {
                     )
                 
                 Text(L10n.thisWeek)
-                    .font(Luxury.Typography.subheading())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.subheading())
+                    .foregroundColor(Color.textPrimary)
                 
                 // Count badge
                 if !events.isEmpty {
                     Text("\(events.count)")
-                        .font(Luxury.Typography.captionMedium())
-                        .foregroundColor(.accentPrimary)
-                        .padding(.horizontal, Luxury.Spacing.sm)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundColor(Color.accentPrimary)
+                        .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, 2)
                         .background(
                             Capsule()
@@ -74,13 +74,13 @@ struct HomeWeekEventsSection: View {
                 
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(.vertical, Luxury.Spacing.xs)
+            .padding(.vertical, DS.Spacing.xs)
         }
         .buttonStyle(.plain)
         .frame(minHeight: 44)
-        .padding(.horizontal, Luxury.Spacing.screenH)
+        .padding(.horizontal, DS.Spacing.screenH)
         .accessibilityLabel("This week events, \(events.count) items")
         .accessibilityHint(isExpanded ? "Tap to collapse" : "Tap to expand")
     }
@@ -91,7 +91,7 @@ struct HomeWeekEventsSection: View {
     private var eventContent: some View {
         if events.isEmpty {
             // Empty state
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 ZStack {
                     Circle()
                         .fill(Color.accentPrimary.opacity(0.08))
@@ -99,25 +99,25 @@ struct HomeWeekEventsSection: View {
                     
                     Image(systemName: "leaf")
                         .font(.system(size: 16))
-                        .foregroundColor(.accentPrimary.opacity(0.5))
+                        .foregroundColor(Color.accentPrimary.opacity(0.5))
                 }
                 
-                VStack(alignment: .leading, spacing: Luxury.Spacing.xxs) {
+                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(L10n.noEvents)
-                        .font(Luxury.Typography.body())
-                        .foregroundColor(.textSecondary)
+                        .font(DS.Typography.body())
+                        .foregroundColor(Color.textSecondary)
                     
                     Text("Enjoy a peaceful week")
-                        .font(Luxury.Typography.caption())
-                        .foregroundColor(.textTertiary)
+                        .font(DS.Typography.caption())
+                        .foregroundColor(Color.textTertiary)
                 }
                 
                 Spacer()
             }
-            .padding(.vertical, Luxury.Spacing.sm)
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.vertical, DS.Spacing.sm)
+            .padding(.horizontal, DS.Spacing.screenH)
         } else {
-            VStack(spacing: Luxury.Spacing.xs) {
+            VStack(spacing: DS.Spacing.xs) {
                 ForEach(events) { event in
                     if event.canDelete {
                         CompactEventRow(event: event)
@@ -129,7 +129,7 @@ struct HomeWeekEventsSection: View {
                     }
                 }
             }
-            .padding(.horizontal, Luxury.Spacing.screenH)
+            .padding(.horizontal, DS.Spacing.screenH)
         }
     }
 }
@@ -140,7 +140,7 @@ struct CompactEventRow: View {
     let event: UpcomingEvent
     
     var body: some View {
-        HStack(spacing: Luxury.Spacing.md) {
+        HStack(spacing: DS.Spacing.md) {
             // Color indicator
             Circle()
                 .fill(event.color)
@@ -155,14 +155,14 @@ struct CompactEventRow: View {
             // Content
             VStack(alignment: .leading, spacing: 0) {
                 Text(event.title)
-                    .font(Luxury.Typography.label())
-                    .foregroundColor(.textPrimary)
+                    .font(DS.Typography.label())
+                    .foregroundColor(Color.textPrimary)
                     .lineLimit(1)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
-                        .font(Luxury.Typography.micro())
-                        .foregroundColor(.textTertiary)
+                        .font(DS.Typography.micro())
+                        .foregroundColor(Color.textTertiary)
                         .lineLimit(1)
                 }
             }
@@ -171,19 +171,19 @@ struct CompactEventRow: View {
             
             // Countdown badge
             Text(event.countdownText)
-                .font(Luxury.Typography.captionMedium())
-                .foregroundColor(event.daysUntil <= 1 ? .white : .accentPrimary)
-                .padding(.horizontal, Luxury.Spacing.sm)
+                .font(DS.Typography.captionMedium())
+                .foregroundColor(event.daysUntil <= 1 ? .white : Color.accentPrimary)
+                .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, 4)
                 .background(
                     Capsule()
                         .fill(event.daysUntil <= 1 ? event.color : Color.accentPrimary.opacity(0.1))
                 )
         }
-        .padding(.vertical, Luxury.Spacing.sm)
-        .padding(.horizontal, Luxury.Spacing.md)
+        .padding(.vertical, DS.Spacing.sm)
+        .padding(.horizontal, DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: Luxury.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.md)
                 .fill(Color.themeCardBackground)
         )
         .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)

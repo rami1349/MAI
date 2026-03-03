@@ -20,14 +20,14 @@ struct HomeCompactTaskRow: View {
         switch task.priority {
         case .urgent: return Color(hex: "E57373")  // Soft red
         case .high: return Color(hex: "FFB74D")    // Soft orange
-        case .medium: return .accentPrimary
-        case .low: return .textTertiary
+        case .medium: return Color.accentPrimary
+        case .low: return Color.textTertiary
         }
     }
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Priority indicator
                 Circle()
                     .fill(priorityColor)
@@ -36,12 +36,12 @@ struct HomeCompactTaskRow: View {
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     // Title row
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         Text(task.title)
-                            .font(Luxury.Typography.label())
-                            .foregroundColor(task.status == .completed ? .textTertiary : .textPrimary)
+                            .font(DS.Typography.label())
+                            .foregroundColor(task.status == .completed ? Color.textTertiary : Color.textPrimary)
                             .lineLimit(1)
-                            .strikethrough(task.status == .completed, color: .textTertiary)
+                            .strikethrough(task.status == .completed, color: Color.textTertiary)
                         
                         if task.hasReward {
                             Image(systemName: "dollarsign.circle.fill")
@@ -52,41 +52,41 @@ struct HomeCompactTaskRow: View {
                         if task.isRecurring {
                             Image(systemName: "repeat")
                                 .font(.system(size: 10))
-                                .foregroundColor(.textTertiary)
+                                .foregroundColor(Color.textTertiary)
                         }
                     }
                     
                     // Subtitle row
-                    HStack(spacing: Luxury.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         if let groupName {
                             Text(groupName)
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                                 .lineLimit(1)
                         }
                         
                         if groupName != nil && (assigneeName != nil || task.scheduledTime != nil) {
                             Text("·")
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                         }
                         
                         if let assigneeName {
                             Text(assigneeName)
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                                 .lineLimit(1)
                         }
                         
                         if let time = task.scheduledTime {
                             Text(time.formattedTime)
-                                .font(Luxury.Typography.micro())
-                                .foregroundColor(.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundColor(Color.textTertiary)
                         }
                     }
                 }
                 
-                Spacer(minLength: Luxury.Spacing.xs)
+                Spacer(minLength: DS.Spacing.xs)
                 
                 // Status indicator
                 statusIndicator
@@ -94,13 +94,13 @@ struct HomeCompactTaskRow: View {
                 // Chevron
                 Image(systemName: "chevron.right")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(.vertical, Luxury.Spacing.sm)
-            .padding(.horizontal, Luxury.Spacing.md)
+            .padding(.vertical, DS.Spacing.sm)
+            .padding(.horizontal, DS.Spacing.md)
             .frame(minHeight: 44)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(Color.themeCardBackground)
             )
             .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)

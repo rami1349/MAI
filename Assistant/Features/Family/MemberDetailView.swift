@@ -56,7 +56,7 @@ struct MemberDetailView: View {
                             Text("Stats")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                         }
                         statsCard
                     }
@@ -104,7 +104,7 @@ struct MemberDetailView: View {
                     if member.isAdult {
                         Text("Adult")
                             .font(.caption)
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
             }
@@ -114,11 +114,11 @@ struct MemberDetailView: View {
             VStack(alignment: .trailing, spacing: DS.Spacing.xs) {
                 Text("Balance")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(member.balance.currencyString)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.accentGreen)
+                    .foregroundStyle(Color.accentGreen)
             }
         }
         .padding(DS.Spacing.xl)
@@ -134,7 +134,7 @@ struct MemberDetailView: View {
                     .fontWeight(.bold)
                 Text("Active")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -144,10 +144,10 @@ struct MemberDetailView: View {
                 Text("\(completedCount)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(.accentGreen)
+                    .foregroundStyle(Color.accentGreen)
                 Text("Completed")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -159,10 +159,10 @@ struct MemberDetailView: View {
                 Text("\(rate)%")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                 Text("Rate")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -176,10 +176,10 @@ struct MemberDetailView: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 Text("Goal for \(currentYear)")
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                 Text(goal)
                     .font(.subheadline)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .lineLimit(2)
             }
             
@@ -193,7 +193,7 @@ struct MemberDetailView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             HStack {
                 Image(systemName: "checklist")
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                 Text("Active Tasks")
                     .font(.headline)
             }
@@ -215,8 +215,8 @@ struct MemberTaskRow: View {
     private var statusColor: Color {
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
@@ -230,12 +230,12 @@ struct MemberTaskRow: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(task.title)
                     .font(.subheadline)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .lineLimit(1)
                 
                 Text(task.dueDate.formattedDate)
                     .font(.caption)
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             
             Spacer()

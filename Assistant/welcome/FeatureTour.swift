@@ -324,11 +324,11 @@ struct TourTooltip: View {
                 VStack(spacing: DS.Spacing.xs) {
                     Text(step.title)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text(step.message)
                         .font(DS.Typography.body())
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -338,7 +338,7 @@ struct TourTooltip: View {
                     // Step counter
                     Text("\(tourManager.stepIndex + 1) of \(tourManager.totalSteps)")
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                     
                     Spacer()
                     
@@ -346,7 +346,7 @@ struct TourTooltip: View {
                     Button(action: tourManager.skip) {
                         Text("Skip")
                             .font(DS.Typography.label())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                     .padding(.trailing, DS.Spacing.sm)
                     

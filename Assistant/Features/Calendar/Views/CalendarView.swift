@@ -175,7 +175,7 @@ struct CalendarView: View {
                 Button(action: jumpToToday) {
                     Text(L10n.today)
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -189,7 +189,7 @@ struct CalendarView: View {
             Button(action: { showMemberFilter = true }) {
                 Image(systemName: selectedMemberIds.isEmpty ? "person.2" : "person.2.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(selectedMemberIds.isEmpty ? .textSecondary : .accentPrimary)
+                    .foregroundStyle(selectedMemberIds.isEmpty ? Color.textSecondary : Color.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -273,7 +273,7 @@ struct CalendarView: View {
             
             Text(SharedFormatters.monthYear.string(from: monthGridMonth))
                 .font(DS.Typography.subheading())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             Spacer()
             
@@ -283,7 +283,7 @@ struct CalendarView: View {
             } label: {
                 Image(systemName: "chevron.right")
                     .font(DS.Typography.label())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .frame(width: 36, height: 36)
             }
         }
@@ -331,7 +331,7 @@ struct CalendarView: View {
                         Text("\(calendar.component(.day, from: date))")
                             .font(DS.Typography.bodySmall())
                             .fontWeight(isToday ? .semibold : .regular)
-                            .foregroundStyle(isSelected ? .white : (isToday ? .accentPrimary : .textPrimary))
+                            .foregroundStyle(isSelected ? .white : (isToday ? Color.accentPrimary : Color.textPrimary))
                         
                         if itemCount > 0 {
                             Circle()
@@ -364,7 +364,7 @@ struct CalendarView: View {
                 
                 Text(selectedDay.formatted(.dateTime.month().day()))
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
             }
             
             Spacer()
@@ -375,7 +375,7 @@ struct CalendarView: View {
                 } label: {
                     Text(L10n.today)
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(.accentPrimary)
+                        .foregroundStyle(Color.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -388,7 +388,7 @@ struct CalendarView: View {
             Button { showMemberFilter = true } label: {
                 Image(systemName: selectedMemberIds.isEmpty ? "person.2" : "person.2.fill")
                     .font(DS.Typography.body())
-                    .foregroundStyle(selectedMemberIds.isEmpty ? .textSecondary : .accentPrimary)
+                    .foregroundStyle(selectedMemberIds.isEmpty ? Color.textSecondary : Color.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -487,7 +487,7 @@ struct CalendarView: View {
                         if selectedMemberIds.isEmpty {
                             Image(systemName: "checkmark")
                                 .font(DS.Typography.label())
-                                .foregroundStyle(.accentPrimary)
+                                .foregroundStyle(Color.accentPrimary)
                         }
                     }
                 }
@@ -497,12 +497,12 @@ struct CalendarView: View {
                             AvatarView(user: member, size: DS.Avatar.sm)
                             Text(member.displayName)
                                 .font(DS.Typography.body())
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if selectedMemberIds.contains(member.id ?? "") {
                                 Image(systemName: "checkmark")
                                     .font(DS.Typography.label())
-                                    .foregroundStyle(.accentPrimary)
+                                    .foregroundStyle(Color.accentPrimary)
                             }
                         }
                     }

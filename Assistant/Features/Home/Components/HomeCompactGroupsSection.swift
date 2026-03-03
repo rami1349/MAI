@@ -20,14 +20,14 @@ struct HomeCompactGroupsSection: View {
     @State private var groupToDelete: TaskGroup? = nil
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Luxury.Spacing.sm) {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             // Section header with collapse toggle
             Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() } }) {
-                HStack(spacing: Luxury.Spacing.sm) {
+                HStack(spacing: DS.Spacing.sm) {
                     // Icon badge
                     Image(systemName: "folder.fill")
                         .font(.system(size: 14))
-                        .foregroundColor(.accentPrimary)
+                        .foregroundColor(Color.accentPrimary)
                         .frame(width: 28, height: 28)
                         .background(
                             Circle()
@@ -35,14 +35,14 @@ struct HomeCompactGroupsSection: View {
                         )
                     
                     Text(L10n.taskGroups)
-                        .font(Luxury.Typography.subheading())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.subheading())
+                        .foregroundColor(Color.textPrimary)
                     
                     // Count badge
                     Text("\(groups.count)")
-                        .font(Luxury.Typography.captionMedium())
-                        .foregroundColor(.accentPrimary)
-                        .padding(.horizontal, Luxury.Spacing.sm)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundColor(Color.accentPrimary)
+                        .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, 2)
                         .background(
                             Capsule()
@@ -53,9 +53,9 @@ struct HomeCompactGroupsSection: View {
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.textTertiary)
+                        .foregroundColor(Color.textTertiary)
                 }
-                .padding(.vertical, Luxury.Spacing.xs)
+                .padding(.vertical, DS.Spacing.xs)
             }
             .buttonStyle(.plain)
             .frame(minHeight: 44)
@@ -64,7 +64,7 @@ struct HomeCompactGroupsSection: View {
             
             // Group rows
             if isExpanded {
-                VStack(spacing: Luxury.Spacing.xs) {
+                VStack(spacing: DS.Spacing.xs) {
                     ForEach(groups) { group in
                         CompactGroupRow(group: group, onTap: { onSelectGroup(group) })
                             .swipeToDelete {
@@ -76,7 +76,7 @@ struct HomeCompactGroupsSection: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(.horizontal, Luxury.Spacing.screenH)
+        .padding(.horizontal, DS.Spacing.screenH)
         .animation(.easeInOut(duration: 0.2), value: isExpanded)
         .alert(L10n.deleteTaskGroup, isPresented: $showDeleteAlert) {
             Button(L10n.cancel, role: .cancel) { groupToDelete = nil }
@@ -102,10 +102,10 @@ struct CompactGroupRow: View {
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: Luxury.Spacing.md) {
+            HStack(spacing: DS.Spacing.md) {
                 // Group icon
                 ZStack {
-                    RoundedRectangle(cornerRadius: Luxury.Radius.sm)
+                    RoundedRectangle(cornerRadius: DS.Radius.sm)
                         .fill(Color(hex: group.color).opacity(0.12))
                         .frame(width: 32, height: 32)
                     
@@ -117,13 +117,13 @@ struct CompactGroupRow: View {
                 // Name + count
                 VStack(alignment: .leading, spacing: 0) {
                     Text(group.name)
-                        .font(Luxury.Typography.label())
-                        .foregroundColor(.textPrimary)
+                        .font(DS.Typography.label())
+                        .foregroundColor(Color.textPrimary)
                         .lineLimit(1)
                     
                     Text("\(group.taskCount) \(L10n.tasks)")
-                        .font(Luxury.Typography.micro())
-                        .foregroundColor(.textTertiary)
+                        .font(DS.Typography.micro())
+                        .foregroundColor(Color.textTertiary)
                 }
                 
                 Spacer()
@@ -140,13 +140,13 @@ struct CompactGroupRow: View {
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.textTertiary)
+                    .foregroundColor(Color.textTertiary)
             }
-            .padding(.vertical, Luxury.Spacing.sm)
-            .padding(.horizontal, Luxury.Spacing.md)
+            .padding(.vertical, DS.Spacing.sm)
+            .padding(.horizontal, DS.Spacing.md)
             .frame(minHeight: 44)
             .background(
-                RoundedRectangle(cornerRadius: Luxury.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(Color.themeCardBackground)
             )
             .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)

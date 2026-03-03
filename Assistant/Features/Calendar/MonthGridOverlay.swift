@@ -54,7 +54,7 @@ struct MonthGridOverlay: View {
             Button(action: onPreviousMonth) {
                 Image(systemName: "chevron.left")
                     .font(DS.Typography.label())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -66,14 +66,14 @@ struct MonthGridOverlay: View {
             
             Text(SharedFormatters.monthYear.string(from: currentMonth))
                 .font(DS.Typography.subheading())
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             Spacer()
             
             Button(action: onNextMonth) {
                 Image(systemName: "chevron.right")
                     .font(DS.Typography.label())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -91,7 +91,7 @@ struct MonthGridOverlay: View {
                 Text(letter)
                     .font(DS.Typography.micro())
                     .fontWeight(.medium)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
                     .frame(maxWidth: .infinity)
             }
         }
@@ -143,7 +143,7 @@ struct MonthGridOverlay: View {
                 
                 Text(L10n.tapToClose)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, DS.Spacing.sm)
@@ -203,18 +203,18 @@ private struct LuxuryMonthDayCell: View {
     
     private var foregroundColor: Color {
         if isSelected { return .white }
-        if isToday { return .accentPrimary }
-        return .textPrimary
+        if isToday { return Color.accentPrimary }
+        return Color.textPrimary
     }
     
     private var backgroundColor: Color {
-        if isSelected { return .accentPrimary }
-        if isToday { return .accentPrimary.opacity(0.1) }
+        if isSelected { return Color.accentPrimary }
+        if isToday { return Color.accentPrimary.opacity(0.1) }
         return .clear
     }
     
     private var dotColor: Color {
         if isSelected { return .white.opacity(0.7) }
-        return .accentPrimary
+        return Color.accentPrimary
     }
 }

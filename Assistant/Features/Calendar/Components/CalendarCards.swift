@@ -153,7 +153,7 @@ struct EventCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(event.title)
                         .font(.headline)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                     
                     HStack(spacing: 4) {
                         Image(systemName: isMultiDay ? "calendar" : "clock")
@@ -161,12 +161,12 @@ struct EventCard: View {
                         Text(dateRangeText)
                             .font(.caption)
                     }
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     
                     if let description = event.description, !description.isEmpty {
                         Text(description)
                             .font(.caption)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                             .lineLimit(1)
                     }
                 }
@@ -176,12 +176,12 @@ struct EventCard: View {
                 if isMultiDay {
                     Image(systemName: "arrow.left.arrow.right")
                         .font(.caption)
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                 }
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(16)
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
@@ -199,8 +199,8 @@ struct CalendarTaskCard: View {
     var statusColor: Color {
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
@@ -218,12 +218,12 @@ struct CalendarTaskCard: View {
                 Text(task.title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 if let time = task.scheduledTime {
                     Text(time.formattedTime)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             
@@ -233,7 +233,7 @@ struct CalendarTaskCard: View {
                 Text(amount.currencyString)
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(.accentGreen)
+                    .foregroundStyle(Color.accentGreen)
             }
         }
         .padding(12)
@@ -285,12 +285,12 @@ struct SpecialEventCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(event.title)
                     .font(.headline)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             

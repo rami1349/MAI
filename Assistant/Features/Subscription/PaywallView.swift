@@ -37,7 +37,7 @@ struct PaywallView: View {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -65,18 +65,18 @@ struct PaywallView: View {
                     .frame(width: 72, height: 72)
                 Image(systemName: "sparkles")
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(.accentPrimary)
+                    .foregroundStyle(Color.accentPrimary)
             }
             .padding(.top, DS.Spacing.lg)
             
             Text("Unlock the full MAI experience")
                 .font(DS.Typography.heading())
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             Text("More messages, smarter AI, and unlimited potential for your family.")
                 .font(DS.Typography.bodySmall())
-                .foregroundStyle(.textSecondary)
+                .foregroundStyle(Color.textSecondary)
                 .multilineTextAlignment(.center)
         }
     }
@@ -109,21 +109,21 @@ struct PaywallView: View {
                         Text(isYearly ? "Yearly" : "Monthly")
                             .font(DS.Typography.body())
                             .fontWeight(.semibold)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         Text(product.displayPrice)
                             .font(DS.Typography.displayMedium()) // was .rounded
-                            .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
+                            .foregroundStyle(isSelected ? Color.accentPrimary : Color.textPrimary)
                         
                         Text(isYearly ? "per year" : "per month")
                             .font(DS.Typography.subheading())
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         
                         if isYearly {
                             let monthly = product.price / 12
                             Text("\(monthly.formatted(.currency(code: "USD")))/mo")
                                 .font(DS.Typography.subheading())
-                                .foregroundStyle(.accentGreen)
+                                .foregroundStyle(Color.accentGreen)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -150,11 +150,11 @@ struct PaywallView: View {
             Text("What you get")
                 .font(DS.Typography.body())
                 .fontWeight(.semibold)
-                .foregroundStyle(.textPrimary)
+                .foregroundStyle(Color.textPrimary)
             
             featureRow(icon: "bubble.left.and.text.bubble.right.fill",
                        title: "300 messages/day",
-                       subtitle: "vs 20 on Free", color: .accentPrimary)
+                       subtitle: "vs 20 on Free", color: Color.accentPrimary)
             featureRow(icon: "brain.head.profile.fill",
                        title: "Smarter AI model",
                        subtitle: "GPT-4o for chat (vs GPT-4o-mini)", color: .purple)
@@ -192,10 +192,10 @@ struct PaywallView: View {
                 Text(title)
                     .font(DS.Typography.bodySmall())
                     .fontWeight(.medium)
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                 Text(subtitle)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
         }
     }
@@ -236,11 +236,11 @@ struct PaywallView: View {
                 Task { await store.restorePurchases() }
             }
             .font(DS.Typography.bodySmall())
-            .foregroundStyle(.accentPrimary)
+            .foregroundStyle(Color.accentPrimary)
             
             Text("Payment will be charged to your Apple ID account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.")
                 .font(DS.Typography.micro())
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
                 .multilineTextAlignment(.center)
         }
     }

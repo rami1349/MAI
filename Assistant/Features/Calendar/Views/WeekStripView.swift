@@ -84,7 +84,7 @@ private struct LuxuryDayCell: View {
             // Day letter
             Text(dayLetter)
                 .font(DS.Typography.micro())
-                .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
+                .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
             
             // Day number
             Text(dayNumber)
@@ -108,9 +108,9 @@ private struct LuxuryDayCell: View {
     }
     
     private var dayNumberColor: Color {
-        if isSelected { return .accentPrimary }
-        if isToday { return .accentPrimary }
-        return .textPrimary
+        if isSelected { return Color.accentPrimary }
+        if isToday { return Color.accentPrimary }
+        return Color.textPrimary
     }
     
     private var backgroundColor: Color {
@@ -142,7 +142,7 @@ private struct LuxuryDayCell: View {
             } else {
                 Text("\(itemCount)")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
+                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
                     .frame(height: 6)
             }
         } else {

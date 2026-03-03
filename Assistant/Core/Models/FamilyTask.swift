@@ -434,7 +434,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         case .urgent: return .statusError
         case .high: return .accentOrange
         case .medium: return .statusWarning
-        case .low: return .statusSuccess
+        case .low: return Color.statusSuccess
         }
     }
     

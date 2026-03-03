@@ -57,11 +57,11 @@ struct WeekHabitView: View {
                 VStack(spacing: DS.Spacing.xxs) {
                     Text(Self.dayFormatter.string(from: date).prefix(3).uppercased())
                         .font(DS.Typography.micro())
-                        .foregroundStyle(.textTertiary)
+                        .foregroundStyle(Color.textTertiary)
                     
                     Text("\(calendar.component(.day, from: date))")
                         .font(DS.Typography.bodySmall()).fontWeight(calendar.isDateInToday(date) ? .bold : .medium)
-                        .foregroundStyle(calendar.isDateInToday(date) ? .accentPrimary : .textSecondary)
+                        .foregroundStyle(calendar.isDateInToday(date) ? Color.accentPrimary : Color.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -92,7 +92,7 @@ struct WeekHabitRow: View {
                 
                 Text(habit.name)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .lineLimit(1)
             }
             .frame(width: 100, alignment: .leading)

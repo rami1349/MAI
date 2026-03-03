@@ -117,7 +117,7 @@ struct CalendarSearchSheet: View {
                 HStack(spacing: 12) {
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundStyle(.textSecondary)
+                            .foregroundStyle(Color.textSecondary)
                         
                         TextField("Filter events & tasks...", text: $searchText)
                             .focused($isSearchFocused)
@@ -126,7 +126,7 @@ struct CalendarSearchSheet: View {
                         if !searchText.isEmpty {
                             Button(action: { searchText = "" }) {
                                 Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.textSecondary)
+                                    .foregroundStyle(Color.textSecondary)
                             }
                         }
                     }
@@ -145,12 +145,12 @@ struct CalendarSearchSheet: View {
                         Text(searchText.isEmpty ? "Upcoming" : "Results")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         if searchText.isEmpty && hasResults {
                             Text(L10n.eventsAndTasksToday)
                                 .font(.caption2)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
                     
@@ -158,7 +158,7 @@ struct CalendarSearchSheet: View {
                     
                     Text("\(filteredEvents.count) events, \(filteredTasks.count) tasks")
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 8)
@@ -170,16 +170,16 @@ struct CalendarSearchSheet: View {
                         
                         Image(systemName: "calendar.badge.exclamationmark")
                             .font(DS.Typography.displayLarge())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                         
                         Text(searchText.isEmpty ? L10n.noEvents : L10n.noEventsFound)
                             .font(.headline)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         if !searchText.isEmpty {
                             Text(L10n.tryDifferentSearch)
                                 .font(.subheadline)
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                         }
                         
                         Spacer()
@@ -207,7 +207,7 @@ struct CalendarSearchSheet: View {
                                         Text(date.formattedDate)
                                             .font(.caption)
                                             .fontWeight(.semibold)
-                                            .foregroundStyle(.textSecondary)
+                                            .foregroundStyle(Color.textSecondary)
                                         
                                         if calendar.isDateInToday(date) {
                                             Text(L10n.today)
@@ -277,19 +277,19 @@ struct SearchEventRow: View {
                     Text(event.title)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .lineLimit(1)
                     
                     Text(timeString)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
@@ -307,8 +307,8 @@ struct SearchTaskRow: View {
     private var statusColor: Color {
         switch task.status {
         case .todo: return .statusTodo
-        case .inProgress: return .statusInProgress
-        case .pendingVerification: return .statusPending
+        case .inProgress: return Color.statusInProgress
+        case .pendingVerification: return Color.statusPending
         case .completed: return .statusCompleted
         }
     }
@@ -337,12 +337,12 @@ struct SearchTaskRow: View {
                     Text(task.title)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundStyle(.textPrimary)
+                        .foregroundStyle(Color.textPrimary)
                         .lineLimit(1)
                     
                     Text(timeString)
                         .font(.caption)
-                        .foregroundStyle(.textSecondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 
                 Spacer()
@@ -351,12 +351,12 @@ struct SearchTaskRow: View {
                     Text(amount.currencyString)
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.accentGreen)
+                        .foregroundStyle(Color.accentGreen)
                 }
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundStyle(.textTertiary)
+                    .foregroundStyle(Color.textTertiary)
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)

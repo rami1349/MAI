@@ -32,7 +32,7 @@ struct AgendaTaskRow: View {
                 Text(task.title)
                     .font(DS.Typography.label())
                     .foregroundStyle(task.status == .completed ? Color.textTertiary : Color.textPrimary)
-                    .strikethrough(task.status == .completed, color: .textTertiary)
+                    .strikethrough(task.status == .completed, color: Color.textTertiary)
                     .lineLimit(1)
                 
                 HStack(spacing: DS.Spacing.sm) {
@@ -43,14 +43,14 @@ struct AgendaTaskRow: View {
                     if let time = task.scheduledTime {
                         Text(time.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                     
                     // Assignee
                     if let assignee = assignee {
                         Text(assignee.displayName)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                     }
                 }
             }
@@ -61,13 +61,13 @@ struct AgendaTaskRow: View {
             if task.hasReward, let amount = task.rewardAmount {
                 Text(amount.currencyString)
                     .font(DS.Typography.captionMedium())
-                    .foregroundStyle(.accentGreen)
+                    .foregroundStyle(Color.accentGreen)
             }
             
             // Chevron
             Image(systemName: "chevron.right")
                 .font(DS.Typography.captionMedium())
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
         }
         .padding(DS.Spacing.md)
         .background(
@@ -99,7 +99,7 @@ struct AgendaTaskRow: View {
                     .frame(width: 6, height: 6)
                 Text("In Progress")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.statusInProgress)
+                    .foregroundStyle(Color.statusInProgress)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, 2)
@@ -115,7 +115,7 @@ struct AgendaTaskRow: View {
                     .frame(width: 6, height: 6)
                 Text("Pending")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.statusPending)
+                    .foregroundStyle(Color.statusPending)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, 2)
@@ -127,7 +127,7 @@ struct AgendaTaskRow: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(DS.Typography.body())
-                .foregroundStyle(.accentGreen)
+                .foregroundStyle(Color.accentGreen)
         }
     }
     
@@ -137,8 +137,8 @@ struct AgendaTaskRow: View {
         switch task.priority {
         case .urgent: return Color(hex: "E57373")  // Soft red
         case .high: return Color(hex: "FFB74D")    // Soft orange
-        case .medium: return .accentPrimary
-        case .low: return .textTertiary
+        case .medium: return Color.accentPrimary
+        case .low: return Color.textTertiary
         }
     }
 }
@@ -164,7 +164,7 @@ struct AgendaEventRow: View {
                 
                 Text(event.isAllDay ? L10n.allDay : timeRange)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
             }
             
             Spacer()
@@ -185,7 +185,7 @@ struct AgendaEventRow: View {
                     if event.participants.count > 3 {
                         Text("+\(event.participants.count - 3)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.textTertiary)
+                            .foregroundStyle(Color.textTertiary)
                             .padding(.leading, DS.Spacing.xs)
                     }
                 }

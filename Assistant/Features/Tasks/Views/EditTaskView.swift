@@ -89,7 +89,7 @@ struct EditTaskView: View {
                                     Text(type.displayName)
                                         .font(DS.Typography.bodySmall())
                                 }
-                                .foregroundStyle(taskType == type ? .textOnAccent : .textPrimary)
+                                .foregroundStyle(taskType == type ? .textOnAccent : Color.textPrimary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, DS.Spacing.md)
                                 .background(
@@ -128,21 +128,21 @@ struct EditTaskView: View {
                     } label: {
                         HStack {
                             Label(L10n.assignedTo, systemImage: "person")
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if let assignedTo, let member = familyMemberVM.getMember(by: assignedTo) {
                                 HStack(spacing: DS.Spacing.xs) {
                                     AvatarView(user: member, size: 24)
                                     Text(member.displayName)
-                                        .foregroundStyle(.textSecondary)
+                                        .foregroundStyle(Color.textSecondary)
                                 }
                             } else {
                                 Text(L10n.unassigned)
-                                    .foregroundStyle(.textTertiary)
+                                    .foregroundStyle(Color.textTertiary)
                             }
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
                     
@@ -151,7 +151,7 @@ struct EditTaskView: View {
                     } label: {
                         HStack {
                             Label(L10n.taskGroup, systemImage: "folder")
-                                .foregroundStyle(.textPrimary)
+                                .foregroundStyle(Color.textPrimary)
                             Spacer()
                             if let groupId = selectedGroupId,
                                let group = familyMemberVM.getTaskGroup(by: groupId) {
@@ -159,15 +159,15 @@ struct EditTaskView: View {
                                     Image(systemName: group.icon)
                                         .foregroundStyle(Color(hex: group.color))
                                     Text(group.name)
-                                        .foregroundStyle(.textSecondary)
+                                        .foregroundStyle(Color.textSecondary)
                                 }
                             } else {
                                 Text(L10n.noGroup)
-                                    .foregroundStyle(.textTertiary)
+                                    .foregroundStyle(Color.textTertiary)
                             }
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundStyle(.textTertiary)
+                                .foregroundStyle(Color.textTertiary)
                         }
                     }
                 }
@@ -202,21 +202,21 @@ struct EditTaskView: View {
                     HStack {
                         Image(systemName: "dollarsign.circle.fill")
                             .font(DS.Typography.heading())
-                            .foregroundStyle(.accentGreen)
+                            .foregroundStyle(Color.accentGreen)
                         
                         Text(L10n.reward)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         Spacer()
                         
                         HStack(spacing: 4) {
                             Text("$")
-                                .foregroundStyle(.textSecondary)
+                                .foregroundStyle(Color.textSecondary)
                             
                             TextField("0", text: $rewardAmount)
                                 .keyboardType(.numberPad)
                                 .font(DS.Typography.heading()) // was .rounded
-                                .foregroundStyle(parsedReward > 0 ? .accentGreen : .textTertiary)
+                                .foregroundStyle(parsedReward > 0 ? .accentGreen : Color.textTertiary)
                                 .frame(width: 70)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: rewardAmount) { _, newValue in
@@ -233,16 +233,16 @@ struct EditTaskView: View {
                     HStack {
                         Image(systemName: "camera.fill")
                             .font(DS.Typography.body())
-                            .foregroundStyle(.accentTertiary)
+                            .foregroundStyle(Color.accentTertiary)
                         
                         Text(L10n.requireProof)
-                            .foregroundStyle(.textPrimary)
+                            .foregroundStyle(Color.textPrimary)
                         
                         Spacer()
                         
                         Toggle("", isOn: $requiresProof)
                             .labelsHidden()
-                            .tint(.accentPrimary)
+                            .tint(Color.accentPrimary)
                     }
                 } header: {
                     Text(L10n.incentives)

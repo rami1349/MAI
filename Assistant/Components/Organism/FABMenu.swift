@@ -35,7 +35,7 @@ struct FABMenu: View {
                     FABMenuItem(
                         icon: "checkmark.circle.fill",
                         label: "New Task",
-                        color: .accentPrimary,
+                        color: Color.accentPrimary,
                         delay: 0.0
                     ) {
                         showFABMenu = false
@@ -91,7 +91,7 @@ struct FABButton: View {
                 .frame(width: DS.Control.fab, height: DS.Control.fab)
                 .background(
                     Circle()
-                        .fill(isExpanded ? Color.textSecondary : Color.accentPrimary)
+                        .fill(isExpanded ?Color.textSecondary : Color.accentPrimary)
                 )
                 // Level 3 elevation for floating element
                 .shadow(
@@ -123,7 +123,7 @@ struct FABMenuItem: View {
                 // Label pill with Level 2 elevation
                 Text(label)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.xs)
                     .background(

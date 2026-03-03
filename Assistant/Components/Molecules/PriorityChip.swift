@@ -83,7 +83,7 @@ struct DayOfWeekChip: View {
             Text(label)
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(isSelected ? .white : .textSecondary)
+                .foregroundColor(isSelected ? .white : Color.textSecondary)
                 .frame(width: DS.IconContainer.md, height: DS.IconContainer.md)
                 .background(Circle().fill(isSelected ? Color.accentPrimary : Color.backgroundSecondary))
         }

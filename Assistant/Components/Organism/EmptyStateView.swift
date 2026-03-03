@@ -53,7 +53,7 @@ enum EmptyStateContext {
     var accentColor: Color {
         switch self {
         case .tasks, .todayTasks, .taskGroup:
-            return .accentPrimary
+            return Color.accentPrimary
         case .habits:
             return .accentGreen
         case .notifications:
@@ -67,7 +67,7 @@ enum EmptyStateContext {
         case .rewards:
             return .accentGreen
         case .generic:
-            return .accentPrimary
+            return Color.accentPrimary
         }
     }
 }
@@ -138,13 +138,13 @@ struct EmptyStateView: View {
             VStack(spacing: DS.Spacing.sm) {
                 Text(title)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(.textPrimary)
+                    .foregroundStyle(Color.textPrimary)
                     .opacity(isAnimating ? 1.0 : 0)
                     .offset(y: isAnimating ? 0 : 10)
                 
                 Text(message)
                     .font(DS.Typography.body())
-                    .foregroundStyle(.textSecondary)
+                    .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(isAnimating ? 1.0 : 0)
@@ -354,7 +354,7 @@ private struct NotificationsIllustration: View {
             // "Z" sleep indicators
             Text("z z z")
                 .font(DS.Typography.label()) // was .rounded
-                .foregroundStyle(.textTertiary)
+                .foregroundStyle(Color.textTertiary)
                 .offset(x: 30, y: -30)
                 .opacity(isAnimating ? 0.6 : 0)
                 .animation(.easeOut(duration: 0.5).delay(0.6), value: isAnimating)
