@@ -23,9 +23,9 @@ struct TaskCard: View {
     /// Priority border color based on implicit priority (due date + reward)
     private var priorityBorderColor: Color {
         switch task.displayPriority {
-        case .urgent: return .statusError      // Red
-        case .high: return .accentOrange       // Orange
-        case .medium: return .statusWarning    // Yellow
+        case .urgent: return Color.statusError      // Red
+        case .high: return Color.accentOrange       // Orange
+        case .medium: return Color.statusWarning    // Yellow
         case .low: return Color.textTertiary        // Gray
         }
     }
@@ -33,10 +33,10 @@ struct TaskCard: View {
     /// Status color for action buttons only
     private var statusColor: Color {
         switch task.status {
-        case .todo: return .statusTodo
+        case .todo: return Color.statusTodo
         case .inProgress: return Color.statusInProgress
         case .pendingVerification: return Color.statusPending
-        case .completed: return .statusCompleted
+        case .completed: return Color.statusCompleted
         }
     }
     
@@ -55,7 +55,7 @@ struct TaskCard: View {
                         if let groupName {
                             Text(groupName)
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                         
                         Spacer()
@@ -68,7 +68,7 @@ struct TaskCard: View {
                                 Text(L10n.overdue)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(Color.statusError)
+                            .foregroundStyle(.statusError)
                         } else if task.isDueSoon {
                             HStack(spacing: DS.Spacing.xxs) {
                                 Image(systemName: "clock.fill")
@@ -76,18 +76,18 @@ struct TaskCard: View {
                                 Text(task.timeUntilDueText)
                                     .font(DS.Typography.micro())
                             }
-                           .foregroundStyle(Color.accentOrange)
+                            .foregroundStyle(.accentOrange)
                         } else if let time = task.scheduledTime {
                             Label(time.formattedTime, systemImage: "clock")
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                     
                     // Task title
                     Text(task.title)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
@@ -101,7 +101,7 @@ struct TaskCard: View {
                                 Text(taskType.displayName)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(taskType == .homework ? .accentBlue : Color.textTertiary)
+                            .foregroundStyle(taskType == .homework ? .accentBlue : .textTertiary)
                         }
                         
                         if task.isRecurring {
@@ -111,7 +111,7 @@ struct TaskCard: View {
                                 Text(L10n.repeats)
                                     .font(DS.Typography.micro())
                             }
-                            .foregroundStyle(Color.accentTertiary)
+                            .foregroundStyle(.accentTertiary)
                         }
                         
                         Spacer()
@@ -124,7 +124,7 @@ struct TaskCard: View {
                                 Text(amount.currencyString)
                                     .font(DS.Typography.captionMedium())
                             }
-                            .foregroundStyle(Color.accentGreen)
+                            .foregroundStyle(.accentGreen)
                         }
                     }
                     
@@ -169,7 +169,7 @@ struct TaskCard: View {
                     Text(L10n.startTask)
                         .font(DS.Typography.captionMedium())
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.xs)
                 .background(
@@ -190,7 +190,7 @@ struct TaskCard: View {
                         Text(L10n.focus)
                             .font(DS.Typography.captionMedium())
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .padding(.horizontal, DS.Spacing.sm)
                     .padding(.vertical, DS.Spacing.xs)
                     .background(
@@ -213,7 +213,7 @@ struct TaskCard: View {
                             Text(L10n.complete)
                                 .font(DS.Typography.captionMedium())
                         }
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, DS.Spacing.xs)
                         .background(
@@ -232,7 +232,7 @@ struct TaskCard: View {
                 Text(L10n.awaitingVerification)
                     .font(DS.Typography.caption())
             }
-            .foregroundStyle(Color.statusPending)
+            .foregroundStyle(.statusPending)
             
         case .completed:
             HStack(spacing: DS.Spacing.xs) {
@@ -241,7 +241,7 @@ struct TaskCard: View {
                 Text(L10n.completed)
                     .font(DS.Typography.caption())
             }
-            .foregroundStyle(Color.statusCompleted)
+            .foregroundStyle(.statusCompleted)
         }
     }
 }
@@ -254,9 +254,9 @@ struct CompactTaskCard: View {
     
     private var priorityBorderColor: Color {
         switch task.displayPriority {
-        case .urgent: return .statusError
-        case .high: return .accentOrange
-        case .medium: return .statusWarning
+        case .urgent: return Color.statusError
+        case .high: return Color.accentOrange
+        case .medium: return Color.statusWarning
         case .low: return Color.textTertiary
         }
     }
@@ -278,7 +278,7 @@ struct CompactTaskCard: View {
                     // Title
                     Text(task.title)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -287,20 +287,20 @@ struct CompactTaskCard: View {
                     if task.isOverdue {
                         Text(L10n.overdue)
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.statusError)
+                            .foregroundStyle(.statusError)
                     } else if task.hasReward, let amount = task.rewardAmount {
                         Text(amount.currencyString)
                             .font(DS.Typography.captionMedium())
-                            .foregroundStyle(Color.accentGreen)
+                            .foregroundStyle(.accentGreen)
                     } else if let time = task.scheduledTime {
                         Text(time.formattedTime)
                             .font(DS.Typography.caption())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                     
                     Image(systemName: "chevron.right")
                         .font(DS.Typography.captionMedium())
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)
@@ -452,7 +452,7 @@ struct CompactTaskCard: View {
             Divider()
                 .padding(.vertical, DS.Spacing.md)
             
-            Text("Compact Cards")
+            Text("compact cards")
                 .font(DS.Typography.heading())
                 .frame(maxWidth: .infinity, alignment: .leading)
             

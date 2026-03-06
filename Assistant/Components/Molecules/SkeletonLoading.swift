@@ -1,11 +1,7 @@
 //
-//  ShimmerModifier.swift
-//  Assistant
+//  SkeletonLoading.swift
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Shimmer skeleton placeholders for smooth loading states.
 //  Replaces jarring blank → content transitions.
 //
@@ -432,15 +428,19 @@ struct CalendarViewSkeleton: View {
 #Preview("Skeletons") {
     ScrollView {
         VStack(spacing: 24) {
-            Text("Task Card").font(.caption).foregroundColor(Color.textSecondary)
+            Text(L10n.task).font(.caption).foregroundStyle(.textSecondary)
             TaskCardSkeleton()
-            Text("Summary Card").font(.caption).foregroundColor(Color.textSecondary)
+            
+            Text(L10n.summaryLabel).font(.caption).foregroundStyle(.textSecondary)
             SummaryCardSkeleton()
-            Text("Habit Widget").font(.caption).foregroundColor(Color.textSecondary)
+            
+            Text(L10n.habitsLabel).font(.caption).foregroundStyle(.textSecondary)
             HabitWidgetSkeleton()
-            Text("Group Card").font(.caption).foregroundColor(Color.textSecondary)
+            
+            Text(L10n.taskGroup).font(.caption).foregroundStyle(.textSecondary)
             GroupCardSkeleton()
-            Text("Stat Cards").font(.caption).foregroundColor(Color.textSecondary)
+            
+            Text(L10n.statusLabel).font(.caption).foregroundStyle(.textSecondary)
             HStack(spacing: DS.Spacing.md) {
                 StatCardSkeleton()
                 StatCardSkeleton()

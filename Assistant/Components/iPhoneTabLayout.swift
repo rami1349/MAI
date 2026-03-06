@@ -220,7 +220,7 @@ struct ChatTabButton: View {
                 
                 Text(L10n.chat)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                     .offset(y: -8)
             }
             .frame(maxWidth: .infinity)
@@ -247,7 +247,7 @@ struct TabBarButton: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: isSelected ? item.selectedIcon : item.icon)
                         .font(.system(size: DS.IconSize.md, weight: isSelected ? .semibold : .regular)) // DT-exempt: icon sizing
-                        .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                        .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                     
                     if badge > 0 {
                         Circle()
@@ -259,7 +259,7 @@ struct TabBarButton: View {
                 
                 Text(item.title)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.xs)

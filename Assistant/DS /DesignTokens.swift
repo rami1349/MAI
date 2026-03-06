@@ -4,6 +4,8 @@
 //
 //  Single source of truth for all layout values.
 //  Every padding, spacing, corner radius, icon size, and control height
+//  should reference a token from this file Ã¢â‚¬â€ never a magic number.
+//
 //  Spacing scale (8pt grid): 4, 8, 12, 16, 20, 24, 32, 40, 48
 //  Corner radius scale: 8, 12, 16, 20, 24, 9999 (pill)
 //  Icon size scale: 12, 16, 20, 24, 32, 40, 48, 64
@@ -887,6 +889,7 @@ private func elevationSample(_ label: String, _ level: Int) -> some View {
         .background(RoundedRectangle(cornerRadius: 12).fill(Color.themeCardBackground))
     
     switch level {
+    case 0: base.elevationNone()
     case 1: base.elevation1()
     case 2: base.elevation2()
     case 3: base.elevation3()

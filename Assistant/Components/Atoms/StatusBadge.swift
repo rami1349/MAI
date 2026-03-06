@@ -1,13 +1,9 @@
 //
 //  StatusBadge.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Task status badge component
-//  UPDATED: Luxury typography and softer styling
+//  Status badge with refined typography
 //  NO LOGIC CHANGES - Presentation layer only
 //
 
@@ -20,7 +16,7 @@ struct StatusBadge: View {
     var body: some View {
         Text(statusText)
             .font(DS.Typography.captionMedium())
-            .foregroundColor(color)
+            .foregroundStyle(color)
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
             .background(
@@ -41,7 +37,7 @@ struct StatusBadge: View {
 
 // MARK: - Generic Badge Component
 
-struct LuxuryBadge: View {
+struct StyledBadge: View {
     let text: String
     var color: Color = Color.accentPrimary
     var icon: String? = nil
@@ -50,12 +46,12 @@ struct LuxuryBadge: View {
         HStack(spacing: DS.Spacing.xxs) {
             if let icon {
                 Image(systemName: icon)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(DS.Typography.micro())
             }
             Text(text)
                 .font(DS.Typography.captionMedium())
         }
-        .foregroundColor(color)
+        .foregroundStyle(color)
         .padding(.horizontal, DS.Spacing.sm)
         .padding(.vertical, DS.Spacing.xxs)
         .background(
@@ -69,13 +65,13 @@ struct LuxuryBadge: View {
 
 struct CountBadge: View {
     let count: Int
-    var color: Color = .accentRed
+    var color: Color = Color.accentRed
     
     var body: some View {
         if count > 0 {
             Text(count > 99 ? "99+" : "\(count)")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundColor(.white)
+                .font(DS.Typography.micro()) // was .rounded
+                .foregroundStyle(.textOnAccent)
                 .padding(.horizontal, count > 9 ? 6 : 0)
                 .frame(minWidth: 18, minHeight: 18)
                 .background(
@@ -90,19 +86,19 @@ struct CountBadge: View {
     VStack(spacing: DS.Spacing.md) {
         // Status badges
         HStack(spacing: DS.Spacing.sm) {
-            StatusBadge(status: .todo, color: .statusTodo)
+            StatusBadge(status: .todo, color: Color.statusTodo)
             StatusBadge(status: .inProgress, color: Color.statusInProgress)
             StatusBadge(status: .pendingVerification, color: Color.statusPending)
-            StatusBadge(status: .completed, color: .statusCompleted)
+            StatusBadge(status: .completed, color: Color.statusCompleted)
         }
         
         ThemeDivider()
         
         // Generic badges
         HStack(spacing: DS.Spacing.sm) {
-            LuxuryBadge(text: "High", color: .accentOrange, icon: "exclamationmark.triangle.fill")
-            LuxuryBadge(text: "Reward", color: .accentGreen, icon: "dollarsign.circle.fill")
-            LuxuryBadge(text: "Recurring", color: .accentBlue, icon: "repeat")
+            StyledBadge(text: "High", color: Color.accentOrange, icon: "exclamationmark.triangle.fill")
+            StyledBadge(text: "Reward", color: Color.accentGreen, icon: "dollarsign.circle.fill")
+            StyledBadge(text: "Recurring", color: Color.accentBlue, icon: "repeat")
         }
         
         ThemeDivider()

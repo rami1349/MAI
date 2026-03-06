@@ -16,17 +16,17 @@ struct TaskGroupCard: View {
             HStack(spacing: DS.Spacing.lg) {
                 Image(systemName: group.icon)
                     .font(.system(size: DS.IconSize.lg)) // DT-exempt: icon sizing
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: DS.IconContainer.lg, height: DS.IconContainer.lg)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.themeHighlight))
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                     Text(group.name)
                         .font(DS.Typography.subheading())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     Text("\(group.taskCount) \(L10n.tasks)")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 Spacer()

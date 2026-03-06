@@ -501,6 +501,7 @@ struct EventDetailView: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     EventDetailView(event: CalendarEvent(
         familyId: "test",
         title: "Family Dinner",
@@ -515,6 +516,6 @@ struct EventDetailView: View {
         eventType: nil,
         createdAt: Date()
     ))
-    .environment({ let vm = FamilyViewModel(); return vm }())
-    .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
+    .environment(familyVM)
+    .environment(familyVM.familyMemberVM)
 }

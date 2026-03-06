@@ -21,21 +21,21 @@ struct InviteCodeSheet: View {
         NavigationStack {
             VStack(spacing: DS.Spacing.xxxl) {
                 Image(systemName: "person.badge.plus")
-                    .font(.system(size: DS.IconSize.jumbo)).foregroundStyle(Color.accentPrimary) // DT-exempt: icon sizing
+                    .font(.system(size: DS.IconSize.jumbo)).foregroundStyle(.accentPrimary) // DT-exempt: icon sizing
                 
                 VStack(spacing: DS.Spacing.sm) {
                     HStack(spacing: DS.Spacing.sm) {
                         Text(L10n.inviteCode).font(.title2).fontWeight(.bold)
                     }
                     Text(L10n.shareCodeMessage)
-                        .font(.subheadline).foregroundStyle(Color.textSecondary)
+                        .font(.subheadline).foregroundStyle(.textSecondary)
                 }
                 
                 HStack(spacing: DS.Spacing.sm) {
                     ForEach(Array(inviteCode), id: \.self) { char in
                         Text(String(char))
                             .font(DS.Typography.displayMedium())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                             .frame(width: DS.Control.standard, height: DS.Control.large + 6)
                             .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.accentPrimary.opacity(0.1)))
                     }
@@ -45,7 +45,7 @@ struct InviteCodeSheet: View {
                     UIPasteboard.general.string = inviteCode
                 } label: {
                     Label(L10n.copyCode, systemImage: "doc.on.doc")
-                        .font(.headline).foregroundStyle(.white)
+                        .font(.headline).foregroundStyle(.textOnAccent)
                         .frame(maxWidth: .infinity).frame(height: DS.Control.large + 6)
                         .background(RoundedRectangle(cornerRadius: DS.Radius.xl).fill(Color.accentPrimary))
                 }
@@ -57,7 +57,7 @@ struct InviteCodeSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(L10n.done) { dismiss() }
                 }
             }
         }

@@ -1,11 +1,7 @@
 //
 //  HomeFocusNowSection.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  "Focus Now" section: Top 5 highest-priority tasks needing attention.
 //  Shows overdue, due today, urgent/high priority tasks.
 //  Clean, minimal design focused on action.
@@ -26,17 +22,17 @@ struct HomeFocusNowSection: View {
             // Header
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "target")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.label())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("Focus Now")
+                Text("10n.focusNow")
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
             }
@@ -80,25 +76,25 @@ struct HomeFocusNowSection: View {
                     .frame(width: 40, height: 40)
                 
                 Image(systemName: "checkmark.circle")
-                    .font(.system(size: 18))
-                    .foregroundColor(.accentGreen)
+                    .font(DS.Typography.heading())
+                    .foregroundStyle(.accentGreen)
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("All caught up!")
+                Text("L10n.allCaughtUp")
                     .font(DS.Typography.body())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
-                Text("No urgent tasks right now")
+                Text("L10n.noUrgentTasksRightNow")
                     .font(DS.Typography.caption())
-                    .foregroundColor(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
             Spacer()
         }
         .padding(DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
         .padding(.horizontal, DS.Spacing.screenH)
@@ -116,8 +112,8 @@ struct FocusTaskRow: View {
     
     private var priorityColor: Color {
         switch task.priority {
-        case .urgent: return .accentRed
-        case .high: return .accentOrange
+        case .urgent: return Color.accentRed
+        case .high: return Color.accentOrange
         case .medium: return Color.accentPrimary
         case .low: return Color.textTertiary
         }
@@ -136,8 +132,8 @@ struct FocusTaskRow: View {
     }
     
     private var dueBadgeColor: Color {
-        if task.isOverdue { return .accentRed }
-        if Calendar.current.isDateInToday(task.dueDate) { return .accentOrange }
+        if task.isOverdue { return Color.accentRed }
+        if Calendar.current.isDateInToday(task.dueDate) { return Color.accentOrange }
         return Color.textSecondary
     }
     
@@ -164,23 +160,23 @@ struct FocusTaskRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(task.title)
                         .font(DS.Typography.label())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     HStack(spacing: DS.Spacing.sm) {
                         // Due badge
                         Text(dueBadgeText)
                             .font(DS.Typography.micro())
-                            .foregroundColor(dueBadgeColor)
+                            .foregroundStyle(dueBadgeColor)
                         
                         // Group name
                         if let groupName = groupName {
                             Text("•")
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                             Text(groupName)
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .lineLimit(1)
                         }
                         
@@ -188,10 +184,10 @@ struct FocusTaskRow: View {
                         if let time = task.scheduledTime {
                             Text("•")
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                             Text(time.formatted(.dateTime.hour().minute()))
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                     }
                 }
@@ -201,21 +197,21 @@ struct FocusTaskRow: View {
                 // Priority indicator
                 if task.priority == .urgent || task.priority == .high {
                     Image(systemName: task.priority == .urgent ? "exclamationmark.2" : "exclamationmark")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(priorityColor)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundStyle(priorityColor)
                 }
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(DS.Spacing.md)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .fill(Color.themeCardBackground)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .stroke(task.isOverdue ? Color.accentRed.opacity(0.3) : Color.clear, lineWidth: 1)
             )
         }

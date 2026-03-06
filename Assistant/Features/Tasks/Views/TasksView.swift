@@ -92,7 +92,7 @@ struct TasksView: View {
                 }) {
                     Text(tab.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedMainTab == tab ? .white : Color.textSecondary)
+                        .foregroundStyle(selectedMainTab == tab ? .textOnAccent : .textSecondary)
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: DS.Control.standard)
                         .padding(.vertical, DS.Spacing.sm)
@@ -120,13 +120,14 @@ struct TasksView: View {
 }
 
 #Preview {
+    let familyVM = FamilyViewModel()
     TasksView(selectedMode: .constant(TasksViewMode.tasks), showAddHabit: .constant(false))
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())  
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
         .environment(ThemeManager.shared)
 }

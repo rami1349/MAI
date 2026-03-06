@@ -4,13 +4,6 @@
 //
 // ViewModel for AI Homework Verification
 //
-// FIXES APPLIED:
-//   ✅ Removed duplicate types (now uses VerificationModels.swift)
-//   ✅ Removed confusing legacy aiVerify method
-//   ✅ Added result caching to prevent redundant API calls
-//   ✅ Improved error handling with specific error types
-//   ✅ Added retry capability
-//
 // IMPORTANT: AI provides RECOMMENDATIONS only — parent makes final decision
 // ============================================================================
 
@@ -143,7 +136,7 @@ class HomeworkVerificationViewModel {
         
         // Convert image to base64 data URL
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
-            errorMessage = String(localized: "Failed to process image")
+            errorMessage = "L10n.failedToProcessImage"
             isVerifying = false
             canRetry = false
             return
@@ -162,7 +155,7 @@ class HomeworkVerificationViewModel {
                 return
             }
             
-            errorMessage = String(localized: "Image too large. Please use a smaller image.")
+            errorMessage = "L10n.imageTooLargePleaseUseASmallerImage"
             isVerifying = false
             canRetry = false
             return
@@ -181,7 +174,7 @@ class HomeworkVerificationViewModel {
     func retry() async {
         guard let taskId = lastVerifiedTaskId,
               let imageUrl = lastVerifiedImageUrl else {
-            errorMessage = String(localized: "Nothing to retry")
+            errorMessage = "L10n.nothingToRetry"
             return
         }
         
@@ -200,15 +193,15 @@ class HomeworkVerificationViewModel {
         var errorDescription: String? {
             switch self {
             case .invalidResponse:
-                return String(localized: "Invalid response from server")
+                return "L10n.invalidResponseFromServer"
             case .serverError(let message):
                 return message
             case .imageProcessingFailed:
-                return String(localized: "Failed to process image")
+                return "L10n.failedToProcessImage"
             case .retryable(let message, _):
                 return message
             case .circuitOpen(let retryAfter):
-                return String(localized: "AI service temporarily unavailable. Try again in \(retryAfter) seconds.")
+                return L10n.aiServiceUnavailableRetry(retryAfter)
             }
         }
         
@@ -240,39 +233,39 @@ class HomeworkVerificationViewModel {
             
             switch FunctionsErrorCode(rawValue: functionsError.code) {
             case .unauthenticated:
-                errorMessage = String(localized: "Please sign in to verify homework")
+                errorMessage = "L10n.pleaseSignInToVerifyHomework"
                 canRetry = false
                 
             case .invalidArgument:
-                errorMessage = String(localized: "Could not process image. Please try a clearer photo.")
+                errorMessage = "L10n.couldNotProcessImagePleaseTryAClearerPhoto"
                 canRetry = true
                 
             case .resourceExhausted:
-                errorMessage = String(localized: "Daily verification limit reached. Try again tomorrow!")
+                errorMessage = "L10n.dailyVerificationLimitReachedTryAgainTomorro"
                 canRetry = false
                 
             case .notFound:
-                errorMessage = String(localized: "Task not found")
+                errorMessage = L10n.taskNotFound
                 canRetry = false
                 
             case .failedPrecondition:
-                errorMessage = String(localized: "No proof image found for this task")
+                errorMessage = "L10n.noProofImageFoundForThisTask"
                 canRetry = false
                 
             case .unavailable:
-                errorMessage = String(localized: "AI service temporarily unavailable. Please try again.")
+                errorMessage = "L10n.aiServiceTemporarilyUnavailablePleaseTryAgai"
                 canRetry = true
                 
             case .deadlineExceeded:
-                errorMessage = String(localized: "Request timed out. Please try again.")
+                errorMessage = "L10n.requestTimedOutPleaseTryAgain"
                 canRetry = true
                 
             default:
-                errorMessage = String(localized: "Verification failed. Please review manually.")
+                errorMessage = "L10n.verificationFailedPleaseReviewManually"
                 canRetry = true
             }
         } else {
-            errorMessage = String(localized: "Unable to analyze. Please review manually.")
+            errorMessage = "L10n.unableToAnalyzePleaseReviewManually"
             canRetry = true
         }
     }

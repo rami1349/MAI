@@ -30,14 +30,14 @@ struct PaywallView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle("Upgrade to Premium")
+            .navigationTitle(L10n.upgradeToPremium)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.title3)
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
             }
@@ -65,18 +65,18 @@ struct PaywallView: View {
                     .frame(width: 72, height: 72)
                 Image(systemName: "sparkles")
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
             }
             .padding(.top, DS.Spacing.lg)
             
-            Text("Unlock the full MAI experience")
+            Text(L10n.unlockTheFullMaiExperience)
                 .font(DS.Typography.heading())
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
-            Text("More messages, smarter AI, and unlimited potential for your family.")
+            Text(L10n.moreMessagesSmarterAiAndUnlimitedPotentialF)
                 .font(DS.Typography.bodySmall())
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.center)
         }
     }
@@ -95,9 +95,9 @@ struct PaywallView: View {
                 } label: {
                     VStack(spacing: DS.Spacing.sm) {
                         if isYearly {
-                            Text("Save 33%")
+                            Text(L10n.save33)
                                 .font(DS.Typography.micro())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.textOnAccent)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(Capsule().fill(Color.accentGreen))
@@ -109,21 +109,21 @@ struct PaywallView: View {
                         Text(isYearly ? "Yearly" : "Monthly")
                             .font(DS.Typography.body())
                             .fontWeight(.semibold)
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         Text(product.displayPrice)
                             .font(DS.Typography.displayMedium()) // was .rounded
-                            .foregroundStyle(isSelected ? Color.accentPrimary : Color.textPrimary)
+                            .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
                         
                         Text(isYearly ? "per year" : "per month")
                             .font(DS.Typography.subheading())
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                         
                         if isYearly {
                             let monthly = product.price / 12
                             Text("\(monthly.formatted(.currency(code: "USD")))/mo")
                                 .font(DS.Typography.subheading())
-                                .foregroundStyle(Color.accentGreen)
+                                .foregroundStyle(.accentGreen)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -147,10 +147,10 @@ struct PaywallView: View {
     
     private var featuresSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text("What you get")
+            Text(L10n.whatYouGet)
                 .font(DS.Typography.body())
                 .fontWeight(.semibold)
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             featureRow(icon: "bubble.left.and.text.bubble.right.fill",
                        title: "300 messages/day",
@@ -160,7 +160,7 @@ struct PaywallView: View {
                        subtitle: "GPT-4o for chat (vs GPT-4o-mini)", color: .purple)
             featureRow(icon: "person.3.fill",
                        title: "10 family members",
-                       subtitle: "vs 4 on Free", color: .accentGreen)
+                       subtitle: "vs 4 on Free", color: Color.accentGreen)
             featureRow(icon: "checklist",
                        title: "200 active tasks",
                        subtitle: "vs 50 on Free", color: .orange)
@@ -192,10 +192,10 @@ struct PaywallView: View {
                 Text(title)
                     .font(DS.Typography.bodySmall())
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 Text(subtitle)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
     }
@@ -211,7 +211,7 @@ struct PaywallView: View {
                 if store.isPurchasing {
                     ProgressView().tint(.white)
                 } else {
-                    Text("Subscribe")
+                    Text(L10n.subscribe)
                         .fontWeight(.bold)
                     if let plan = selectedPlan {
                         Text("· \(plan.displayPrice)")
@@ -221,7 +221,7 @@ struct PaywallView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.accentPrimary))
-            .foregroundStyle(.white)
+            .foregroundStyle(.textOnAccent)
             .font(DS.Typography.body())
         }
         .disabled(selectedPlan == nil || store.isPurchasing)
@@ -232,15 +232,15 @@ struct PaywallView: View {
     
     private var footerSection: some View {
         VStack(spacing: DS.Spacing.md) {
-            Button("Restore Purchases") {
+            Button(L10n.restorePurchases) {
                 Task { await store.restorePurchases() }
             }
             .font(DS.Typography.bodySmall())
-            .foregroundStyle(Color.accentPrimary)
+            .foregroundStyle(.accentPrimary)
             
-            Text("Payment will be charged to your Apple ID account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.")
+            Text(L10n.paymentWillBeChargedToYourAppleIdAccountS)
                 .font(DS.Typography.micro())
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
                 .multilineTextAlignment(.center)
         }
     }

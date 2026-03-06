@@ -23,11 +23,11 @@ struct TaskGroupPicker: View {
                     Button(action: { selectedGroupId = nil; dismiss() }) {
                         HStack {
                             Text(L10n.noGroup)
-                                .foregroundStyle(Color.textPrimary)
+                                .foregroundStyle(.textPrimary)
                             Spacer()
                             if selectedGroupId == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.accentPrimary)
+                                    .foregroundStyle(.accentPrimary)
                             }
                         }
                     }
@@ -51,13 +51,13 @@ struct TaskGroupPicker: View {
                                 }
                                 
                                 Text(group.name)
-                                    .foregroundStyle(Color.textPrimary)
+                                    .foregroundStyle(.textPrimary)
                                 
                                 Spacer()
                                 
                                 if selectedGroupId == group.id {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(Color.accentPrimary)
+                                        .foregroundStyle(.accentPrimary)
                                 }
                             }
                         }
@@ -69,9 +69,9 @@ struct TaskGroupPicker: View {
                     Button(action: { showCreateGroup = true }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(Color.accentPrimary)
+                                .foregroundStyle(.accentPrimary)
                             Text(L10n.createGroup)
-                                .foregroundStyle(Color.accentPrimary)
+                                .foregroundStyle(.accentPrimary)
                         }
                     }
                     .listRowBackground(Color.backgroundCard)
@@ -114,17 +114,17 @@ struct MultiMemberPicker: View {
                         HStack {
                             Text("\(selectedMemberIds.count) selected")
                                 .font(DS.Typography.label())
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                             
                             Spacer()
                             
-                            Button("Clear all") {
+                            Button("clearAll") {
                                 withAnimation(.easeOut(duration: 0.2)) {
                                     selectedMemberIds.removeAll()
                                 }
                             }
                             .font(DS.Typography.label())
-                            .foregroundStyle(Color.accentPrimary)
+                            .foregroundStyle(.accentPrimary)
                         }
                     }
                     .listRowBackground(Color.backgroundCard)
@@ -160,7 +160,7 @@ struct MultiMemberPicker: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(L10n.done) {
                         onDismiss?()
                         dismiss()
                     }
@@ -203,7 +203,7 @@ private struct MultiMemberPickerRow: View {
                         
                         Image(systemName: "checkmark")
                             .font(.system(size: DS.IconSize.xs, weight: .bold)) // DT-exempt: icon sizing
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                     }
                 }
                 
@@ -214,10 +214,10 @@ private struct MultiMemberPickerRow: View {
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(member.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     Text(member.isAdult ? L10n.adult : L10n.member)
                         .font(.caption)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 Spacer()
@@ -243,11 +243,11 @@ struct MemberPicker: View {
                     Button(action: { selectedMemberId = nil; dismiss() }) {
                         HStack {
                             Text(L10n.unassigned)
-                                .foregroundStyle(Color.textPrimary)
+                                .foregroundStyle(.textPrimary)
                             Spacer()
                             if selectedMemberId == nil {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(Color.accentPrimary)
+                                    .foregroundStyle(.accentPrimary)
                             }
                         }
                     }
@@ -262,17 +262,17 @@ struct MemberPicker: View {
                                 
                                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                                     Text(member.displayName)
-                                        .foregroundStyle(Color.textPrimary)
+                                        .foregroundStyle(.textPrimary)
                                     Text(member.isAdult ? L10n.adult : L10n.member)
                                         .font(.caption)
-                                        .foregroundStyle(Color.textSecondary)
+                                        .foregroundStyle(.textSecondary)
                                 }
                                 
                                 Spacer()
                                 
                                 if selectedMemberId == member.id {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(Color.accentPrimary)
+                                        .foregroundStyle(.accentPrimary)
                                 }
                             }
                         }
@@ -329,7 +329,7 @@ struct CreateTaskGroupView: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
                         Text(L10n.icon)
                             .font(.headline)
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                             ForEach(TaskGroupColors.icons, id: \.systemName) { icon in
@@ -355,7 +355,7 @@ struct CreateTaskGroupView: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
                         Text(L10n.color)
                             .font(.headline)
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
                             ForEach(TaskGroupColors.colors, id: \.hex) { color in
@@ -367,7 +367,7 @@ struct CreateTaskGroupView: View {
                                         
                                         if selectedColor == color.hex {
                                             Image(systemName: "checkmark")
-                                                .foregroundStyle(.white)
+                                                .foregroundStyle(.textOnAccent)
                                                 .fontWeight(.bold)
                                         }
                                     }

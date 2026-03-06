@@ -94,7 +94,7 @@ struct AgendaDayView: View {
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
-                Text("This day is clear")
+                Text("L10n.thisDayIsClear")
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textTertiary)
             }

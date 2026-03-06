@@ -1,10 +1,9 @@
 //
 //  FilterChip.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
 //  Selectable filter chip component
-//  UPDATED: Luxury styling with refined elevation
+//  Filter chip with refined elevation
 //  NO LOGIC CHANGES - Presentation layer only
 //
 
@@ -19,7 +18,7 @@ struct FilterChip: View {
         Button(action: action) {
             Text(title)
                 .font(DS.Typography.labelSmall())
-                .foregroundColor(isSelected ? .white : Color.textSecondary)
+                .foregroundStyle(isSelected ? .textOnAccent : .textSecondary)
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.xs)
                 .background(
@@ -58,11 +57,11 @@ struct IconFilterChip: View {
         Button(action: action) {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: icon)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(DS.Typography.captionMedium())
                 Text(title)
                     .font(DS.Typography.labelSmall())
             }
-            .foregroundColor(isSelected ? .white : Color.textSecondary)
+            .foregroundStyle(isSelected ? .textOnAccent : .textSecondary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.xs)
             .background(
@@ -98,7 +97,7 @@ struct CompactChip: View {
     var body: some View {
         Text(title)
             .font(DS.Typography.caption())
-            .foregroundColor(isOutlined ? color : .white)
+            .foregroundStyle(isOutlined ? color : .textOnAccent)
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
             .background(
@@ -138,8 +137,8 @@ struct CompactChip: View {
         // Compact chips
         HStack(spacing: DS.Spacing.sm) {
             CompactChip(title: "Work", color: Color.accentPrimary)
-            CompactChip(title: "Personal", color: .accentOrange)
-            CompactChip(title: "Health", color: .accentGreen, isOutlined: true)
+            CompactChip(title: "Personal", color: Color.accentOrange)
+            CompactChip(title: "Health", color: Color.accentGreen, isOutlined: true)
         }
     }
     .padding(.vertical, DS.Spacing.lg)

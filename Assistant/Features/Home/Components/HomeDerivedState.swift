@@ -1,8 +1,5 @@
-//
 //  HomeDerivedState.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  Performance cache for HomeView.
 //  Precomputes filtered task lists + week events once when source data changes.
@@ -10,7 +7,6 @@
 //
 
 import SwiftUI
-import Combine
 
 // MARK: - Timeline Item (merged tasks + events)
 
@@ -44,66 +40,75 @@ enum TimelineItem: Identifiable {
 // MARK: - Derived State
 
 @MainActor
-final class HomeDerivedState: ObservableObject {
+@Observable
+final class HomeDerivedState {
     
     // MARK: - Published Outputs (consumed by views)
     
     /// Active tasks (todo + inProgress + pendingVerification), sorted by priority then dueDate.
-    @Published private(set) var activeTasks: [FamilyTask] = []
+    private(set) var activeTasks: [FamilyTask] = []
     
     /// Completed tasks (hidden by default, shown when toggled).
-    @Published private(set) var completedTasks: [FamilyTask] = []
+    private(set) var completedTasks: [FamilyTask] = []
     
     /// Search-filtered tasks - equals activeTasks when search is empty.
-    @Published private(set) var displayedTasks: [FamilyTask] = []
+    private(set) var displayedTasks: [FamilyTask] = []
     
     /// Focus Now: Top 5 highest-priority tasks that need attention.
     /// Prioritizes: overdue > due today > urgent/high priority > due soon
-    @Published private(set) var focusTasks: [FamilyTask] = []
+    private(set) var focusTasks: [FamilyTask] = []
     
     /// This-week upcoming events (max 7), excludes today/tomorrow (those go in timeline).
-    @Published private(set) var weekEvents: [UpcomingEvent] = []
+    private(set) var weekEvents: [UpcomingEvent] = []
     
     /// Unified timeline: tasks and events merged by date for today/tomorrow
-    @Published private(set) var timelineItems: [TimelineItem] = []
+    private(set) var timelineItems: [TimelineItem] = []
     
     /// Whether we're currently showing completed tasks in the unified list.
-    @Published var showCompleted: Bool = false {
+    var showCompleted: Bool = false {
         didSet { refilter() }
     }
     
     /// Visible task groups with stats for current user (moved from HomeView computed property).
     /// Previously re-scanned ALL tasks on every body evaluation.
-    @Published private(set) var myVisibleGroups: [TaskGroup] = []
+    private(set) var myVisibleGroups: [TaskGroup] = []
     
     /// Tasks pending verification that were assigned BY this user (parent review queue).
     /// Previously re-filtered on every body evaluation.
-    @Published private(set) var myPendingVerificationTasks: [FamilyTask] = []
+    private(set) var myPendingVerificationTasks: [FamilyTask] = []
     
     /// Search text - drives debounced refilter.
-    @Published var searchText: String = ""
+    var searchText: String = "" {
+        didSet {
+            guard searchText != oldValue else { return }
+            debounceSearch()
+        }
+    }
     
     // MARK: - Private
     
     /// Pre-built search index: taskId -> lowercased searchable string.
     private var searchIndex: [String: String] = [:]
     
-    /// Combine cancellable for debounced search.
-    private var searchCancellable: AnyCancellable?
+    /// Task handle for debounced search.
+    @ObservationIgnored private var searchTask: Task<Void, Never>?
     
     /// Last rebuild fingerprint to skip redundant work.
     private var lastFingerprint: Int = 0
     
     // MARK: - Init
     
-    init() {
-        // Debounce search input by 300ms, then refilter.
-        searchCancellable = $searchText
-            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.refilter()
-            }
+    init() {}
+    
+    // MARK: - Debounced Search
+    
+    private func debounceSearch() {
+        searchTask?.cancel()
+        searchTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            self?.refilter()
+        }
     }
     
     // MARK: - Rebuild (called when source data changes)

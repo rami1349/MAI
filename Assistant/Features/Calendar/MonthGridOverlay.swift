@@ -54,7 +54,7 @@ struct MonthGridOverlay: View {
             Button(action: onPreviousMonth) {
                 Image(systemName: "chevron.left")
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -66,14 +66,14 @@ struct MonthGridOverlay: View {
             
             Text(SharedFormatters.monthYear.string(from: currentMonth))
                 .font(DS.Typography.subheading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Spacer()
             
             Button(action: onNextMonth) {
                 Image(systemName: "chevron.right")
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -91,7 +91,7 @@ struct MonthGridOverlay: View {
                 Text(letter)
                     .font(DS.Typography.micro())
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                     .frame(maxWidth: .infinity)
             }
         }
@@ -110,7 +110,7 @@ struct MonthGridOverlay: View {
                     let isToday = calendar.isDate(date, inSameDayAs: todayDate)
                     let count = itemCounts[AgendaDataCache.dayKey(for: date)] ?? 0
                     
-                    LuxuryMonthDayCell(
+                    MonthDayCell(
                         dayNumber: date.dayNumber,
                         isSelected: isSelected,
                         isToday: isToday,
@@ -143,7 +143,7 @@ struct MonthGridOverlay: View {
                 
                 Text(L10n.tapToClose)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, DS.Spacing.sm)
@@ -173,9 +173,9 @@ struct MonthGridOverlay: View {
     }
 }
 
-// MARK: - Luxury Month Day Cell
+// MARK: - Month Day Cell
 
-private struct LuxuryMonthDayCell: View {
+private struct MonthDayCell: View {
     let dayNumber: String
     let isSelected: Bool
     let isToday: Bool

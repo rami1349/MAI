@@ -1,11 +1,7 @@
-//
-//  PriorityChip.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
-//
 
-
+//  TaskChips.swift
+//  FamilyHub
+//
 //  Shared selectable chip components for task creation and editing.
 //  Place in: Components/Chips/TaskChips.swift
 //
@@ -21,10 +17,10 @@ struct PriorityChip: View {
     
     var color: Color {
         switch priority {
-        case .low: return .accentGreen
-        case .medium: return .accentYellow
-        case .high: return .accentOrange
-        case .urgent: return .accentRed
+        case .low: return Color.accentGreen
+        case .medium: return Color.accentYellow
+        case .high: return Color.accentOrange
+        case .urgent: return Color.accentRed
         }
     }
     
@@ -32,7 +28,7 @@ struct PriorityChip: View {
         Button(action: action) {
             Text(priority.rawValue)
                 .font(DS.Typography.badge())
-                .foregroundColor(isSelected ? .white : color)
+                .foregroundStyle(isSelected ? .textOnAccent : color)
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)
                 .background(Capsule().fill(isSelected ? color : color.opacity(0.15)))
@@ -59,7 +55,7 @@ struct RecurrenceFrequencyChip: View {
         Button(action: action) {
             Text(label)
                 .font(DS.Typography.badge())
-                .foregroundColor(isSelected ? .white : .accentBlue)
+                .foregroundStyle(isSelected ? .textOnAccent : .accentBlue)
                 .padding(.horizontal, DS.Spacing.md + 2)
                 .padding(.vertical, DS.Spacing.sm)
                 .background(Capsule().fill(isSelected ? Color.accentBlue : Color.accentBlue.opacity(0.15)))
@@ -83,7 +79,7 @@ struct DayOfWeekChip: View {
             Text(label)
                 .font(.caption)
                 .fontWeight(.semibold)
-                .foregroundColor(isSelected ? .white : Color.textSecondary)
+                .foregroundStyle(isSelected ? .textOnAccent : .textSecondary)
                 .frame(width: DS.IconContainer.md, height: DS.IconContainer.md)
                 .background(Circle().fill(isSelected ? Color.accentPrimary : Color.backgroundSecondary))
         }

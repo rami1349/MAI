@@ -54,7 +54,8 @@ import UserNotifications
 /// Conforms to:
 /// - `UNUserNotificationCenterDelegate`: handles foreground display and tap routing.
 /// - `MessagingDelegate`: receives FCM token updates from Firebase Messaging.
-class LocalNotificationService: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
+@Observable
+class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     /// Shared singleton. Assigned as both the notification center delegate and
     /// Firebase Messaging delegate in `AssistantApp.init()`.
@@ -62,9 +63,9 @@ class LocalNotificationService: NSObject, ObservableObject, UNUserNotificationCe
 
     /// The current device FCM token. Set by `MessagingDelegate.messaging(_:didReceiveRegistrationToken:)`.
     /// Observed by `AuthViewModel` via `NotificationCenter` to save token to Firestore on login.
-    @Published var fcmToken: String?
+    var fcmToken: String?
 
-    private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
 
     private override init() {
         super.init()

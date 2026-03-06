@@ -22,7 +22,7 @@ class RewardViewModel {
     var errorMessage: String?
     
     // MARK: - Private
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     @ObservationIgnored private var transactionListener: ListenerRegistration?
     @ObservationIgnored private var withdrawalListener: ListenerRegistration?
     

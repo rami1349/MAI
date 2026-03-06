@@ -1,11 +1,7 @@
 //
 //  HabitSquare.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Square habit completion indicator for month grid
 //
 
@@ -36,8 +32,8 @@ struct HabitSquare: View {
             
             if isCompleted {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textOnAccent)
             }
         }
     }

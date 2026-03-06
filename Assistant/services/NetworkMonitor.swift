@@ -8,16 +8,17 @@
 
 
 import Foundation
+import Observation
 import Network
-import Combine
 
 @MainActor
-final class NetworkMonitor: ObservableObject {
+@Observable
+final class NetworkMonitor {
     static let shared = NetworkMonitor()
     
-    @Published private(set) var isConnected: Bool = true
+    private(set) var isConnected: Bool = true
     
-    private let monitor = NWPathMonitor()
+    @ObservationIgnored private let monitor = NWPathMonitor()
     private let queue = DispatchQueue(label: "NetworkMonitor", qos: .utility)
     
     private init() {

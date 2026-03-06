@@ -32,11 +32,11 @@ struct CreditsPurchaseSheet: View {
                             .foregroundStyle(.statusWarning)
                     }
                     
-                    Text("Need more messages?")
+                    Text("needMoreMessages")
                         .font(DS.Typography.heading())
                         .foregroundStyle(.textPrimary)
                     
-                    Text("Buy credits to keep chatting. Credits never expire.")
+                    Text(L10n.buyCreditsToKeepChattingCreditsNeverExpire)
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
@@ -72,7 +72,7 @@ struct CreditsPurchaseSheet: View {
                         if store.isPurchasing {
                             ProgressView().tint(.white)
                         } else {
-                            Text("Buy Credits")
+                            Text(L10n.buyCredits)
                                 .fontWeight(.bold)
                             if let pkg = selectedPackage {
                                 Text("· \(pkg.displayPrice)")
@@ -102,7 +102,7 @@ struct CreditsPurchaseSheet: View {
                         HStack(spacing: DS.Spacing.xs) {
                             Image(systemName: "sparkles")
                                 .font(DS.Typography.body())
-                            Text("Or upgrade to Premium for 300/day")
+                            Text(L10n.orUpgradeToPremiumFor300day)
                                 .font(DS.Typography.bodySmall())
                         }
                         .foregroundStyle(.accentPrimary)
@@ -113,7 +113,7 @@ struct CreditsPurchaseSheet: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle("Buy Credits")
+            .navigationTitle(L10n.buyCredits)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -159,7 +159,7 @@ struct CreditsPurchaseSheet: View {
                             .foregroundStyle(.textSecondary)
                         
                         if pkg.isBestValue {
-                            Text("Best Value")
+                            Text(L10n.bestValue)
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.textOnAccent)
                                 .padding(.horizontal, 6)

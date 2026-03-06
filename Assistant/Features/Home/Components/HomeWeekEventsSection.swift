@@ -1,11 +1,6 @@
 //
 //  HomeWeekEventsSection.swift
-//  Assistant
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 
 import SwiftUI
 
@@ -40,8 +35,8 @@ struct HomeWeekEventsSection: View {
             HStack(spacing: DS.Spacing.sm) {
                 // Icon badge
                 Image(systemName: "calendar")
-                    .font(.system(size: 14))
-                    .foregroundColor(Color.accentPrimary)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -50,13 +45,13 @@ struct HomeWeekEventsSection: View {
                 
                 Text(L10n.thisWeek)
                     .font(DS.Typography.subheading())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 // Count badge
                 if !events.isEmpty {
                     Text("\(events.count)")
                         .font(DS.Typography.captionMedium())
-                        .foregroundColor(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, 2)
                         .background(
@@ -73,8 +68,8 @@ struct HomeWeekEventsSection: View {
                 Spacer()
                 
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.captionMedium())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(.vertical, DS.Spacing.xs)
         }
@@ -98,18 +93,18 @@ struct HomeWeekEventsSection: View {
                         .frame(width: 40, height: 40)
                     
                     Image(systemName: "leaf")
-                        .font(.system(size: 16))
-                        .foregroundColor(Color.accentPrimary.opacity(0.5))
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentPrimary.opacity(0.5))
                 }
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                     Text(L10n.noEvents)
                         .font(DS.Typography.body())
-                        .foregroundColor(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     
-                    Text("Enjoy a peaceful week")
+                    Text("L10n.enjoyAPeacefulWeek")
                         .font(DS.Typography.caption())
-                        .foregroundColor(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Spacer()
@@ -148,21 +143,21 @@ struct CompactEventRow: View {
             
             // Icon
             Image(systemName: event.icon)
-                .font(.system(size: 14))
-                .foregroundColor(event.color)
+                .font(DS.Typography.body())
+                .foregroundStyle(event.color)
                 .frame(width: 20)
             
             // Content
             VStack(alignment: .leading, spacing: 0) {
                 Text(event.title)
                     .font(DS.Typography.label())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
                         .font(DS.Typography.micro())
-                        .foregroundColor(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                         .lineLimit(1)
                 }
             }
@@ -172,7 +167,7 @@ struct CompactEventRow: View {
             // Countdown badge
             Text(event.countdownText)
                 .font(DS.Typography.captionMedium())
-                .foregroundColor(event.daysUntil <= 1 ? .white : Color.accentPrimary)
+                .foregroundStyle(event.daysUntil <= 1 ? .textOnAccent : .accentPrimary)
                 .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, 4)
                 .background(
@@ -183,10 +178,10 @@ struct CompactEventRow: View {
         .padding(.vertical, DS.Spacing.sm)
         .padding(.horizontal, DS.Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: DS.Radius.md)
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
                 .fill(Color.themeCardBackground)
         )
-        .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+        .elevation1()
         .accessibilityElement(children: .combine)
     }
 }

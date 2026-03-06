@@ -1,11 +1,6 @@
 //
 //  HomeUnifiedTaskList.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
-//
-
-
+//  FamilyHub
 //
 //  Unified task list with search bar, compact rows, and swipe actions.
 //  Uses LazyVStack for 60fps scrolling with stable IDs.
@@ -59,17 +54,17 @@ struct HomeUnifiedTaskList: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "checklist")
                 .font(.subheadline)
-                .foregroundColor(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
             
             Text(L10n.myTasks)
                 .font(.subheadline)
                 .fontWeight(.semibold)
-                .foregroundColor(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Text("\(totalActive)")
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
                 .padding(.horizontal, DS.Spacing.sm)
                 .padding(.vertical, DS.Spacing.xxs)
                 .background(Capsule().fill(Color.accentPrimary.opacity(0.1)))
@@ -84,11 +79,11 @@ struct HomeUnifiedTaskList: View {
         HStack(spacing: DS.Spacing.sm) {
             Image(systemName: "magnifyingglass")
                 .font(.subheadline)
-                .foregroundColor(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
             
             TextField(L10n.search, text: $searchText)
                 .font(.subheadline)
-                .foregroundColor(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
             
@@ -96,7 +91,7 @@ struct HomeUnifiedTaskList: View {
                 Button(action: { searchText = "" }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.subheadline)
-                        .foregroundColor(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 .frame(minWidth: DS.Control.minTapTarget, minHeight: DS.Control.minTapTarget)
             }
@@ -112,7 +107,7 @@ struct HomeUnifiedTaskList: View {
                 .stroke(Color.themeCardBorder, lineWidth: DS.Border.hairline)
         )
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Search tasks")
+        .accessibilityLabel("10n.searchTasks")
     }
     
     // MARK: - Completed Toggle
@@ -127,9 +122,9 @@ struct HomeUnifiedTaskList: View {
                     .font(.caption)
                 Text("(\(completedCount))")
                     .font(.caption)
-                    .foregroundColor(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
-            .foregroundColor(Color.accentPrimary)
+            .foregroundStyle(.accentPrimary)
         }
         .controlSize(.small)
         .frame(minHeight: 36)
@@ -185,10 +180,10 @@ struct HomeUnifiedTaskList: View {
             VStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "magnifyingglass")
                     .font(.title2)
-                    .foregroundColor(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                 Text(L10n.noTasksFilter)
                     .font(.subheadline)
-                    .foregroundColor(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.xxl)
@@ -197,13 +192,13 @@ struct HomeUnifiedTaskList: View {
             VStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.circle")
                     .font(.title2)
-                    .foregroundColor(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
                 Text(L10n.noTasks)
                     .font(.subheadline)
-                    .foregroundColor(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 Text(L10n.addTasksToStart)
                     .font(.caption)
-                    .foregroundColor(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, DS.Spacing.xxl)

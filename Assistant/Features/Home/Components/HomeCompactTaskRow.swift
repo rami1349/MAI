@@ -1,11 +1,5 @@
 //
 //  HomeCompactTaskRow.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 
 
 import SwiftUI
@@ -18,7 +12,7 @@ struct HomeCompactTaskRow: View {
     
     private var priorityColor: Color {
         switch task.priority {
-        case .urgent: return Color(hex: "E57373")  // Soft red
+        case .urgent: return Color.statusError  // Soft red
         case .high: return Color(hex: "FFB74D")    // Soft orange
         case .medium: return Color.accentPrimary
         case .low: return Color.textTertiary
@@ -39,20 +33,20 @@ struct HomeCompactTaskRow: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Text(task.title)
                             .font(DS.Typography.label())
-                            .foregroundColor(task.status == .completed ? Color.textTertiary : Color.textPrimary)
+                            .foregroundStyle(task.status == .completed ? .textTertiary : .textPrimary)
                             .lineLimit(1)
                             .strikethrough(task.status == .completed, color: Color.textTertiary)
                         
                         if task.hasReward {
                             Image(systemName: "dollarsign.circle.fill")
-                                .font(.system(size: 12))
-                                .foregroundColor(.accentGreen)
+                                .font(DS.Typography.bodySmall())
+                                .foregroundStyle(.accentGreen)
                         }
                         
                         if task.isRecurring {
                             Image(systemName: "repeat")
-                                .font(.system(size: 10))
-                                .foregroundColor(Color.textTertiary)
+                                .font(DS.Typography.micro())
+                                .foregroundStyle(.textTertiary)
                         }
                     }
                     
@@ -61,27 +55,27 @@ struct HomeCompactTaskRow: View {
                         if let groupName {
                             Text(groupName)
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .lineLimit(1)
                         }
                         
                         if groupName != nil && (assigneeName != nil || task.scheduledTime != nil) {
                             Text("·")
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                         
                         if let assigneeName {
                             Text(assigneeName)
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .lineLimit(1)
                         }
                         
                         if let time = task.scheduledTime {
                             Text(time.formattedTime)
                                 .font(DS.Typography.micro())
-                                .foregroundColor(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                     }
                 }
@@ -93,17 +87,17 @@ struct HomeCompactTaskRow: View {
                 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(.vertical, DS.Spacing.sm)
             .padding(.horizontal, DS.Spacing.md)
             .frame(minHeight: 44)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .fill(Color.themeCardBackground)
             )
-            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+            .elevation1()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
@@ -149,8 +143,8 @@ struct HomeCompactTaskRow: View {
             
         case .completed:
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 16))
-                .foregroundColor(.accentGreen)
+                .font(DS.Typography.body())
+                .foregroundStyle(.accentGreen)
         }
     }
     
@@ -201,3 +195,4 @@ struct HomeCompactTaskRow: View {
     .padding()
     .background(Color.themeSurfacePrimary)
 }
+ 

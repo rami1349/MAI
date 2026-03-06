@@ -72,7 +72,7 @@ final class HabitViewModel {
     // MARK: - Private
 
     /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
 
     /// Real-time snapshot listener for habits. Removed on `deinit` and on listener reset.
     @ObservationIgnored private var listener: ListenerRegistration?

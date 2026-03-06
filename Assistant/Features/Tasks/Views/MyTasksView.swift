@@ -112,7 +112,7 @@ struct MyTasksView: View {
                 } label: {
                     Text(filter.displayName)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedFilter == filter ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(selectedFilter == filter ? .textPrimary : .textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -152,9 +152,9 @@ struct MyTasksView: View {
                 let doneCount = allMyTasks.filter { $0.status == .completed && $0.isRecurring }.count
                 
                 HStack(spacing: DS.Spacing.md) {
-                    StatCard(title: L10n.todo, count: todoCount, color: .statusTodo)
+                    StatCard(title: L10n.todo, count: todoCount, color: Color.statusTodo)
                     StatCard(title: L10n.inProgress, count: inProgressCount, color: Color.statusInProgress)
-                    StatCard(title: L10n.done, count: doneCount, color: .statusCompleted)
+                    StatCard(title: L10n.done, count: doneCount, color: Color.statusCompleted)
                 }
             }
         }
@@ -253,7 +253,7 @@ struct StatCard: View {
             
             Text(title)
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, DS.Spacing.lg)
@@ -267,12 +267,13 @@ struct StatCard: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     MyTasksView()
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
 }

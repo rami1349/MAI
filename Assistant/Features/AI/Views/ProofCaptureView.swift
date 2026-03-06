@@ -183,11 +183,11 @@ struct ProofCaptureView: View {
                     ImageProcessingOverlay(message: processingMessage)
                 }
             }
-            .navigationTitle("Submit Proof")
+            .navigationTitle(L10n.submitProof)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(L10n.cancel) { dismiss() }
                         .disabled(isUploading || isProcessingImage)
                 }
             }
@@ -211,15 +211,15 @@ struct ProofCaptureView: View {
                     ProofPreviewSheet(item: item)
                 }
             }
-            .alert("No Text Detected", isPresented: $showNoTextWarning) {
-                Button("Use Anyway") { }
+            .alert(L10n.noTextDetected, isPresented: $showNoTextWarning) {
+                Button(L10n.useAnyway) { }
                 Button("Retake", role: .cancel) {
                     if let lastItem = proofItems.last {
                         proofItems.removeAll { $0.id == lastItem.id }
                     }
                 }
             } message: {
-                Text("This image may not contain readable homework. The AI might have trouble verifying it.")
+                Text(L10n.thisImageMayNotContainReadableHomeworkTheA)
             }
         }
     }
@@ -255,7 +255,7 @@ struct ProofCaptureView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "dollarsign.circle.fill")
                         .foregroundStyle(.accentGreen)
-                    Text("Earn \(amount.currencyString)")
+                    Text(L10n.earnAmount(amount.currencyString))
                         .fontWeight(.medium)
                 }
                 .font(.subheadline)
@@ -284,10 +284,10 @@ struct ProofCaptureView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: DS.IconSize.md, height: DS.IconSize.md)
-                Text("MAI will check your work")
+                Text(L10n.maiWillCheckYourWork)
             } else {
                 Image(systemName: "person.fill")
-                Text("Parent will review")
+                Text(L10n.parentWillReview)
             }
         }
         .font(.caption)
@@ -318,10 +318,10 @@ struct ProofCaptureView: View {
             }
             
             VStack(spacing: DS.Spacing.xs) {
-                Text("Add Proof of Completion")
+                Text(L10n.addProofOfCompletion)
                     .font(.headline)
                 
-                Text("Upload photos, videos, or documents to show your work")
+                Text(L10n.uploadPhotosVideosOrDocumentsToShowYourWor)
                     .font(.subheadline)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -330,7 +330,7 @@ struct ProofCaptureView: View {
             // Tips for homework photos (only show for homework)
             if task.taskType == .homework {
                 VStack(spacing: DS.Spacing.xs) {
-                    Text("Tips for homework photos:")
+                    Text(L10n.tipsForHomeworkPhotos)
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(.textSecondary)
@@ -411,7 +411,7 @@ struct ProofCaptureView: View {
     
     private var addProofSection: some View {
         VStack(spacing: DS.Spacing.md) {
-            Text("Add More")
+            Text(L10n.addMore)
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
             
@@ -778,7 +778,7 @@ struct ImageProcessingOverlay: View {
                     .font(.headline)
                     .foregroundStyle(.textOnAccent)
                 
-                Text("Optimizing for MAI")
+                Text(L10n.optimizingForMai)
                     .font(.caption)
                     .foregroundStyle(.textOnAccent.opacity(0.8))
             }
@@ -839,7 +839,7 @@ struct ProofPreviewCard: View {
                     if item.wasEnhanced {
                         HStack(spacing: 2) {
                             Image(systemName: "sparkles")
-                            Text("Enhanced")
+                            Text(L10n.enhanced)
                         }
                         .font(.caption2)
                         .foregroundStyle(.accentPrimary)
@@ -1046,7 +1046,7 @@ struct ProofPreviewSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button(L10n.close) { dismiss() }
                         .foregroundStyle(.textOnAccent)
                 }
             }

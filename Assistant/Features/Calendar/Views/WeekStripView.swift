@@ -31,7 +31,7 @@ struct WeekStripView: View {
                 let isToday = calendar.isDate(date, inSameDayAs: todayDate)
                 let count = itemCounts[AgendaDataCache.dayKey(for: date)] ?? 0
                 
-                LuxuryDayCell(
+                DayCell(
                     dayLetter: Self.dayLetters[index % 7],
                     dayNumber: date.dayNumber,
                     isSelected: isSelected,
@@ -70,9 +70,9 @@ struct WeekStripView: View {
     }
 }
 
-// MARK: - Luxury Day Cell
+// MARK: - Day Cell
 
-private struct LuxuryDayCell: View {
+private struct DayCell: View {
     let dayLetter: String
     let dayNumber: String
     let isSelected: Bool
@@ -84,7 +84,7 @@ private struct LuxuryDayCell: View {
             // Day letter
             Text(dayLetter)
                 .font(DS.Typography.micro())
-                .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
             
             // Day number
             Text(dayNumber)
@@ -142,7 +142,7 @@ private struct LuxuryDayCell: View {
             } else {
                 Text("\(itemCount)")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                     .frame(height: 6)
             }
         } else {

@@ -307,10 +307,10 @@ struct MainTabView: View {
             ) {
                 showQuickAddMenu = true
             }
-            .confirmationDialog("Create", isPresented: $showQuickAddMenu) {
-                Button("New Task") { showAddTask = true }
-                Button("New Event") { showAddEvent = true }
-                Button("New Habit") { showAddHabit = true }
+            .confirmationDialog(L10n.create, isPresented: $showQuickAddMenu) {
+                Button(L10n.newTask) { showAddTask = true }
+                Button(L10n.newEvent) { showAddEvent = true }
+                Button(L10n.newHabit) { showAddHabit = true }
                 Button("Cancel", role: .cancel) {}
             }
         }

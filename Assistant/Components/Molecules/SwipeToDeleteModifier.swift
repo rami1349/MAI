@@ -71,7 +71,7 @@ struct SwipeableModifier: ViewModifier {
                         .font(.caption)
                         .fontWeight(.medium)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
             }
             .frame(width: max(actionWidth, width))
         }
@@ -158,7 +158,7 @@ extension View {
         swipeable(trailing: SwipeAction(
             icon: "trash.fill",
             title: L10n.delete,
-            color: .accentRed,
+            color: Color.accentRed,
             action: action
         ))
     }
@@ -173,13 +173,13 @@ extension View {
             leading: canComplete ? SwipeAction(
                 icon: "checkmark.circle.fill",
                 title: L10n.done,
-                color: .accentGreen,
+                color: Color.accentGreen,
                 action: onComplete
             ) : nil,
             trailing: SwipeAction(
                 icon: "trash.fill",
                 title: L10n.delete,
-                color: .accentRed,
+                color: Color.accentRed,
                 action: onDelete
             )
         )

@@ -28,15 +28,6 @@
 //   - `updateEvent()` uses optimistic local update with rollback on failure
 //   - Cached DateFormatter for performance
 //   - Multi-assignee aware filtering for tasks
-//
-// FIXES APPLIED:
-//   ✅ SUGGESTION 1: Real-time Firestore listener for live updates
-//   ✅ SUGGESTION 2: Cached static DateFormatter for monthYearString
-//   ✅ SUGGESTION 3: Rollback on updateEvent() failure
-//   ✅ SUGGESTION 4: Multi-assignee support in eventsFor()
-//   ✅ SUGGESTION 5: Safe guard instead of force-unwrap in generateDaysInMonth()
-//
-// ============================================================================
 
 import Foundation
 import Observation
@@ -80,7 +71,7 @@ final class CalendarViewModel {
     // MARK: - Private
     
     /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     
     /// Shared Calendar instance for all date arithmetic in this ViewModel.
     @ObservationIgnored private let calendar = Calendar.current
@@ -93,7 +84,7 @@ final class CalendarViewModel {
     
     /// Currently loaded date range (to avoid redundant listener setup)
     @ObservationIgnored private var loadedStartDate: Date?
-@ObservationIgnored     @ObservationIgnored private var loadedEndDate: Date?
+    @ObservationIgnored private var loadedEndDate: Date?
     
     /// Cached month/year string - recomputed only when currentMonth changes (FIX: SUGGESTION 2)
     @ObservationIgnored private var _cachedMonthYearString: String?

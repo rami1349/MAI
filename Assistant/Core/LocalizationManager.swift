@@ -1,12 +1,33 @@
 //
 //  LocalizationManager.swift
+//  FamilyHub
+//
+//  Refactored to use Apple's standard Localizable.strings files.
+//
+//  HOW IT WORKS:
+//  - All translations live in standard .strings files:
+//      en.lproj/Localizable.strings
+//      es.lproj/Localizable.strings
+//      zh-Hans.lproj/Localizable.strings
+//  - LocalizationManager handles in-app language override by loading
+//    the correct .lproj bundle at runtime.
+//  - L10n provides type-safe accessors (unchanged public API).
+//  - No more Strings.defaults dictionary â€” Apple's bundle system IS the source of truth.
+//
+//  MIGRATION NOTES:
+//  - The Localizable.strings files you already have for es and zh-Hans remain as-is.
+//  - You MUST add en.lproj/Localizable.strings with all English strings
+//    (previously hardcoded in Strings.defaults). A generated copy is provided.
+//  - Every call site using L10n.xxx continues to work with zero changes.
+//
 
 import Foundation
 import SwiftUI
 
 // MARK: - Supported Languages
+// ⚠️ RENAMED: Was "AppLanguage" - now "LanguageOption" to avoid conflict with AppLanguage.swift class
 
-enum AppLanguage: String, CaseIterable, Identifiable {
+enum LanguageOption: String, CaseIterable, Identifiable {
     case system  = "system"
     case english = "en"
     case spanish = "es"
@@ -19,7 +40,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .system:  return "System Default"
         case .english: return "English"
         case .spanish: return "Español"
-        case .chinese: return "Chinese"
+        case .chinese: return "中文"
         }
     }
     
@@ -28,7 +49,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .system:  return "System"
         case .english: return "English"
         case .spanish: return "Español"
-        case .chinese: return "Chinese"
+        case .chinese: return "中文"
         }
     }
 }
@@ -42,7 +63,7 @@ final class LocalizationManager {
     @ObservationIgnored private let languageKey = "app_language_preference"
     
     private(set) var currentLanguage: String
-    private(set) var selectedLanguage: AppLanguage
+    private(set) var selectedLanguage: LanguageOption
     
     /// The .lproj bundle for the active language.
     /// `nil` only if the .lproj folder is missing from the app bundle.
@@ -52,7 +73,7 @@ final class LocalizationManager {
     
     private init() {
         let saved = UserDefaults.standard.string(forKey: languageKey) ?? "system"
-        let language = AppLanguage(rawValue: saved) ?? .system
+        let language = LanguageOption(rawValue: saved) ?? .system
         let resolved = language == .system
         ? Self.resolveSystemLanguage()
         : language.rawValue
@@ -64,7 +85,7 @@ final class LocalizationManager {
     
     // MARK: - Language Switching
     
-    func setLanguage(_ language: AppLanguage) {
+    func setLanguage(_ language: LanguageOption) {
         selectedLanguage = language
         UserDefaults.standard.set(language.rawValue, forKey: languageKey)
         
@@ -73,7 +94,8 @@ final class LocalizationManager {
         : language.rawValue
         
         bundle = Self.loadBundle(for: currentLanguage)
-        objectWillChange.send()
+        // Note: With @Observable, property changes automatically trigger view updates.
+        // No need for objectWillChange.send() - that's the old ObservableObject pattern.
     }
     
     // MARK: - String Lookup
@@ -93,12 +115,12 @@ final class LocalizationManager {
     
     var languageDisplayName: String {
         selectedLanguage == .system
-        ? AppLanguage(rawValue: currentLanguage)?.displayName ?? "English"
+        ? LanguageOption(rawValue: currentLanguage)?.displayName ?? "English"
         : selectedLanguage.displayName
     }
     
     var currentLanguageShortName: String {
-        AppLanguage(rawValue: currentLanguage)?.shortName ?? "English"
+        LanguageOption(rawValue: currentLanguage)?.shortName ?? "English"
     }
     
     // MARK: - Private Helpers
@@ -799,5 +821,345 @@ struct L10n {
     
     static func membersCount(_ count: Int) -> String {
         "\(count) \(pluralMembers(count))"
+    }
+
+    // ════════════════════════════════════════════════════════════════
+    // MARK: - Phase 5 Localization Extraction (163 new keys)
+    // ════════════════════════════════════════════════════════════════
+
+    // ACTION
+    static var actionCompletedSuccessfully: String { loc.string("action_completed_successfully") }
+    static var actionFailed: String { loc.string("action_failed") }
+    static var confirmAction: String { loc.string("confirm_action") }
+    static var confirmBtn: String { loc.string("confirm") }
+    static var processingEllipsis: String { loc.string("processing") }
+
+    // AI
+    static var aiAnalysis: String { loc.string("ai_analysis") }
+    static var aiCredits: String { loc.string("ai_credits") }
+    static var aiProvidesSuggestionsOnly: String { loc.string("ai_provides_suggestions_only__you_make_the_final_d") }
+    static var aiSuggestion: String { loc.string("ai_suggestion") }
+    static var aiUsage: String { loc.string("ai_usage") }
+    static var betaLabel: String { loc.string("beta") }
+    static var buyCredits: String { loc.string("buy_credits") }
+    static var creditsLabel: String { loc.string("credits") }
+    static var currentBalance: String { loc.string("current_balance") }
+    static var dailyLimit: String { loc.string("daily_limit") }
+    static var maiLabel: String { loc.string("mai") }
+    static var messagesRemainingToday: String { loc.string("messages_remaining_today") }
+    static var purchaseBtn: String { loc.string("purchase") }
+    static var suggestionsOnlyYouDecide: String { loc.string("suggestions_only__you_decide") }
+    static var unlimitedLabel: String { loc.string("unlimited") }
+    static var upgradeBtn: String { loc.string("upgrade") }
+    static var upgradeForMore: String { loc.string("upgrade_for_more") }
+    static var youHaveCredits: String { loc.string("you_have_credits") }
+
+    // CHAT
+    static var aiAssistant: String { loc.string("ai_assistant") }
+    static var askMaiAnything: String { loc.string("ask_mai_anything") }
+    static var clearChat: String { loc.string("clear_chat") }
+    static var creditsAvailable: String { loc.string("credits_available") }
+    static var newChat: String { loc.string("new_chat") }
+    static var sendMessage: String { loc.string("send_message") }
+    static var typeAMessage: String { loc.string("type_a_message") }
+    static var useCredit: String { loc.string("use_credit") }
+
+    // COMMON
+    static var aboutLabel: String { loc.string("about") }
+    static var addPhotos: String { loc.string("add_photos") }
+    static var allLabel: String { loc.string("all") }
+    static var analyzingHomeworkWithAi: String { loc.string("analyzing_homework_with_ai") }
+    static var appearanceLabel: String { loc.string("appearance") }
+    static var approveBtn: String { loc.string("approve") }
+    static var areasToReview: String { loc.string("areas_to_review") }
+    static var assignedByLabel: String { loc.string("assigned_by") }
+    static var assignedToLabel: String { loc.string("assigned_to") }
+    static var backLabel: String { loc.string("back") }
+    static var balanceLabel: String { loc.string("balance") }
+    static var bestValue: String { loc.string("best_value") }
+    static var calendarLabel: String { loc.string("calendar") }
+    static var chatLabel: String { loc.string("chat") }
+    static var closeLabel: String { loc.string("close_label") }
+    static var confidenceLabel: String { loc.string("confidence") }
+    static var continueBtn: String { loc.string("continue") }
+    static var correctLabel: String { loc.string("correct") }
+    static var dateJoined: String { loc.string("date_joined") }
+    static var deleteAccountLabel: String { loc.string("delete_account_label") }
+    static var descriptionLabel: String { loc.string("description") }
+    static var disclaimerLabel: String { loc.string("disclaimer") }
+    static var dueDateLabel: String { loc.string("due_date") }
+    static var editLabel: String { loc.string("edit_label") }
+    static var emailLabel: String { loc.string("email_label") }
+    static var encouragementLabel: String { loc.string("encouragement") }
+    static var enhancingImage: String { loc.string("enhancing_image") }
+    static var errorLabel: String { loc.string("error_label") }
+    static var expectedAnswer: String { loc.string("expected_answer") }
+    static var familyLabel: String { loc.string("family") }
+    static var filterLabel: String { loc.string("filter") }
+    static var freeTrial: String { loc.string("free_trial") }
+    static var habitsLabel: String { loc.string("habits") }
+    static var homeLabel: String { loc.string("home") }
+    static var homeworkCheck: String { loc.string("homework_check") }
+    static var imageQualityWarning: String { loc.string("image_quality_may_affect_verification_accuracy") }
+    static var incorrectLabel: String { loc.string("incorrect") }
+    static var itemsSelected: String { loc.string("items_selected") }
+    static var languageLabel: String { loc.string("language") }
+    static var loadingEventsEllipsis: String { loc.string("loading_events") }
+    static var loadingHabitsEllipsis: String { loc.string("loading_habits") }
+    static var loadingTasksEllipsis: String { loc.string("loading_tasks") }
+    static var memberDetails: String { loc.string("member_details") }
+    static var monthlyLabel: String { loc.string("monthly") }
+    static var needsReviewLabel: String { loc.string("needs_review") }
+    static var nextLabel: String { loc.string("next") }
+    static var noTextDetectedInImage: String { loc.string("no_text_detected_in_image") }
+    static var noteLabel: String { loc.string("note") }
+    static var notificationsLabel: String { loc.string("notifications_label") }
+    static var overviewLabel: String { loc.string("overview") }
+    static var overdueLabel: String { loc.string("overdue") }
+    static var perMonth: String { loc.string("per_month") }
+    static var perYear: String { loc.string("per_year") }
+    static var premiumLabel: String { loc.string("premium") }
+    static var previousLabel: String { loc.string("previous") }
+    static var priorityLabel: String { loc.string("priority") }
+    static var processingImage: String { loc.string("processing_image") }
+    static var profileLabel: String { loc.string("profile") }
+    static var proofImage: String { loc.string("proof_image") }
+    static var questionLabel: String { loc.string("question") }
+    static var questionsLabel: String { loc.string("questions") }
+    static var rejectBtn: String { loc.string("reject") }
+    static var removeLabel: String { loc.string("remove") }
+    static var restorePurchases: String { loc.string("restore_purchases") }
+    static var retryLabel: String { loc.string("retry") }
+    static var retryVerification: String { loc.string("retry_verification") }
+    static var rewardLabel: String { loc.string("reward") }
+    static var rewardsLabel: String { loc.string("rewards") }
+    static var roleLabel: String { loc.string("role") }
+    static var scoreLabel: String { loc.string("score") }
+    static var searchLabel: String { loc.string("search") }
+    static var settingsLabel: String { loc.string("settings") }
+    static var signOutLabel: String { loc.string("sign_out") }
+    static var sortLabel: String { loc.string("sort") }
+    static var statusLabel: String { loc.string("status") }
+    static var studentAnswer: String { loc.string("student_answer") }
+    static var submitBtn: String { loc.string("submit") }
+    static var summaryLabel: String { loc.string("summary") }
+    static var taskLabel: String { loc.string("task") }
+    static var tasksAssigned: String { loc.string("tasks_assigned") }
+    static var tasksCompleted: String { loc.string("tasks_completed") }
+    static var tasksLabel: String { loc.string("tasks") }
+    static var thisMayTakeAMoment: String { loc.string("this_may_take_a_moment") }
+    static var tryAgain: String { loc.string("try_again") }
+    static var uncertainLabel: String { loc.string("uncertain") }
+    static var unlockPremium: String { loc.string("unlock_premium") }
+    static var uploadFiles: String { loc.string("upload_files") }
+    static var uploadingEllipsis: String { loc.string("uploading") }
+    static var versionLabel: String { loc.string("version") }
+    static var verifyNow: String { loc.string("verify_now") }
+    static var verifyingEllipsis: String { loc.string("verifying") }
+    static var yearlyLabel: String { loc.string("yearly") }
+
+    // PROFILE
+    static var personalGoal: String { loc.string("personal_goal") }
+    static var saveChanges: String { loc.string("save_changes") }
+
+    // TASK
+    static var tasksCompletedLabel: String { loc.string("tasks_completed_label") }
+
+    // VERIFICATION
+    static var cannotVerify: String { loc.string("cannot_verify") }
+    static var looksCorrect: String { loc.string("looks_correct") }
+    static var unclearLabel: String { loc.string("unclear_label") }
+    static var likelyCorrectLabel: String { loc.string("likely_correct") }
+    static var likelyIncorrectLabel: String { loc.string("likely_incorrect") }
+    static var verificationFailed: String { loc.string("verification_failed") }
+    
+    // MARK: - Task Detail Verification UI (added for TaskDetailView.swift)
+    static var needsAttention: String { loc.string("needs_attention") }
+    static var answer: String { loc.string("answer") }
+    static var expected: String { loc.string("expected") }
+    static var verified: String { loc.string("verified") }
+
+    // ════════════════════════════════════════════════════════════════
+    // MARK: - Missing Keys (Build Fix - 113 properties)
+    // ════════════════════════════════════════════════════════════════
+    
+    // Common/UI
+    static var active: String { loc.string("active") }
+    static var activeTasks: String { loc.string("active_tasks") }
+    static var addMore: String { loc.string("add_more") }
+    static var addProofOfCompletion: String { loc.string("add_proof_of_completion") }
+    static var allCaughtUp: String { loc.string("all_caught_up") }
+    static var analysis: String { loc.string("analysis") }
+    static var approve: String { loc.string("approve") }
+    static var beta: String { loc.string("beta") }
+    static var clearAll: String { loc.string("clear_all") }
+    static var clearSchedule: String { loc.string("clear_schedule") }
+    static var confirm: String { loc.string("confirm") }
+    static var createEvent: String { loc.string("create_event") }
+    static var credits: String { loc.string("credits") }
+    static var details: String { loc.string("details") }
+    static var dynamicTypeTest: String { loc.string("dynamic_type_test") }
+    static var enhanced: String { loc.string("enhanced") }
+    static var filterEventsTasks: String { loc.string("filter_events_tasks") }
+    static var focusNow: String { loc.string("focus_now") }
+    static var getMore: String { loc.string("get_more") }
+    static var manageSubscription: String { loc.string("manage_subscription") }
+    static var plan: String { loc.string("plan") }
+    static var printReport: String { loc.string("print_report") }
+    static var questionDetails: String { loc.string("question_details") }
+    static var reassignTask: String { loc.string("reassign_task") }
+    static var reviewManually: String { loc.string("review_manually") }
+    static var save33: String { loc.string("save_33") }
+    static var schedule: String { loc.string("schedule") }
+    static var searchTasks: String { loc.string("search_tasks") }
+    static var start: String { loc.string("start") }
+    static var student: String { loc.string("student") }
+    static var subscribe: String { loc.string("subscribe") }
+    static var subscription: String { loc.string("subscription") }
+    static var suggestion: String { loc.string("suggestion") }
+    static var tabBar: String { loc.string("tab_bar") }
+    static var toDo: String { loc.string("to_do") }
+    static var todayTomorrow: String { loc.string("today_tomorrow") }
+    static var type: String { loc.string("type") }
+    static var updateStatus: String { loc.string("update_status") }
+    static var updateTask: String { loc.string("update_task") }
+    static var upgrade: String { loc.string("upgrade") }
+    static var upgradeToPremium: String { loc.string("upgrade_to_premium") }
+    static var useAnyway: String { loc.string("use_anyway") }
+    static var whatYouGet: String { loc.string("what_you_get") }
+    static var yourDecision: String { loc.string("your_decision") }
+    
+    // AI/MAI Related
+    static var aiAssistantIsTemporarilyUnavailable: String { loc.string("ai_assistant_is_temporarily_unavailable") }
+    static var aiConfidence: String { loc.string("ai_confidence") }
+    static var aiServiceTemporarilyUnavailablePleaseTryAgai: String { loc.string("ai_service_temporarily_unavailable_please_try_again") }
+    static var analyzingHomework: String { loc.string("analyzing_homework") }
+    static var analyzingHomeworkPleaseWait: String { loc.string("analyzing_homework_please_wait") }
+    static var getMaiRecommendationToHelpYouReviewThisHom: String { loc.string("get_mai_recommendation_to_help_you_review_this_homework") }
+    static var getMaiSuggestion: String { loc.string("get_mai_suggestion") }
+    static var lowAiConfidencePleaseReviewCarefully: String { loc.string("low_ai_confidence_please_review_carefully") }
+    static var lowConfidenceAnalysis: String { loc.string("low_confidence_analysis") }
+    static var mai: String { loc.string("mai") }
+    static var maiEstimate: String { loc.string("mai_estimate") }
+    static var maiLimitations: String { loc.string("mai_limitations") }
+    static var maiMayMakeMistakesReadingHandwritingOrSolvi: String { loc.string("mai_may_make_mistakes_reading_handwriting_or_solving") }
+    static var maiSuggests: String { loc.string("mai_suggests") }
+    static var maiWillCheckYourWork: String { loc.string("mai_will_check_your_work") }
+    static var manualReviewStronglyRecommended: String { loc.string("manual_review_strongly_recommended") }
+    static var onlyYouCanApproveOrRejectAiCannotMakeThis: String { loc.string("only_you_can_approve_or_reject_ai_cannot_make_this") }
+    static var optimizingForMai: String { loc.string("optimizing_for_mai") }
+    static var parentWillReview: String { loc.string("parent_will_review") }
+    static var pleaseReviewTheHomeworkManually: String { loc.string("please_review_the_homework_manually") }
+    static var readingHandwritingCheckingAnswers: String { loc.string("reading_handwriting_checking_answers") }
+    static var rememberMaiSuggestionsMayBeInaccurate: String { loc.string("remember_mai_suggestions_may_be_inaccurate") }
+    static var suggestedPracticeAreas: String { loc.string("suggested_practice_areas") }
+    static var verifyHomework: String { loc.string("verify_homework") }
+    static var maiAnalysis: String { loc.string("mai_analysis") }
+    static var maiMayMakeMistakesParentHasFinalSay: String { loc.string("mai_may_make_mistakes_parent_has_final_say") }
+    static var checkingHomework: String { loc.string("checking_homework") }
+    static var maiCouldntAnalyzePleaseReviewManually: String { loc.string("mai_couldnt_analyze_please_review_manually") }
+    static var reviewThePhotoAndDecideIfTheChoreIsDone: String { loc.string("review_the_photo_and_decide_if_the_chore_is_done") }
+    static var needsRedo: String { loc.string("needs_redo") }
+    
+    // Verification Status
+    static var likelyCorrect: String { loc.string("likely_correct") }
+    static var likelyIncorrect: String { loc.string("likely_incorrect") }
+    static var needsReview: String { loc.string("needs_review") }
+    static var needsReviewStringlocalized: String { loc.string("needs_review") }
+    static var uncertain: String { loc.string("uncertain") }
+    static var unclear: String { loc.string("unclear") }
+    static var couldNotAnalyze: String { loc.string("could_not_analyze") }
+    static var unableToAnalyzePleaseReviewManually: String { loc.string("unable_to_analyze_please_review_manually") }
+    static var verificationFailedPleaseReviewManually: String { loc.string("verification_failed_please_review_manually") }
+    static var warningLowConfidenceAnalysisManualReviewStro: String { loc.string("warning_low_confidence_analysis_manual_review_strongly") }
+    
+    // Error Messages
+    static var connectionFailedPleaseTryAgain: String { loc.string("connection_failed_please_try_again") }
+    static var couldNotProcessImagePleaseTryAClearerPhoto: String { loc.string("could_not_process_image_please_try_a_clearer_photo") }
+    static var failedToProcessImage: String { loc.string("failed_to_process_image") }
+    static var imageTooLargePleaseUseASmallerImage: String { loc.string("image_too_large_please_use_a_smaller_image") }
+    static var invalidResponseFromServer: String { loc.string("invalid_response_from_server") }
+    static var nothingToRetry: String { loc.string("nothing_to_retry") }
+    static var requestTimedOut: String { loc.string("request_timed_out") }
+    static var requestTimedOutPleaseTryAgain: String { loc.string("request_timed_out_please_try_again") }
+    static var serviceTemporarilyUnavailable: String { loc.string("service_temporarily_unavailable") }
+    static var somethingWentWrongPleaseTryAgain: String { loc.string("something_went_wrong_please_try_again") }
+    static var thisImageMayNotContainReadableHomeworkTheA: String { loc.string("this_image_may_not_contain_readable_homework_the_analysis") }
+    static var noTextDetected: String { loc.string("no_text_detected") }
+    static var noProofImageFoundForThisTask: String { loc.string("no_proof_image_found_for_this_task") }
+    
+    // Empty States
+    static var enjoyAPeacefulWeek: String { loc.string("enjoy_a_peaceful_week") }
+    static var noUrgentTasksRightNow: String { loc.string("no_urgent_tasks_right_now") }
+    static var nothingScheduledForTodayOrTomorrow: String { loc.string("nothing_scheduled_for_today_or_tomorrow") }
+    static var thisDayIsClear: String { loc.string("this_day_is_clear") }
+    
+    // Credits/Subscription
+    static var buyCreditsToKeepChattingCreditsNeverExpire: String { loc.string("buy_credits_to_keep_chatting_credits_never_expire") }
+    static var dailyVerificationLimitReachedTryAgainTomorro: String { loc.string("daily_verification_limit_reached_try_again_tomorrow") }
+    static var messageLimitReached: String { loc.string("message_limit_reached") }
+    static var moreMessagesSmarterAiAndUnlimitedPotentialF: String { loc.string("more_messages_smarter_ai_and_unlimited_potential_for") }
+    static var needMoreMessages: String { loc.string("need_more_messages") }
+    static var orUpgradeToPremiumFor300day: String { loc.string("or_upgrade_to_premium_for_3_00_day") }
+    static var paymentWillBeChargedToYourAppleIdAccountS: String { loc.string("payment_will_be_charged_to_your_apple_id_account_subscription") }
+    static var unlockTheFullMaiExperience: String { loc.string("unlock_the_full_mai_experience") }
+    static var youveUsedAllYourMessagesForTodayTryAgainT: String { loc.string("youve_used_all_your_messages_for_today_try_again_tomorrow") }
+    
+    // Proof/Homework
+    static var homeworkProofImage: String { loc.string("homework_proof_image") }
+    static var tipsForHomeworkPhotos: String { loc.string("tips_for_homework_photos") }
+    static var uploadPhotosVideosOrDocumentsToShowYourWor: String { loc.string("upload_photos_videos_or_documents_to_show_your_work") }
+    
+    // Auth
+    static var pleaseSignInToChat: String { loc.string("please_sign_in_to_chat") }
+    static var pleaseSignInToVerifyHomework: String { loc.string("please_sign_in_to_verify_homework") }
+    
+    // Action Confirmation
+    static var actionCancelledLetMeKnowIfYoudLikeToTryS: String { loc.string("action_cancelled_let_me_know_if_youd_like_to_try_something") }
+    static var thisActionWillBePerformedAfterYouConfirm: String { loc.string("this_action_will_be_performed_after_you_confirm") }
+    
+    // Misc/Debug
+    static var xxx: String { loc.string("xxx") }
+    static var zZZ: String { loc.string("zzz") }
+    
+    // Number formatting placeholder (used in code)
+    static var _100: String { "100" }
+
+    // ════════════════════════════════════════════════════════════════
+    // MARK: - Format Functions (interpolated strings)
+    // ════════════════════════════════════════════════════════════════
+
+    static func dailyLimitUsedWithCredits(_ limit: Int, _ credits: Int) -> String {
+        loc.string("daily_limit_used_with_credits", limit, credits)
+    }
+    static func dailyLimitUsed(_ limit: Int) -> String {
+        loc.string("daily_limit_used", limit)
+    }
+    static func usingCreditsRemaining(_ count: Int) -> String {
+        loc.string("using_credits_remaining", count)
+    }
+    static func dailyAiActionsUsed(_ count: Int) -> String {
+        loc.string("daily_ai_actions_used", count)
+    }
+    static func questionNumberShort(_ num: String) -> String {
+        loc.string("question_number_short", num)
+    }
+    static func goalForYear(_ year: Int) -> String {
+        loc.string("goal_for_year", year)
+    }
+    static func questionNumberWithText(_ num: String, _ text: String) -> String {
+        loc.string("question_number_with_text", num, text)
+    }
+    static func questionNumberLabel(_ num: String) -> String {
+        loc.string("question_number_label", num)
+    }
+    static func aiUnavailableRetrySeconds(_ seconds: Int) -> String {
+        loc.string("ai_unavailable_retry_seconds", seconds)
+    }
+    static func maiUnavailableRetrySeconds(_ seconds: Int) -> String {
+        loc.string("mai_unavailable_retry_seconds", seconds)
+    }
+    static func aiServiceUnavailableRetry(_ seconds: Int) -> String {
+        loc.string("ai_service_unavailable_retry", seconds)
     }
 }

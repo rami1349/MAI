@@ -60,8 +60,8 @@ struct EditProfileSheet: View {
                 }
                 
                 // Basic Info Section
-                Section("Basic Info") {
-                    TextField("Display Name", text: $displayName)
+                Section(L10n.basicInfo) {
+                    TextField(L10n.displayName, text: $displayName)
                     
                     Button {
                         showDatePicker.toggle()
@@ -112,7 +112,7 @@ struct EditProfileSheet: View {
                 }
                 
                 // Goal Suggestions
-                Section("Goal Ideas") {
+                Section(L10n.goalIdeas) {
                     GoalSuggestionButton(text: "Exercise regularly and stay healthy") {
                         goal = "Exercise regularly and stay healthy"
                     }
@@ -131,10 +131,10 @@ struct EditProfileSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(L10n.cancel) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(L10n.save) {
                         saveProfile()
                     }
                     .disabled(isLoading || displayName.isEmpty)

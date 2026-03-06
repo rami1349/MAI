@@ -272,12 +272,12 @@ struct AIChatView: View {
                 .foregroundStyle(.textPrimary)
             
             if credits > 0 {
-                Text("You've used all \(limit) messages, but you have \(credits) credits left.")
+                Text(L10n.dailyLimitUsedWithCredits(limit, credits))
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             } else {
-                Text("You've used all \(limit) messages for today.")
+                Text(L10n.dailyLimitUsed(limit))
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -290,7 +290,7 @@ struct AIChatView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "crown.fill")
                                     .font(.caption2)
-                                Text("Upgrade")
+                                Text(L10n.upgrade)
                                     .font(.caption)
                                     .fontWeight(.semibold)
                             }
@@ -307,7 +307,7 @@ struct AIChatView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "bolt.fill")
                                 .font(.caption2)
-                            Text("Buy Credits")
+                            Text(L10n.buyCredits)
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -475,7 +475,7 @@ struct AIChatView: View {
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.accentPrimary)
                     
-                    Text("Using credits · \(store.aiCredits) remaining")
+                    Text(L10n.usingCreditsRemaining(store.aiCredits))
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                     
@@ -484,7 +484,7 @@ struct AIChatView: View {
                     Button {
                         store.showCreditsPurchase = true
                     } label: {
-                        Text("Get more")
+                        Text(L10n.getMore)
                             .font(.caption)
                             .foregroundStyle(.accentPrimary)
                     }
@@ -512,7 +512,7 @@ struct AIChatView: View {
                             Button {
                                 store.showPaywall = true
                             } label: {
-                                Text("Upgrade")
+                                Text(L10n.upgrade)
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.textOnAccent)
@@ -528,7 +528,7 @@ struct AIChatView: View {
                             HStack(spacing: 2) {
                                 Image(systemName: "bolt.fill")
                                     .font(DS.Typography.micro())
-                                Text("Credits")
+                                Text(L10n.credits)
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                             }

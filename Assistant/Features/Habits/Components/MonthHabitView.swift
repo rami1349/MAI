@@ -107,7 +107,7 @@ struct MonthHabitCard: View {
                 
                 Text(habit.name)
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Spacer()
@@ -120,7 +120,7 @@ struct MonthHabitCard: View {
                     ForEach(Array(["S", "M", "T", "W", "T", "F", "S"].enumerated()), id: \.offset) { _, day in
                         Text(day)
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .frame(maxWidth: .infinity)
                     }
                 }
@@ -159,7 +159,7 @@ struct MonthHabitCard: View {
                 
                 Text("\(completedCount) completed")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Spacer()
             }
@@ -198,7 +198,7 @@ struct CalendarSquare: View {
             if isCompleted {
                 Image(systemName: "checkmark")
                     .font(DS.Typography.micro())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
             }
         }
     }

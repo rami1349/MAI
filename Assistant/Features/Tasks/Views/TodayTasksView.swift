@@ -118,7 +118,7 @@ struct TodayTasksView: View {
             Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
@@ -130,9 +130,9 @@ struct TodayTasksView: View {
             Spacer()
             
             // Title
-            Text("Schedule")
+            Text("L10n.schedule")
                 .font(DS.Typography.subheading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Spacer()
             
@@ -143,9 +143,9 @@ struct TodayTasksView: View {
                     currentWeekStart = Date().startOfWeek
                 }
             } label: {
-                Text("Today")
+                Text(L10n.today)
                     .font(DS.Typography.captionMedium())
-                    .foregroundStyle(isSelectedToday ? Color.textTertiary : Color.accentPrimary)
+                    .foregroundStyle(isSelectedToday ? .textTertiary : .accentPrimary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -168,7 +168,7 @@ struct TodayTasksView: View {
                 Button { previousWeek() } label: {
                     Image(systemName: "chevron.left")
                         .font(DS.Typography.label())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .frame(width: 32, height: 32)
                 }
                 
@@ -176,14 +176,14 @@ struct TodayTasksView: View {
                 
                 Text(Self.monthYearFormatter.string(from: currentWeekStart))
                     .font(DS.Typography.labelSmall())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 
                 Button { nextWeek() } label: {
                     Image(systemName: "chevron.right")
                         .font(DS.Typography.label())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .frame(width: 32, height: 32)
                 }
             }
@@ -192,7 +192,7 @@ struct TodayTasksView: View {
             // Week days
             HStack(spacing: DS.Spacing.xs) {
                 ForEach(weekDays, id: \.self) { date in
-                    LuxuryWeekDayCell(
+                    WeekDayCell(
                         date: date,
                         isSelected: calendar.isDate(date, inSameDayAs: selectedDate),
                         isToday: calendar.isDateInToday(date),
@@ -217,7 +217,7 @@ struct TodayTasksView: View {
             // Date title
             Text(Self.fullDateFormatter.string(from: selectedDate))
                 .font(DS.Typography.heading())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             // Stats row
             HStack(spacing: DS.Spacing.lg) {
@@ -225,20 +225,20 @@ struct TodayTasksView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "checklist")
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                     
                     Text("\(taskCount) \(taskCount == 1 ? "task" : "tasks")")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 if completedCount > 0 {
                     Text("•")
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     
                     Text("\(completedCount) done")
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                 }
                 
                 Spacer()
@@ -252,7 +252,7 @@ struct TodayTasksView: View {
     private var tasksList: some View {
         VStack(spacing: DS.Spacing.sm) {
             ForEach(tasksForSelectedDate, id: \.stableId) { task in
-                LuxuryTaskCard(
+                TodayTaskCard(
                     task: task,
                     isLoading: inFlightActions.contains(task.id ?? ""),
                     groupName: task.groupId.flatMap { familyMemberVM.getTaskGroup(by: $0)?.name },
@@ -280,18 +280,18 @@ struct TodayTasksView: View {
                 
                 Image(systemName: "leaf")
                     .font(DS.Typography.displayMedium())
-                    .foregroundStyle(Color.accentPrimary.opacity(0.5))
+                    .foregroundStyle(.accentPrimary.opacity(0.5))
             }
             
             // Text
             VStack(spacing: DS.Spacing.xs) {
                 Text(isSelectedToday ? "Nothing scheduled" : "No tasks")
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(isSelectedToday ? "Enjoy your free time" : "This day is clear")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
             Spacer()
@@ -353,9 +353,9 @@ struct TodayTasksView: View {
     }
 }
 
-// MARK: - Luxury Week Day Cell
+// MARK: - Week Day Cell
 
-struct LuxuryWeekDayCell: View {
+struct WeekDayCell: View {
     let date: Date
     let isSelected: Bool
     let isToday: Bool
@@ -380,12 +380,12 @@ struct LuxuryWeekDayCell: View {
                 // Day name
                 Text(Self.dayFormatter.string(from: date).prefix(3).uppercased())
                     .font(DS.Typography.micro())
-                    .foregroundStyle(isSelected ? Color.accentPrimary : Color.textTertiary)
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                 
                 // Date number
                 Text(Self.dateFormatter.string(from: date))
                     .font(DS.Typography.body()).fontWeight(isSelected ? .semibold : .regular)
-                    .foregroundStyle(isSelected ? Color.accentPrimary : (isToday ? Color.textPrimary : Color.textSecondary))
+                    .foregroundStyle(isSelected ? .accentPrimary : (isToday ? .textPrimary : .textSecondary))
                 
                 // Indicator dot
                 Circle()
@@ -414,9 +414,9 @@ struct LuxuryWeekDayCell: View {
     }
 }
 
-// MARK: - Luxury Task Card
+// MARK: - Today Task Card
 
-struct LuxuryTaskCard: View {
+struct TodayTaskCard: View {
     let task: FamilyTask
     var isLoading: Bool = false
     let groupName: String?
@@ -444,7 +444,7 @@ struct LuxuryTaskCard: View {
                     if let time = timeString {
                         Text(time)
                             .font(DS.Typography.captionMedium())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                     
                     Spacer()
@@ -456,7 +456,7 @@ struct LuxuryTaskCard: View {
                 // Title
                 Text(task.title)
                     .font(DS.Typography.label())
-                    .foregroundStyle(isCompleted ? Color.textTertiary : Color.textPrimary)
+                    .foregroundStyle(isCompleted ? .textTertiary : .textPrimary)
                     .strikethrough(isCompleted, color: Color.textTertiary)
                     .multilineTextAlignment(.leading)
                     .lineLimit(2)
@@ -470,7 +470,7 @@ struct LuxuryTaskCard: View {
                             Text(name)
                                 .font(DS.Typography.caption())
                         }
-                        .foregroundStyle(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                     }
                     
                     Spacer()
@@ -483,7 +483,7 @@ struct LuxuryTaskCard: View {
                             Text(amount.currencyString)
                                 .font(DS.Typography.captionMedium())
                         }
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                     }
                 }
                 
@@ -519,9 +519,9 @@ struct LuxuryTaskCard: View {
                 Circle()
                     .fill(Color.statusInProgress)
                     .frame(width: 6, height: 6)
-                Text("In Progress")
+                Text(L10n.inProgress)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.statusInProgress)
+                    .foregroundStyle(.statusInProgress)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
@@ -535,9 +535,9 @@ struct LuxuryTaskCard: View {
                 Circle()
                     .fill(Color.statusPending)
                     .frame(width: 6, height: 6)
-                Text("Pending")
+                Text(L10n.pending)
                     .font(DS.Typography.micro())
-                    .foregroundStyle(Color.statusPending)
+                    .foregroundStyle(.statusPending)
             }
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xxs)
@@ -549,7 +549,7 @@ struct LuxuryTaskCard: View {
         case .completed:
             Image(systemName: "checkmark.circle.fill")
                 .font(DS.Typography.heading())
-                .foregroundStyle(Color.accentGreen)
+                .foregroundStyle(.accentGreen)
         }
     }
     
@@ -569,10 +569,10 @@ struct LuxuryTaskCard: View {
                         Image(systemName: "play.fill")
                             .font(DS.Typography.micro())
                     }
-                    Text("Start")
+                    Text("L10n.start")
                         .font(DS.Typography.captionMedium())
                 }
-                .foregroundStyle(Color.accentPrimary)
+                .foregroundStyle(.accentPrimary)
                 .padding(.horizontal, DS.Spacing.md)
                 .padding(.vertical, DS.Spacing.sm)
                 .background(
@@ -589,10 +589,10 @@ struct LuxuryTaskCard: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: "scope")
                             .font(DS.Typography.micro())
-                        Text("Focus")
+                        Text(L10n.focus)
                             .font(DS.Typography.captionMedium())
                     }
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -613,10 +613,10 @@ struct LuxuryTaskCard: View {
                                 Image(systemName: "checkmark")
                                     .font(DS.Typography.micro())
                             }
-                            Text("Done")
+                            Text(L10n.done)
                                 .font(DS.Typography.captionMedium())
                         }
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.textOnAccent)
                         .padding(.horizontal, DS.Spacing.md)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -637,10 +637,11 @@ struct LuxuryTaskCard: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     NavigationStack {
         TodayTasksView()
             .environment(FamilyViewModel())
-            .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-            .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
+            .environment(familyVM.familyMemberVM)
+            .environment(familyVM.taskVM)
     }
 }

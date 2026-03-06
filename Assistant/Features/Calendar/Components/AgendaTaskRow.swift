@@ -1,6 +1,13 @@
 //
 //  AgendaTaskRow.swift
 //
+//  LUXURY CALM REDESIGN
+//  - Clean card design with soft shadows
+//  - Refined priority indicators
+//  - Elegant status badges
+//  - Premium typography
+//
+
 import SwiftUI
 
 // MARK: - Agenda Task Row
@@ -80,7 +87,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .stroke(Color.textTertiary.opacity(0.4), lineWidth: 1)
                     .frame(width: 10, height: 10)
-                Text("To Do")
+                Text("L10n.toDo")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textTertiary)
             }
@@ -90,7 +97,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .fill(Color.statusInProgress)
                     .frame(width: 6, height: 6)
-                Text("In Progress")
+                Text(L10n.inProgress)
                     .font(DS.Typography.micro())
                     .foregroundStyle(.statusInProgress)
             }
@@ -106,7 +113,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .fill(Color.statusPending)
                     .frame(width: 6, height: 6)
-                Text("Pending")
+                Text(L10n.pending)
                     .font(DS.Typography.micro())
                     .foregroundStyle(.statusPending)
             }

@@ -120,17 +120,17 @@ struct TaskGroupDetailView: View {
             
             Text(taskGroup.name)
                 .font(DS.Typography.displayMedium())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             if let creator = familyMemberVM.getMember(by: taskGroup.createdBy) {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(L10n.createdBy)
                         .font(.caption)
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                     Text(creator.displayName)
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                 }
             }
         }
@@ -150,7 +150,7 @@ struct TaskGroupDetailView: View {
                     .foregroundStyle(groupColor)
                 Text(L10n.totalTasks)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -164,7 +164,7 @@ struct TaskGroupDetailView: View {
                 
                 Text(L10n.completed)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -174,11 +174,11 @@ struct TaskGroupDetailView: View {
                 Text("\(Int(completionPercentage))%")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.accentGreen)
+                    .foregroundStyle(.accentGreen)
                 
                 Text(L10n.progress)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -192,7 +192,7 @@ struct TaskGroupDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(L10n.tasks)
                 .font(.headline)
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             VStack(spacing: 12) {
                 ForEach(tasksInGroup, id: \.stableId) { task in
@@ -213,10 +213,10 @@ struct TaskRowCard: View {
     
     var statusColor: Color {
         switch task.status {
-        case .todo: return .statusTodo
+        case .todo: return Color.statusTodo
         case .inProgress: return Color.statusInProgress
         case .pendingVerification: return Color.statusPending
-        case .completed: return .statusCompleted
+        case .completed: return Color.statusCompleted
         }
     }
     
@@ -230,7 +230,7 @@ struct TaskRowCard: View {
                 Text(task.title)
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 HStack(spacing: 8) {
                     HStack(spacing: 4) {
@@ -239,7 +239,7 @@ struct TaskRowCard: View {
                         Text(task.dueDate.formattedDate)
                             .font(.caption)
                     }
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     
                     if task.hasReward, let amount = task.rewardAmount {
                         HStack(spacing: 4) {
@@ -248,7 +248,7 @@ struct TaskRowCard: View {
                             Text(amount.currencyString)
                                 .font(.caption)
                         }
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                     }
                 }
             }
@@ -265,7 +265,7 @@ struct TaskRowCard: View {
             
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(.textSecondary)
         }
         .padding(12)
         .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
@@ -273,6 +273,7 @@ struct TaskRowCard: View {
 }
 
 #Preview {
+    let familyVM = FamilyViewModel()
     NavigationStack {
         TaskGroupDetailView(
             taskGroup: TaskGroup(
@@ -285,11 +286,11 @@ struct TaskRowCard: View {
             )
         )
         .environment(AuthViewModel())
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
     }
 }

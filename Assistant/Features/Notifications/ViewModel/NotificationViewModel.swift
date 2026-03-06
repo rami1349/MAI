@@ -63,7 +63,7 @@ final class NotificationViewModel {
     // MARK: - Private
     
     /// Firestore singleton — @ObservationIgnored (infrastructure, not UI state).
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     
     /// Real-time snapshot listener for the current user's notifications.
     @ObservationIgnored private var listener: ListenerRegistration?

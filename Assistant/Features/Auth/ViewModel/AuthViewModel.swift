@@ -101,7 +101,7 @@ class AuthViewModel {
     
     /// Firestore singleton accessor. @ObservationIgnored because db access
     /// is infrastructure — not UI state that views should observe.
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     
     // MARK: - Initialization
     

@@ -1,11 +1,8 @@
 //
 //  FamilyNotification.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  Notification model
-//
 //
 
 import Foundation
@@ -33,7 +30,7 @@ struct FamilyNotification: Identifiable, Codable {
         case reminder
         case familyInvite
         case eventCreated
-        case eventUpdated      
+        case eventUpdated
         case eventCanceled
         case taskOverdue
         case dailySummary

@@ -1,11 +1,7 @@
 //
 //  NotificationBadge.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Bell icon with notification count badge
 //
 
@@ -18,7 +14,7 @@ struct NotificationBadge: View {
         ZStack(alignment: .topTrailing) {
             Image(systemName: "bell.fill")
                 .font(.title3)
-                .foregroundColor(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             if count > 0 {
                 ZStack {
@@ -27,8 +23,8 @@ struct NotificationBadge: View {
                         .frame(width: 18, height: 18)
                     
                     Text("\(min(count, 99))")
-                        .font(.system(size: 10, weight: .bold)) // DT-exempt: badge counter
-                        .foregroundColor(.white)
+                        .font(.caption2.weight(.bold)) // DT-exempt: badge counter
+                        .foregroundStyle(.textOnAccent)
                 }
                 .offset(x: 8, y: -8)
             }

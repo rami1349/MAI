@@ -81,7 +81,7 @@ struct JoinFamilyResult {
 actor FamilyManagementService {
     
     static let shared = FamilyManagementService()
-    private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     private init() {}
     
     /// Maximum retry attempts for generating a unique invite code

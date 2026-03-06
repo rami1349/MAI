@@ -1,6 +1,13 @@
 //
 //  AuthenticationView.swift
 //  FamilyHub
+//
+//  LUXURY CALM REDESIGN
+//  - Elegant, minimal authentication flow
+//  - Soft shadows, premium typography
+//  - FIXED: Removed toolbar Done button (tap outside to dismiss)
+//  - Uses existing FieldHint and PasswordStrengthBar
+//
 
 import SwiftUI
 import AuthenticationServices
@@ -77,7 +84,7 @@ struct SocialLoginButtonsView: View {
                 Task { await authViewModel.signInWithGoogle() }
             }) {
                 HStack(spacing: DS.Spacing.md) {
-                    Image("google")
+                    Image("google_logo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)

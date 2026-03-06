@@ -55,17 +55,17 @@ enum EmptyStateContext {
         case .tasks, .todayTasks, .taskGroup:
             return Color.accentPrimary
         case .habits:
-            return .accentGreen
+            return Color.accentGreen
         case .notifications:
-            return .accentOrange
+            return Color.accentOrange
         case .calendar:
-            return .accentRed
+            return Color.accentRed
         case .search:
-            return .accentSecondary
+            return Color.accentSecondary
         case .family:
-            return .accentTertiary
+            return Color.accentTertiary
         case .rewards:
-            return .accentGreen
+            return Color.accentGreen
         case .generic:
             return Color.accentPrimary
         }
@@ -138,13 +138,13 @@ struct EmptyStateView: View {
             VStack(spacing: DS.Spacing.sm) {
                 Text(title)
                     .font(DS.Typography.heading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .opacity(isAnimating ? 1.0 : 0)
                     .offset(y: isAnimating ? 0 : 10)
                 
                 Text(message)
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(isAnimating ? 1.0 : 0)
@@ -160,7 +160,7 @@ struct EmptyStateView: View {
                         Text(buttonTitle)
                             .font(DS.Typography.label())
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .padding(.horizontal, DS.Spacing.xxl)
                     .padding(.vertical, DS.Spacing.md)
                     .background(Capsule().fill(context.accentColor))
@@ -239,7 +239,7 @@ private struct TasksIllustration: View {
             
             // Stacked task cards
             VStack(spacing: 6) {
-                ForEach(0..<3) { index in
+                ForEach(0..<3, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 6)
                         .fill(Color.themeCardBackground)
                         .frame(width: 60 - CGFloat(index * 8), height: 16)
@@ -287,7 +287,7 @@ private struct HabitsIllustration: View {
             
             // Habit streak dots
             HStack(spacing: 8) {
-                ForEach(0..<5) { index in
+                ForEach(0..<5, id: \.self) { index in
                     Circle()
                         .fill(index < 3 ? accentColor : accentColor.opacity(0.2))
                         .frame(width: 16, height: 16)
@@ -329,7 +329,7 @@ private struct NotificationsIllustration: View {
                 .frame(width: 120, height: 120)
             
             // Sound waves
-            ForEach(0..<3) { index in
+            ForEach(0..<3, id: \.self) { index in
                 Circle()
                     .stroke(accentColor.opacity(0.3 - Double(index) * 0.1), lineWidth: 2)
                     .frame(width: CGFloat(60 + index * 20), height: CGFloat(60 + index * 20))
@@ -352,9 +352,9 @@ private struct NotificationsIllustration: View {
                 }
             
             // "Z" sleep indicators
-            Text("z z z")
+            Text("L10n.zZZ")
                 .font(DS.Typography.label()) // was .rounded
-                .foregroundStyle(Color.textTertiary)
+                .foregroundStyle(.textTertiary)
                 .offset(x: 30, y: -30)
                 .opacity(isAnimating ? 0.6 : 0)
                 .animation(.easeOut(duration: 0.5).delay(0.6), value: isAnimating)
@@ -388,7 +388,7 @@ private struct CalendarIllustration: View {
                 
                 // Grid dots
                 LazyVGrid(columns: Array(repeating: GridItem(.fixed(10), spacing: 4), count: 5), spacing: 4) {
-                    ForEach(0..<10) { index in
+                    ForEach(0..<10, id: \.self) { index in
                         Circle()
                             .fill(index == 4 ? accentColor : Color.textTertiary.opacity(0.3))
                             .frame(width: 6, height: 6)
@@ -402,7 +402,7 @@ private struct CalendarIllustration: View {
             // Floating star
             Image(systemName: "star.fill")
                 .font(DS.Typography.heading())
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.accentYellow)
                 .offset(x: 35, y: -35)
                 .scaleEffect(isAnimating ? 1.0 : 0.5)
                 .rotationEffect(.degrees(isAnimating ? 0 : -30))
@@ -432,7 +432,7 @@ private struct SearchIllustration: View {
                 .animation(.spring(response: 0.6, dampingFraction: 0.7), value: isAnimating)
             
             // Search particles
-            ForEach(0..<4) { index in
+            ForEach(0..<4, id: \.self) { index in
                 Circle()
                     .fill(accentColor.opacity(0.4))
                     .frame(width: 6, height: 6)
@@ -461,7 +461,7 @@ private struct FamilyIllustration: View {
             
             // Family members
             HStack(spacing: -15) {
-                ForEach(0..<3) { index in
+                ForEach(0..<3, id: \.self) { index in
                     Circle()
                         .fill(Color.themeCardBackground)
                         .frame(width: 40, height: 40)
@@ -502,7 +502,7 @@ private struct RewardsIllustration: View {
             
             // Coin stack
             VStack(spacing: -8) {
-                ForEach(0..<3) { index in
+                ForEach(0..<3, id: \.self) { index in
                     Ellipse()
                         .fill(
                             LinearGradient(
@@ -523,10 +523,10 @@ private struct RewardsIllustration: View {
             }
             
             // Sparkles
-            ForEach(0..<4) { index in
+            ForEach(0..<4, id: \.self) { index in
                 Image(systemName: "sparkle")
                     .font(DS.Typography.bodySmall())
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(.accentYellow)
                     .offset(
                         x: CGFloat([35, -35, 30, -30][index]),
                         y: CGFloat([-20, -15, 25, 20][index])
@@ -558,7 +558,7 @@ private struct TaskGroupIllustration: View {
             
             // Small tasks inside
             VStack(spacing: 4) {
-                ForEach(0..<2) { _ in
+                ForEach(0..<2, id: \.self) { _ in
                     RoundedRectangle(cornerRadius: 2)
                         .fill(Color.white.opacity(0.8))
                         .frame(width: 20, height: 4)

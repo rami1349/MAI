@@ -119,7 +119,7 @@ struct CalendarSearchSheet: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.textSecondary)
                         
-                        TextField("Filter events & tasks...", text: $searchText)
+                        TextField("L10n.filterEventsTasks", text: $searchText)
                             .focused($isSearchFocused)
                             .submitLabel(.search)
                         

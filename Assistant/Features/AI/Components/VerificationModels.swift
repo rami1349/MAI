@@ -1,5 +1,3 @@
-
-
 // ============================================================================
 // VerificationModels.swift
 // FamilyHub
@@ -11,7 +9,7 @@
 // - HomeworkVerificationViewModel.swift (VerificationResult, AIRecommendation, etc.)
 //
 // Now there's ONE source of truth used by both ViewModels.
-// ============================================================================
+
 
 import SwiftUI
 
@@ -45,10 +43,10 @@ enum AIRecommendation: String, Codable {
     
     var title: String {
         switch self {
-        case .approve: return String(localized: "Looks Correct")
-        case .review: return String(localized: "Needs Review")
-        case .unclear: return String(localized: "Unclear")
-        case .cannotVerify: return String(localized: "Cannot Verify")
+        case .approve: return L10n.looksCorrect
+        case .review: return L10n.needsReviewLabel      // ✅ FIXED: was L10n.needsReview
+        case .unclear: return L10n.unclearLabel         // ✅ FIXED: was L10n.unclear
+        case .cannotVerify: return L10n.cannotVerify
         }
     }
     
@@ -92,10 +90,10 @@ enum QuestionAssessment: String, Codable {
     
     var accessibilityLabel: String {
         switch self {
-        case .likelyCorrect: return String(localized: "Likely correct")
-        case .likelyIncorrect: return String(localized: "Likely incorrect")
-        case .uncertain: return String(localized: "Uncertain")
-        case .needsReview: return String(localized: "Needs review")
+        case .likelyCorrect: return L10n.likelyCorrectLabel     // ✅ FIXED: was L10n.likelyCorrect
+        case .likelyIncorrect: return L10n.likelyIncorrectLabel // ✅ FIXED: was L10n.likelyIncorrect
+        case .uncertain: return L10n.uncertainLabel             // ✅ FIXED: was L10n.uncertain
+        case .needsReview: return L10n.needsReviewLabel         // ✅ FIXED: was L10n.needsReviewStringlocalized
         }
     }
 }

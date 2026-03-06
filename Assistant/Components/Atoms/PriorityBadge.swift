@@ -1,8 +1,7 @@
 //
 //  PriorityBadge.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
 //  Task priority badge component
 //
 
@@ -13,10 +12,10 @@ struct PriorityBadge: View {
     
     private var color: Color {
         switch priority {
-        case .low: return .accentGreen
-        case .medium: return .accentYellow
-        case .high: return .accentOrange
-        case .urgent: return .accentRed
+        case .low: return Color.accentGreen
+        case .medium: return Color.accentYellow
+        case .high: return Color.accentOrange
+        case .urgent: return Color.accentRed
         }
     }
     
@@ -32,7 +31,7 @@ struct PriorityBadge: View {
     var body: some View {
         Text(text)
             .font(DS.Typography.badge())
-            .foregroundColor(color)
+            .foregroundStyle(color)
             .padding(.horizontal, DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xs)
             .background(RoundedRectangle(cornerRadius: DS.Radius.badge).fill(color.opacity(0.1)))

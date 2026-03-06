@@ -95,7 +95,7 @@ struct AccessibleCustomTabBar: View {
         .padding(.horizontal, DS.Spacing.lg)
         .padding(.bottom, DS.Spacing.sm)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(L10n.tabBar)
+        .accessibilityLabel("L10n.tabBar")
     }
     
     // MARK: - FAB Button

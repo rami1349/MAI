@@ -118,7 +118,7 @@ final class ListenerHealthMonitor {
         print(String(repeating: "-", count: 60))
         
         for (name, stats) in listeners.sorted(by: { $0.key < $1.key }) {
-            let lastFiredStr = stats.lastFired.map { 
+            let lastFiredStr = stats.lastFired.map {
                 RelativeDateTimeFormatter().localizedString(for: $0, relativeTo: Date())
             } ?? "never"
             
@@ -176,7 +176,7 @@ struct ListenerHealthOverlay: View {
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .font(DS.Typography.micro())
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(.textOnAccent)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color.black.opacity(0.7))
@@ -194,13 +194,13 @@ struct ListenerHealthOverlay: View {
                                 Text("\(stats.fireCount)↓ \(stats.skipCount)⏭")
                                     .font(DS.Typography.micro().monospaced())
                             }
-                            .foregroundStyle(.white.opacity(0.8))
+                            .foregroundStyle(.textOnAccent.opacity(0.8))
                         }
                     }
                     
                     Divider().background(Color.white.opacity(0.3))
                     
-                    Button("Print Report") {
+                    Button("report") {
                         monitor.printReport()
                     }
                     .font(DS.Typography.micro())

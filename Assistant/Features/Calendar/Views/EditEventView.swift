@@ -645,6 +645,7 @@ private struct EditCollapsibleParticipantsRow: View {
 // MARK: - Preview
 
 #Preview {
+    let familyVM = FamilyViewModel()
     EditEventView(event: CalendarEvent(
         familyId: "test",
         title: "Family Dinner",
@@ -660,6 +661,6 @@ private struct EditCollapsibleParticipantsRow: View {
         createdAt: Date()
     ))
     .environment(AuthViewModel())
-    .environment({ let vm = FamilyViewModel(); return vm }())
-    .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
+    .environment(familyVM)
+    .environment(familyVM.familyMemberVM)
 }

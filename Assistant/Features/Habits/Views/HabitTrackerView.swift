@@ -117,7 +117,7 @@ struct HabitTrackerView: View {
                 }) {
                     Text(scope.rawValue)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedScope == scope ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(selectedScope == scope ? .textPrimary : .textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
@@ -144,7 +144,7 @@ struct HabitTrackerView: View {
             Button { navigatePrevious() } label: {
                 Image(systemName: "chevron.left")
                     .font(.body)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .frame(width: 44, height: 44)
             }
             .hoverEffect(scale: 1.1, highlight: .clear)
@@ -153,14 +153,14 @@ struct HabitTrackerView: View {
             
             Text(periodLabel)
                 .font(.subheadline)
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             Spacer()
             
             Button { navigateNext() } label: {
                 Image(systemName: "chevron.right")
                     .font(.body)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .frame(width: 44, height: 44)
             }
             .hoverEffect(scale: 1.1, highlight: .clear)
@@ -316,14 +316,14 @@ struct HabitTrackerView: View {
             iPadStatCard(
                 title: "This Week",
                 value: "\(weekStreak) days",
-                color: .accentGreen,
+                color: Color.accentGreen,
                 icon: "flame"
             )
             
             iPadStatCard(
                 title: "Total Habits",
                 value: "\(habitVM.habits.count)",
-                color: .accentTertiary,
+                color: Color.accentTertiary,
                 icon: "repeat"
             )
         }
@@ -344,11 +344,11 @@ struct HabitTrackerView: View {
                 Text(value)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()
@@ -382,12 +382,12 @@ struct HabitTrackerView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(habit.name)
                         .font(DS.Typography.label())
-                        .foregroundStyle(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     Text(L10n.daily)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
                 
                 Spacer()
@@ -400,7 +400,7 @@ struct HabitTrackerView: View {
                 } label: {
                     Image(systemName: isCompletedToday ? "checkmark.circle.fill" : "circle")
                         .font(.title2)
-                        .foregroundStyle(isCompletedToday ? Color(hex: habit.colorHex) : Color.textTertiary)
+                        .foregroundStyle(isCompletedToday ? Color(hex: habit.colorHex) : .textTertiary)
                 }
                 .buttonStyle(.plain)
             }
@@ -416,7 +416,7 @@ struct HabitTrackerView: View {
                     VStack(spacing: 4) {
                         Text(dayLetter(for: date))
                             .font(.caption2)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                         
                         Button {
                             guardedToggle(habit: habit, date: date)
@@ -446,7 +446,7 @@ struct HabitTrackerView: View {
                 
                 Text("\(completedThisWeek)/\(weekDates.count) this week")
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 

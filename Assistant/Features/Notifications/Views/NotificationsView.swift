@@ -108,18 +108,18 @@ struct NotificationCardView: View {
     private var iconColor: Color {
         switch notification.type {
         case .taskAssigned: return Color.accentPrimary
-        case .taskCompleted: return .statusCompleted
-        case .taskDeleted: return .accentRed
-        case .proofSubmitted: return .accentOrange
-        case .proofVerified: return .accentGreen
-        case .rewardReceived: return .accentGreen
-        case .reminder: return .accentTertiary
-        case .familyInvite: return .accentSecondary
+        case .taskCompleted: return Color.statusCompleted
+        case .taskDeleted: return Color.accentRed
+        case .proofSubmitted: return Color.accentOrange
+        case .proofVerified: return Color.accentGreen
+        case .rewardReceived: return Color.accentGreen
+        case .reminder: return Color.accentTertiary
+        case .familyInvite: return Color.accentSecondary
         case .eventCreated: return Color.accentPrimary
-        case .taskOverdue: return .accentRed
-        case .dailySummary: return .accentTertiary
+        case .taskOverdue: return Color.accentRed
+        case .dailySummary: return Color.accentTertiary
         case .eventUpdated: return Color.accentPrimary
-        case .eventCanceled: return .accentRed
+        case .eventCanceled: return Color.accentRed
         }
     }
     
@@ -139,17 +139,17 @@ struct NotificationCardView: View {
                 Text(notification.title)
                     .font(.subheadline)
                     .fontWeight(notification.isRead ? .regular : .semibold)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Text(notification.message)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                     .lineLimit(2)
                 
                 Text(notification.createdAt.timeAgo())
                     .font(.caption2)
-                    .foregroundStyle(Color.textTertiary)
+                    .foregroundStyle(.textTertiary)
             }
             
             Spacer()
@@ -178,12 +178,12 @@ struct NotificationCardView: View {
 }
 
 #Preview {
+    let familyVM = FamilyViewModel()
     NotificationsView()
-        
-        .environment({ let vm = FamilyViewModel(); return vm }())
-        .environment({ let vm = FamilyViewModel(); return vm.familyMemberVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.taskVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.calendarVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.habitVM }())
-        .environment({ let vm = FamilyViewModel(); return vm.notificationVM }())
+        .environment(familyVM)
+        .environment(familyVM.familyMemberVM)
+        .environment(familyVM.taskVM)
+        .environment(familyVM.calendarVM)
+        .environment(familyVM.habitVM)
+        .environment(familyVM.notificationVM)
 }

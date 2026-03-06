@@ -53,10 +53,10 @@ struct MemberDetailView: View {
                     
                     VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                         HStack {
-                            Text("Stats")
+                            Text(L10n.stats)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                                .foregroundStyle(Color.textSecondary)
+                                .foregroundStyle(.textSecondary)
                         }
                         statsCard
                     }
@@ -85,7 +85,7 @@ struct MemberDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(L10n.done) { dismiss() }
                 }
             }
         }
@@ -102,9 +102,9 @@ struct MemberDetailView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     RoleBadge(role: member.role)
                     if member.isAdult {
-                        Text("Adult")
+                        Text(L10n.adult)
                             .font(.caption)
-                            .foregroundStyle(Color.textSecondary)
+                            .foregroundStyle(.textSecondary)
                     }
                 }
             }
@@ -112,13 +112,13 @@ struct MemberDetailView: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: DS.Spacing.xs) {
-                Text("Balance")
+                Text(L10n.balance)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 Text(member.balance.currencyString)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.accentGreen)
+                    .foregroundStyle(.accentGreen)
             }
         }
         .padding(DS.Spacing.xl)
@@ -132,9 +132,9 @@ struct MemberDetailView: View {
                 Text("\(activeMemberTasks.count)")
                     .font(.title2)
                     .fontWeight(.bold)
-                Text("Active")
+                Text("L10n.active")
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -144,10 +144,10 @@ struct MemberDetailView: View {
                 Text("\(completedCount)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.accentGreen)
-                Text("Completed")
+                    .foregroundStyle(.accentGreen)
+                Text(L10n.completed)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
             
@@ -159,10 +159,10 @@ struct MemberDetailView: View {
                 Text("\(rate)%")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(Color.accentPrimary)
-                Text("Rate")
+                    .foregroundStyle(.accentPrimary)
+                Text(L10n.rate)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             .frame(maxWidth: .infinity)
         }
@@ -174,12 +174,12 @@ struct MemberDetailView: View {
     private func goalSection(goal: String) -> some View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-                Text("Goal for \(currentYear)")
+                Text(L10n.goalForYear(currentYear))
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
                 Text(goal)
                     .font(.subheadline)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(2)
             }
             
@@ -193,8 +193,8 @@ struct MemberDetailView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             HStack {
                 Image(systemName: "checklist")
-                    .foregroundStyle(Color.accentPrimary)
-                Text("Active Tasks")
+                    .foregroundStyle(.accentPrimary)
+                Text("L10n.activeTasks")
                     .font(.headline)
             }
             
@@ -214,10 +214,10 @@ struct MemberTaskRow: View {
     
     private var statusColor: Color {
         switch task.status {
-        case .todo: return .statusTodo
+        case .todo: return Color.statusTodo
         case .inProgress: return Color.statusInProgress
         case .pendingVerification: return Color.statusPending
-        case .completed: return .statusCompleted
+        case .completed: return Color.statusCompleted
         }
     }
     
@@ -230,12 +230,12 @@ struct MemberTaskRow: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(task.title)
                     .font(.subheadline)
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 Text(task.dueDate.formattedDate)
                     .font(.caption)
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()

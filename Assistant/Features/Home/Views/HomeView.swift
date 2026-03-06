@@ -180,21 +180,30 @@ struct HomeView: View {
         .task {
             await loadData()
         }
-        // PERF: Debounced rebuild — @Observable tracks per-property access
-        // (isLoading, errorMessage, selectedDate, etc.), not just data arrays.
-        // A single Firestore snapshot fires isLoading=true → data → isLoading=false = 3 events.
-        // With 3 VMs that's up to 9 rebuilds per snapshot. Debounce coalesces to 1.
-        .onReceive(taskVM.objectWillChange) { _ in
+        // PERF: Debounced rebuild for @Observable ViewModels
+        // With @Observable, we track specific properties instead of objectWillChange.
+        // Track array counts as a lightweight proxy for data changes.
+        .onChange(of: taskVM.allTasks.count) { _, _ in
             scheduleRebuild()
         }
-        .onReceive(familyMemberVM.objectWillChange) { _ in
+        .onChange(of: taskVM.isLoading) { _, _ in
+            scheduleRebuild()
+        }
+        .onChange(of: familyMemberVM.familyMembers.count) { _, _ in
             scheduleRebuild(recomputeEvents: true)
         }
-        .onReceive(calendarVM.objectWillChange) { _ in
+        .onChange(of: calendarVM.events.count) { _, _ in
             scheduleRebuild(recomputeEvents: true)
         }
-        .onChange(of: eventKitService.events.count) { _, _ in scheduleRebuild(recomputeEvents: true) }
-        .onChange(of: eventKitService.holidayEvents.count) { _, _ in scheduleRebuild(recomputeEvents: true) }
+        .onChange(of: calendarVM.selectedDate) { _, _ in
+            scheduleRebuild(recomputeEvents: true)
+        }
+        .onChange(of: eventKitService.events.count) { _, _ in
+            scheduleRebuild(recomputeEvents: true)
+        }
+        .onChange(of: eventKitService.holidayEvents.count) { _, _ in
+            scheduleRebuild(recomputeEvents: true)
+        }
     }
     
     // MARK: - Shared Components

@@ -180,10 +180,10 @@ struct iPadSidebarLayout: View {
             ) {
                 showQuickAddMenu = true
             }
-            .confirmationDialog("Create", isPresented: $showQuickAddMenu) {
-                Button("New Task") { showAddTask = true }
-                Button("New Event") { showAddEvent = true }
-                Button("New Habit") { showAddHabit = true }
+            .confirmationDialog(L10n.create, isPresented: $showQuickAddMenu) {
+                Button(L10n.newTask) { showAddTask = true }
+                Button(L10n.newEvent) { showAddEvent = true }
+                Button(L10n.newHabit) { showAddHabit = true }
                 Button("Cancel", role: .cancel) {}
             }
         }
@@ -216,7 +216,7 @@ struct iPadSidebarLayout: View {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: isSelected ? item.selectedIcon : item.icon)
                         .font(DS.Typography.body()).fontWeight(isSelected ? .semibold : .regular)
-                        .foregroundStyle(isSelected ? Color.accentPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
                         .frame(width: 28, height: 28)
                     
                     // Badge dot (collapsed) / count is shown as trailing text (expanded)
@@ -232,7 +232,7 @@ struct iPadSidebarLayout: View {
                 if sidebarExpanded {
                     Text(item.title)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -240,7 +240,7 @@ struct iPadSidebarLayout: View {
                     if badge > 0 {
                         Text("\(min(badge, 99))")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(Capsule().fill(Color.red))
@@ -273,7 +273,7 @@ struct iPadSidebarLayout: View {
                         HStack {
                             Text(L10n.folders.uppercased())
                                 .font(DS.Typography.micro())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .tracking(0.8)
                             
                             Spacer()
@@ -287,7 +287,7 @@ struct iPadSidebarLayout: View {
                         if sidebarExpanded {
                             Text(L10n.noFoldersYet)
                                 .font(DS.Typography.bodySmall())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                                 .padding(.horizontal, DS.Spacing.lg)
                                 .padding(.vertical, DS.Spacing.md)
                         }
@@ -344,7 +344,7 @@ struct iPadSidebarLayout: View {
                 if sidebarExpanded {
                     Text(group.name)
                         .font(DS.Typography.bodySmall())
-                        .foregroundStyle(isSelected ? Color.textPrimary : Color.textSecondary)
+                        .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()
@@ -352,7 +352,7 @@ struct iPadSidebarLayout: View {
                     if count > 0 {
                         Text("\(count)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
             }
@@ -385,14 +385,14 @@ struct iPadSidebarLayout: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: icon)
                     .font(DS.Typography.body()).fontWeight(isAccented ? .semibold : .regular)
-                    .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
+                    .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
                     .frame(width: 28, height: 28)
                     .frame(width: 32)
                 
                 if sidebarExpanded {
                     Text(label)
                         .font(DS.Typography.label())
-                        .foregroundStyle(isAccented ? Color.accentPrimary : Color.textSecondary)
+                        .foregroundStyle(isAccented ? .accentPrimary : .textSecondary)
                         .lineLimit(1)
                     
                     Spacer()

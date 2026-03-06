@@ -1,11 +1,7 @@
 //
 //  HabitDot.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Circular habit completion indicator for week view
 //
 
@@ -36,8 +32,8 @@ struct HabitDot: View {
             
             if isCompleted {
                 Image(systemName: "checkmark")
-                    .font(.system(size: size * 0.4, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(.system(size: size * 0.4, weight: .bold)) // DT-exempt: proportional sizing
+                    .foregroundStyle(.textOnAccent)
             }
         }
         .frame(maxWidth: .infinity)

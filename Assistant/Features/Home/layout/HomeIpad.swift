@@ -133,7 +133,7 @@ extension HomeView {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("Focus Now")
+                Text("L10n.focusNow")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -181,11 +181,11 @@ extension HomeView {
                     
                     HStack(spacing: DS.Spacing.xs) {
                         if task.isOverdue {
-                            Text("Overdue")
+                            Text(L10n.overdue)
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.accentRed)
                         } else if Calendar.current.isDateInToday(task.dueDate) {
-                            Text("Today")
+                            Text(L10n.today)
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.accentOrange)
                         } else {
@@ -239,7 +239,7 @@ extension HomeView {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("Today & Tomorrow")
+                Text("L10n.todayTomorrow")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -458,7 +458,7 @@ extension HomeView {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("This Week")
+                Text(L10n.thisWeek)
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 

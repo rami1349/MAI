@@ -3,6 +3,13 @@
 //  Assistant
 //
 //  Created by Ramiro  on 1/25/26.
+//
+
+
+//
+//  FocusTimerManager.swift
+//  FamilyHub
+//
 //  Manages Pomodoro timer state, background notifications, and persistence
 //
 

@@ -72,16 +72,16 @@ enum PendingActionType: String, Codable {
     
     var title: String {
         switch self {
-        case .createTask:   return String(localized: "Create Task")
-        case .completeTask: return String(localized: "Complete Task")
-        case .updateStatus: return String(localized: "Update Status")
-        case .createEvent:  return String(localized: "Create Event")
-        case .assignTask:   return String(localized: "Reassign Task")
-        case .updateTask:   return String(localized: "Update Task")
-        case .deleteTask:   return String(localized: "Delete Task")
-        case .verifyTask:   return String(localized: "Verify Homework")
-        case .approveVerification: return String(localized: "Approve")
-        case .rejectVerification:  return String(localized: "Reject")
+        case .createTask:   return "L10n.createTask"
+        case .completeTask: return "L10n.completeTask"
+        case .updateStatus: return "updateStatus"
+        case .createEvent:  return "createEvent"
+        case .assignTask:   return "reassignTask"
+        case .updateTask:   return "updateTask"
+        case .deleteTask:   return "deleteTask"
+        case .verifyTask:   return "10n.verifyHomework"
+        case .approveVerification: return "L10n.approve"
+        case .rejectVerification:  return L10n.reject
         }
     }
 }
@@ -316,7 +316,7 @@ class ChatViewModel {
             if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
                 let remaining = Int(unavailableUntil.timeIntervalSinceNow)
                 addErrorMessage(
-                    String(localized: "AI assistant is temporarily unavailable. Please try again in \(remaining) seconds."),
+                    L10n.aiUnavailableRetrySeconds(remaining),
                     canRetry: true,
                     retryAfter: remaining
                 )
@@ -417,22 +417,22 @@ class ChatViewModel {
             if let streamError = error as? StreamingChatService.StreamError {
                 switch streamError {
                 case .notAuthenticated:
-                    errorText = String(localized: "Please sign in to chat")
+                    errorText = "L10n.pleaseSignInToChat"
                     canRetry = false
                 case .connectionFailed:
-                    errorText = String(localized: "Connection failed. Please try again.")
+                    errorText = "L10n.connectionFailedPleaseTryAgain"
                     canRetry = true
                 case .serverError(let message):
                     errorText = message
                     canRetry = true
                 case .timeout:
-                    errorText = String(localized: "Request timed out. Please try again.")
+                    errorText = "L10n.requestTimedOutPleaseTryAgain"
                     canRetry = true
                 case .cancelled:
                     return // Don't show error for cancellation
                 }
             } else {
-                errorText = String(localized: "Something went wrong. Please try again.")
+                errorText = "L10n.somethingWentWrongPleaseTryAgain"
                 canRetry = true
             }
             
@@ -504,7 +504,7 @@ class ChatViewModel {
         if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
             let remaining = Int(unavailableUntil.timeIntervalSinceNow)
             addErrorMessage(
-                String(localized: "MAI is temporarily unavailable. Please try again in \(remaining) seconds."),
+                L10n.maiUnavailableRetrySeconds(remaining),
                 canRetry: true,
                 retryAfter: remaining
             )
@@ -604,7 +604,7 @@ class ChatViewModel {
     }
     
     private func handleSendError(_ error: Error) -> Bool {
-        var errorText = String(localized: "Something went wrong. Please try again.")
+        var errorText = "L10n.somethingWentWrongPleaseTryAgain"
         var canRetry = true
         var retryAfter: Int? = nil
         
@@ -646,24 +646,24 @@ class ChatViewModel {
                     let after = json["retryAfter"] as? Int ?? 300
                     isAIUnavailable = true
                     aiUnavailableUntil = Date().addingTimeInterval(TimeInterval(after))
-                    errorText = String(localized: "AI assistant is temporarily unavailable.")
+                    errorText = "L10n.aiAssistantIsTemporarilyUnavailable"
                     retryAfter = after
                 }
             }
             
             switch FunctionsErrorCode(rawValue: functionsError.code) {
             case .unauthenticated:
-                errorText = String(localized: "Please sign in to chat")
+                errorText = "L10n.pleaseSignInToChat"
                 canRetry = false
             case .resourceExhausted:
-                errorText = String(localized: "Message limit reached.")
+                errorText = "L10n.messageLimitReached"
                 canRetry = true
                 retryAfter = 60
             case .unavailable:
-                errorText = String(localized: "Service temporarily unavailable.")
+                errorText = "L10n.serviceTemporarilyUnavailable"
                 canRetry = true
             case .deadlineExceeded:
-                errorText = String(localized: "Request timed out.")
+                errorText = "L10n.requestTimedOut"
                 canRetry = true
             default:
                 break
@@ -694,7 +694,7 @@ class ChatViewModel {
     private func addRateLimitMessage() {
         let rateLimitMessage = ChatMessage(
             role: "assistant",
-            content: String(localized: "You've used all your messages for today. Try again tomorrow!"),
+            content:" L10n.youveUsedAllYourMessagesForTodayTryAgainT",
             isRateLimit: true
         )
         messages.append(rateLimitMessage)
@@ -782,7 +782,7 @@ class ChatViewModel {
         
         let cancelMessage = ChatMessage(
             role: "assistant",
-            content: String(localized: "Action cancelled. Let me know if you'd like to try something else!")
+            content: "L10n.actionCancelledLetMeKnowIfYoudLikeToTryS"
         )
         messages.append(cancelMessage)
         persistHistory()

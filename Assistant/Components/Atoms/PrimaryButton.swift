@@ -1,10 +1,9 @@
 //
 //  PrimaryButton.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
 //  Primary and secondary button components
-//  UPDATED: DS elevation with accent glow
+//  Primary button with accent glow elevation
 //  NO LOGIC CHANGES - Presentation layer only
 //
 
@@ -27,10 +26,10 @@ struct PrimaryButton: View {
                 Text(title)
                     .font(DS.Typography.label())
             }
-            .foregroundColor(.white)
+            .foregroundStyle(.textOnAccent)
             .frame(maxWidth: .infinity, minHeight: DS.Control.large)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(isDisabled ? Color.textTertiary : Color.accentPrimary)
             )
             // Accent elevation with colored glow
@@ -64,14 +63,14 @@ struct SecondaryButton: View {
                 Text(title)
                     .font(DS.Typography.label())
             }
-            .foregroundColor(isDisabled ? Color.textTertiary : Color.accentPrimary)
+            .foregroundStyle(isDisabled ? .textTertiary : .accentPrimary)
             .frame(maxWidth: .infinity, minHeight: DS.Control.large)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .fill(isDisabled ? Color.fill : Color.accentPrimary.opacity(0.10))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
+                RoundedRectangle(cornerRadius: DS.Radius.md)
                     .stroke(isDisabled ? Color.themeDivider : Color.accentPrimary.opacity(0.3), lineWidth: 1)
             )
         }
@@ -98,12 +97,12 @@ struct TertiaryButton: View {
                 }
                 if let icon {
                     Image(systemName: icon)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(DS.Typography.label())
                 }
                 Text(title)
                     .font(DS.Typography.labelSmall())
             }
-            .foregroundColor(isDisabled ? Color.textTertiary : Color.accentPrimary)
+            .foregroundStyle(isDisabled ? .textTertiary : .accentPrimary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.sm)
         }

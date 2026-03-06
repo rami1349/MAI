@@ -1,8 +1,5 @@
-//
 //  UpcomingEvent.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
+//  FamilyHub
 //
 //  Upcoming event model used by HomeView, week events, and countdown cards.
 //  Standalone file so every view can reference it without cross-dependencies.
@@ -68,19 +65,19 @@ struct CountdownCard: View {
                 
                 Image(systemName: event.icon)
                     .font(.title3)
-                    .foregroundColor(event.color)
+                    .foregroundStyle(event.color)
             }
             
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(event.title)
                     .font(DS.Typography.label())
-                    .foregroundColor(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
                 if let subtitle = event.subtitle {
                     Text(subtitle)
                         .font(DS.Typography.micro())
-                        .foregroundColor(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                 }
             }
             
@@ -90,11 +87,11 @@ struct CountdownCard: View {
                 Text(event.countdownText)
                     .font(DS.Typography.badge())
                     .fontWeight(.bold)
-                    .foregroundColor(event.daysUntil <= 3 ? event.color : Color.accentPrimary)
+                    .foregroundStyle(event.daysUntil <= 3 ? event.color : .accentPrimary)
                 
                 Text(event.date.formattedShortDate)
                     .font(DS.Typography.micro())
-                    .foregroundColor(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
         }
         .padding(DS.Spacing.md)

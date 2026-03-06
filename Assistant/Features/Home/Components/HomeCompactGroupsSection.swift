@@ -1,10 +1,5 @@
 //
 //  HomeCompactGroupsSection.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/2/26.
-//
-
 
 
 
@@ -26,8 +21,8 @@ struct HomeCompactGroupsSection: View {
                 HStack(spacing: DS.Spacing.sm) {
                     // Icon badge
                     Image(systemName: "folder.fill")
-                        .font(.system(size: 14))
-                        .foregroundColor(Color.accentPrimary)
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentPrimary)
                         .frame(width: 28, height: 28)
                         .background(
                             Circle()
@@ -36,12 +31,12 @@ struct HomeCompactGroupsSection: View {
                     
                     Text(L10n.taskGroups)
                         .font(DS.Typography.subheading())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                     
                     // Count badge
                     Text("\(groups.count)")
                         .font(DS.Typography.captionMedium())
-                        .foregroundColor(Color.accentPrimary)
+                        .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.sm)
                         .padding(.vertical, 2)
                         .background(
@@ -52,8 +47,8 @@ struct HomeCompactGroupsSection: View {
                     Spacer()
                     
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color.textTertiary)
+                        .font(DS.Typography.captionMedium())
+                        .foregroundStyle(.textTertiary)
                 }
                 .padding(.vertical, DS.Spacing.xs)
             }
@@ -105,25 +100,25 @@ struct CompactGroupRow: View {
             HStack(spacing: DS.Spacing.md) {
                 // Group icon
                 ZStack {
-                    RoundedRectangle(cornerRadius: DS.Radius.sm)
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
                         .fill(Color(hex: group.color).opacity(0.12))
                         .frame(width: 32, height: 32)
                     
                     Image(systemName: group.icon)
-                        .font(.system(size: 14))
-                        .foregroundColor(Color(hex: group.color))
+                        .font(DS.Typography.body())
+                        .foregroundStyle(Color(hex: group.color))
                 }
                 
                 // Name + count
                 VStack(alignment: .leading, spacing: 0) {
                     Text(group.name)
                         .font(DS.Typography.label())
-                        .foregroundColor(Color.textPrimary)
+                        .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
                     Text("\(group.taskCount) \(L10n.tasks)")
                         .font(DS.Typography.micro())
-                        .foregroundColor(Color.textTertiary)
+                        .foregroundStyle(.textTertiary)
                 }
                 
                 Spacer()
@@ -139,17 +134,17 @@ struct CompactGroupRow: View {
                 }
                 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(Color.textTertiary)
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textTertiary)
             }
             .padding(.vertical, DS.Spacing.sm)
             .padding(.horizontal, DS.Spacing.md)
             .frame(minHeight: 44)
             .background(
-                RoundedRectangle(cornerRadius: DS.Radius.md)
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
                     .fill(Color.themeCardBackground)
             )
-            .shadow(color: Color.black.opacity(0.03), radius: 6, x: 0, y: 2)
+            .elevation1()
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

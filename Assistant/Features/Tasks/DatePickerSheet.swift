@@ -77,7 +77,7 @@ struct TimePickerSheet: View {
                     selectedTime = nil
                     dismiss()
                 }
-                .foregroundStyle(Color.accentRed)
+                .foregroundStyle(.accentRed)
                 .padding()
                 
                 Spacer()

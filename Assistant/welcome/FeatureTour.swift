@@ -344,7 +344,7 @@ struct TourTooltip: View {
                     
                     // Skip
                     Button(action: tourManager.skip) {
-                        Text("Skip")
+                        Text(L10n.skip)
                             .font(DS.Typography.label())
                             .foregroundStyle(.textTertiary)
                     }

@@ -18,7 +18,7 @@ struct HomePendingVerificationSection: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "checkmark.seal")
                     .font(DS.Typography.body())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 28, height: 28)
                     .background(
                         Circle()
@@ -27,7 +27,7 @@ struct HomePendingVerificationSection: View {
                 
                 Text(L10n.awaitingVerification)
                     .font(DS.Typography.subheading())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 Circle()
                     .fill(Color.accentPrimary)
                     .frame(width: 8, height: 8)
@@ -62,18 +62,18 @@ struct CalendarPermissionPrompt: View {
                 
                 Image(systemName: "calendar.badge.exclamationmark")
                     .font(DS.Typography.heading())
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
             }
             
             // Text
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                 Text(L10n.calendarAccess)
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Text(L10n.enableCalendarMessage)
                     .font(DS.Typography.caption())
-                    .foregroundStyle(Color.textSecondary)
+                    .foregroundStyle(.textSecondary)
             }
             
             Spacer()
@@ -90,7 +90,7 @@ struct CalendarPermissionPrompt: View {
             }) {
                 Text(authStatus == .denied ? "Settings" : "Enable")
                     .font(DS.Typography.captionMedium())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .padding(.horizontal, DS.Spacing.md)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -138,11 +138,11 @@ struct PendingVerificationCard: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(assignee.displayName)
                             .font(DS.Typography.label())
-                            .foregroundStyle(Color.textPrimary)
+                            .foregroundStyle(.textPrimary)
                         
                         Text(L10n.submittedProof)
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                     }
                 }
                 
@@ -151,14 +151,14 @@ struct PendingVerificationCard: View {
                 if task.hasReward, let amount = task.rewardAmount {
                     Text(amount.currencyString)
                         .font(DS.Typography.label())
-                        .foregroundStyle(Color.accentGreen)
+                        .foregroundStyle(.accentGreen)
                 }
             }
             
             // Task title
             Text(task.title)
                 .font(DS.Typography.body())
-                .foregroundStyle(Color.textPrimary)
+                .foregroundStyle(.textPrimary)
             
             // View proof button (supports multiple proof images)
             if task.hasProofUploaded {
@@ -174,10 +174,10 @@ struct PendingVerificationCard: View {
                         if task.allProofURLs.count > 1 {
                             Text("(\(task.allProofURLs.count))")
                                 .font(DS.Typography.caption())
-                                .foregroundStyle(Color.textTertiary)
+                                .foregroundStyle(.textTertiary)
                         }
                     }
-                    .foregroundStyle(Color.accentPrimary)
+                    .foregroundStyle(.accentPrimary)
                 }
             }
             
@@ -204,17 +204,17 @@ struct PendingVerificationCard: View {
                         if actionInFlight {
                             ProgressView()
                                 .scaleEffect(0.6)
-                                .tint(Color(hex: "E57373"))
+                                .tint(Color.statusError)
                         }
                         Text(L10n.reject)
                             .font(DS.Typography.captionMedium())
                     }
-                    .foregroundStyle(Color(hex: "E57373"))
+                    .foregroundStyle(.statusError)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
                         RoundedRectangle(cornerRadius: DS.Radius.md)
-                            .stroke(Color(hex: "E57373").opacity(0.5), lineWidth: 1)
+                            .stroke(Color.statusError.opacity(0.5), lineWidth: 1)
                     )
                 }
                 .disabled(actionInFlight)
@@ -245,7 +245,7 @@ struct PendingVerificationCard: View {
                         Text(L10n.approveLabel)
                             .font(DS.Typography.captionMedium())
                     }
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.textOnAccent)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, DS.Spacing.sm)
                     .background(
@@ -292,7 +292,7 @@ struct ProofViewerSheet: View {
                 if isVideo {
                     Text(L10n.videoPlayer)
                         .font(DS.Typography.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .foregroundStyle(.textSecondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.black)
                 } else {

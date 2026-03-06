@@ -59,7 +59,7 @@ struct YearHabitBarCard: View {
                 
                 Text(habit.name)
                     .font(DS.Typography.label())
-                    .foregroundStyle(Color.textPrimary)
+                    .foregroundStyle(.textPrimary)
                 
                 Spacer()
                 
@@ -87,7 +87,7 @@ struct YearHabitBarCard: View {
                     ForEach(1...12, id: \.self) { month in
                         Text("\(month)")
                             .font(DS.Typography.micro())
-                            .foregroundStyle(Color.textTertiary)
+                            .foregroundStyle(.textTertiary)
                             .frame(maxWidth: .infinity)
                     }
                 }

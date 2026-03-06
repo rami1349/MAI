@@ -431,9 +431,9 @@ struct FamilyTask: Identifiable, Codable, Hashable {
     /// Priority color for UI
     var priorityColor: Color {
         switch displayPriority {
-        case .urgent: return .statusError
-        case .high: return .accentOrange
-        case .medium: return .statusWarning
+        case .urgent: return Color.statusError
+        case .high: return Color.accentOrange
+        case .medium: return Color.statusWarning
         case .low: return Color.statusSuccess
         }
     }

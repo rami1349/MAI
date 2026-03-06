@@ -50,7 +50,7 @@ struct FocusTimerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") {
+                    Button(L10n.close) {
                         handleClose()
                     }
                 }

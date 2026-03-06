@@ -23,7 +23,6 @@
 //       await MainActor.run { self.setTasks(tasks) }
 //   }
 //
-//
 //  Shared helper for off-main-thread Firestore decoding.
 //  Moves heavy compactMap/decode work to background to keep UI responsive.
 //

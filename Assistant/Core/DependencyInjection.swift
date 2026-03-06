@@ -29,11 +29,12 @@ protocol ThemeServiceProtocol: Observable {
 }
 
 /// Protocol for LocalizationManager
+/// NOTE: Uses LanguageOption (not AppLanguage) to avoid conflict with AppLanguage class
 @MainActor
 protocol LocalizationServiceProtocol: Observable {
     var currentLanguage: String { get }
-    var selectedLanguage: AppLanguage { get }
-    func setLanguage(_ language: AppLanguage)
+    var selectedLanguage: LanguageOption { get }
+    func setLanguage(_ language: LanguageOption)
     func string(_ key: String) -> String
 }
 

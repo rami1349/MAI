@@ -26,7 +26,7 @@ final class FamilyMemberViewModel {
     
     // MARK: - Private
     // Firestore singleton — @ObservationIgnored (infrastructure, not UI state)
-    @ObservationIgnored private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
     @ObservationIgnored private var membersListener: ListenerRegistration?
     
     // Caches for O(1) lookup

@@ -76,7 +76,7 @@ actor AccountDeletionService {
 
     static let shared = AccountDeletionService()
 
-    private let db = Firestore.firestore()
+    private var db: Firestore { Firestore.firestore() }
 
     private init() {}
 

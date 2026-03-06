@@ -1,11 +1,7 @@
 //
 //  ProgressRing.swift
-//  Assistant
+//  FamilyHub
 //
-//  Created by Ramiro  on 3/2/26.
-//
-
-
 //  Circular progress indicator
 //
 
@@ -30,8 +26,8 @@ struct ProgressRing: View {
             
             if showPercentage {
                 Text("\(Int(progress))%")
-                    .font(.system(size: size * 0.25, weight: .bold))
-                    .foregroundColor(color == .white ? .white : Color.textPrimary)
+                    .font(.system(size: size * 0.25, weight: .bold)) // DT-exempt: proportional sizing
+                    .foregroundStyle(color == .white ? .textOnAccent : .textPrimary)
             }
         }
         .frame(width: size, height: size)
@@ -42,8 +38,8 @@ struct ProgressRing: View {
 #Preview {
     HStack(spacing: 20) {
         ProgressRing(progress: 25, size: 60, color: Color.accentPrimary)
-        ProgressRing(progress: 50, size: 80, color: .accentSecondary)
-        ProgressRing(progress: 75, size: 100, color: .accentTertiary)
+        ProgressRing(progress: 50, size: 80, color: Color.accentSecondary)
+        ProgressRing(progress: 75, size: 100, color: Color.accentTertiary)
     }
     .padding()
 }

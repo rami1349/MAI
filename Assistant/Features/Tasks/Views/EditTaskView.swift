@@ -3,10 +3,7 @@
 //  Assistant
 //
 //  Created by Ramiro  on 2/10/26.
-//
-//  Edit form for an existing task. Presented as a sheet from TaskDetailView.
-//  Keeps the same Form-based approach as AddEventView for consistency.
-//
+
 
 import SwiftUI
 
@@ -106,16 +103,16 @@ struct EditTaskView: View {
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 } header: {
-                    Text("Type")
+                    Text(L10n.type)
                 }
                 .listRowBackground(Color.backgroundCard)
                 
                 // MARK: - Basics
                 Section {
-                    TextField("Task title", text: $title)
+                    TextField(L10n.taskTitle, text: $title)
                         .focused($focusedField, equals: .title)
                     
-                    TextField("Description (optional)", text: $description, axis: .vertical)
+                    TextField(L10n.descriptionOptional, text: $description, axis: .vertical)
                         .lineLimit(2...5)
                         .focused($focusedField, equals: .description)
                 }

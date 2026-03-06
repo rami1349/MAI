@@ -73,9 +73,9 @@ struct FieldHint: View {
         case .idle:
             EmptyView()
         case .invalid(let message):
-            hintRow(icon: "xmark.circle.fill", text: message, color: .accentRed)
+            hintRow(icon: "xmark.circle.fill", text: message, color: Color.accentRed)
         case .valid(let message):
-            hintRow(icon: "checkmark.circle.fill", text: message, color: .accentGreen)
+            hintRow(icon: "checkmark.circle.fill", text: message, color: Color.accentGreen)
         case .info(let message):
             hintRow(icon: "info.circle.fill", text: message, color: Color.textSecondary)
         }
@@ -112,9 +112,9 @@ struct PasswordStrengthBar: View {
     private var color: Color {
         switch strength {
         case .empty, .tooShort: return .gray.opacity(0.3)
-        case .weak:   return .accentRed
-        case .fair:   return .accentYellow
-        case .strong: return .accentGreen
+        case .weak:   return Color.accentRed
+        case .fair:   return Color.accentYellow
+        case .strong: return Color.accentGreen
         }
     }
     
