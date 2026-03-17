@@ -1,83 +1,56 @@
 //
 //  Date+Extensions.swift
 //
-//  Date formatting and utility extensions
+//  Date formatting and utility extensions.
+//  Uses SharedFormatters for performance (single allocation per format).
 //
 
 import Foundation
 
 extension Date {
-    // MARK: - Formatters (cached for performance)
-    private static let timeFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm a"
-        return f
-    }()
     
-    private static let dateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d, yyyy"
-        return f
-    }()
+    // ═══════════════════════════════════════════════════════════════════════
+    // MARK: - Formatted Strings (using SharedFormatters)
+    // ═══════════════════════════════════════════════════════════════════════
     
-    private static let shortDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d"
-        return f
-    }()
-    
-    private static let dayOfWeekFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE"
-        return f
-    }()
-    
-    private static let dayNumberFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "d"
-        return f
-    }()
-    
-    private static let monthNameFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "MMM"
-        return f
-    }()
-    
-    private static let habitDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
-    
-    // MARK: - Computed Properties
+    /// "3:30 PM"
     var formattedTime: String {
-        Self.timeFormatter.string(from: self)
+        SharedFormatters.time.string(from: self)
     }
     
+    /// "Mar 15, 2026"
     var formattedDate: String {
-        Self.dateFormatter.string(from: self)
+        SharedFormatters.mediumDate.string(from: self)
     }
     
+    /// "Mar 15"
     var formattedShortDate: String {
-        Self.shortDateFormatter.string(from: self)
+        SharedFormatters.monthDay.string(from: self)
     }
     
+    /// "Mon"
     var dayOfWeek: String {
-        Self.dayOfWeekFormatter.string(from: self)
+        SharedFormatters.shortWeekday.string(from: self)
     }
     
+    /// "15"
     var dayNumber: String {
-        Self.dayNumberFormatter.string(from: self)
+        SharedFormatters.dayOfMonth.string(from: self)
     }
     
+    /// "Mar"
     var monthName: String {
-        Self.monthNameFormatter.string(from: self)
+        SharedFormatters.shortMonth.string(from: self)
     }
     
+    /// "2026-03-15" (ISO format for storage/API)
     var habitDateString: String {
-        Self.habitDateFormatter.string(from: self)
+        SharedFormatters.isoDate.string(from: self)
     }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // MARK: - Date Checks
+    // ═══════════════════════════════════════════════════════════════════════
     
     var isToday: Bool {
         Calendar.current.isDateInToday(self)
@@ -91,7 +64,10 @@ extension Date {
         Calendar.current.isDateInYesterday(self)
     }
     
+    // ═══════════════════════════════════════════════════════════════════════
     // MARK: - Time Ago
+    // ═══════════════════════════════════════════════════════════════════════
+    
     func timeAgo() -> String {
         let now = Date()
         let components = Calendar.current.dateComponents(
@@ -124,13 +100,17 @@ extension Date {
         return "Just now"
     }
     
+    // ═══════════════════════════════════════════════════════════════════════
     // MARK: - Calendar Helpers
+    // ═══════════════════════════════════════════════════════════════════════
+    
     var startOfDay: Date {
         Calendar.current.startOfDay(for: self)
     }
     
     var endOfDay: Date {
-        Calendar.current.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDay)!
+        Calendar.current.date(byAdding: DateComponents(day: 1, second: -1), to: startOfDay)
+            ?? startOfDay.addingTimeInterval(86399) // Fallback: 23:59:59
     }
     
     var startOfWeek: Date {

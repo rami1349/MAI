@@ -518,10 +518,11 @@ class FocusTimerManager {
         accumulatedPauseTime = data["accumulatedPauseTime"] as? TimeInterval ?? 0
         
         if let startTimeInterval = data["startTime"] as? TimeInterval, startTimeInterval > 0 {
-            startTime = Date(timeIntervalSince1970: startTimeInterval)
+            let restoredStartTime = Date(timeIntervalSince1970: startTimeInterval)
+            startTime = restoredStartTime
             
             // Calculate actual remaining time
-            let elapsed = Date().timeIntervalSince(startTime!) - accumulatedPauseTime
+            let elapsed = Date().timeIntervalSince(restoredStartTime) - accumulatedPauseTime
             remainingSeconds = max(0, totalSeconds - Int(elapsed))
             
             if remainingSeconds > 0 {

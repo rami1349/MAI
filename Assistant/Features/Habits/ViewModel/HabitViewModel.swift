@@ -103,8 +103,8 @@ final class HabitViewModel {
     func loadHabits(userId: String) async {
         isLoading = true
         do {
-            let snapshot = try await db.collection("habits")
-                .whereField("userId", isEqualTo: userId)
+            let snapshot = try await db.collection(FirestoreCollections.habits)
+                .whereField(FirestoreFields.userId, isEqualTo: userId)
                 .whereField("isActive", isEqualTo: true)  // Soft-delete filter
                 .getDocuments()
 
@@ -129,8 +129,8 @@ final class HabitViewModel {
     func setupListener(userId: String) {
         listener?.remove() // Remove stale listener before creating a new one
 
-        listener = db.collection("habits")
-            .whereField("userId", isEqualTo: userId)
+        listener = db.collection(FirestoreCollections.habits)
+            .whereField(FirestoreFields.userId, isEqualTo: userId)
             .whereField("isActive", isEqualTo: true) // Only listen to active habits
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self else { return }
@@ -262,13 +262,23 @@ final class HabitViewModel {
             isActive: true
         )
 
+        // Generate a temporary ID for optimistic update
+        let tempId = UUID().uuidString
+        var optimisticHabit = habit
+        optimisticHabit.id = tempId
+        
+        // OPTIMISTIC UPDATE: Add to local state BEFORE Firestore write
+        // This ensures the UI updates immediately
+        habits.append(optimisticHabit)
+        
         do {
-            // addDocument returns a reference with the server-generated ID
-            let ref = try db.collection("habits").addDocument(from: habit)
-            var newHabit = habit
-            newHabit.id = ref.documentID
-            habits.append(newHabit) // Optimistic local append
+            // Write to Firestore - listener will fire and update with real ID
+            _ = try db.collection(FirestoreCollections.habits).addDocument(from: habit)
+            // Note: Don't update habits here - the listener will handle it
+            // and replace the temp ID with the real Firestore document ID
         } catch {
+            // ROLLBACK: Remove the optimistic habit on failure
+            habits.removeAll { $0.id == tempId }
             errorMessage = error.localizedDescription
         }
     }
@@ -295,7 +305,7 @@ final class HabitViewModel {
         habitLogs.removeValue(forKey: id) // Clear cached logs for this habit
 
         do {
-            try await db.collection("habits").document(id).delete()
+            try await db.collection(FirestoreCollections.habits).document(id).delete()
         } catch {
             // ROLLBACK: Restore state on failure
             habits    = originalHabits
@@ -342,10 +352,10 @@ final class HabitViewModel {
             habitLogs = updatedLogs // Full assignment required for SwiftUI to detect change
 
             // Step 2: Delete matching log document(s) from Firestore
-            let snapshot = try? await db.collection("habitLogs")
-                .whereField("userId",  isEqualTo: userId)
+            let snapshot = try? await db.collection(FirestoreCollections.habitLogs)
+                .whereField(FirestoreFields.userId, isEqualTo: userId)
                 .whereField("habitId", isEqualTo: habitId)
-                .whereField("date",    isEqualTo: dateString)
+                .whereField("date", isEqualTo: dateString)
                 .getDocuments()
 
             for doc in snapshot?.documents ?? [] {
@@ -369,7 +379,7 @@ final class HabitViewModel {
                 date: dateString,
                 completedAt: Date()
             )
-            _ = try? db.collection("habitLogs").addDocument(from: log)
+            _ = try? db.collection(FirestoreCollections.habitLogs).addDocument(from: log)
         }
     }
 

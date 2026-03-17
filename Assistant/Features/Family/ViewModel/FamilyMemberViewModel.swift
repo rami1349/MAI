@@ -114,13 +114,34 @@ final class FamilyMemberViewModel {
             createdAt: Date()
         )
         
+        // Generate a temporary ID for optimistic update
+        let tempId = UUID().uuidString
+        var optimisticGroup = group
+        optimisticGroup.id = tempId
+        
+        // OPTIMISTIC UPDATE: Add to local state BEFORE Firestore write
+        // This ensures the UI updates immediately, before any listener fires
+        taskGroups.append(optimisticGroup)
+        groupCache[tempId] = optimisticGroup
+        
         do {
-            let ref = try db.collection("taskGroups").addDocument(from: group)
-            var newGroup = group
-            newGroup.id = ref.documentID
-            taskGroups.append(newGroup)
-            groupCache[ref.documentID] = newGroup
+            // Write to Firestore - if there's a listener, it will update with real ID
+            let ref = try db.collection(FirestoreCollections.taskGroups).addDocument(from: group)
+            
+            // Update cache with real ID (listener may or may not exist for taskGroups)
+            groupCache.removeValue(forKey: tempId)
+            var realGroup = group
+            realGroup.id = ref.documentID
+            groupCache[ref.documentID] = realGroup
+            
+            // Update the taskGroups array with real ID
+            if let index = taskGroups.firstIndex(where: { $0.id == tempId }) {
+                taskGroups[index] = realGroup
+            }
         } catch {
+            // ROLLBACK: Remove the optimistic group on failure
+            taskGroups.removeAll { $0.id == tempId }
+            groupCache.removeValue(forKey: tempId)
             errorMessage = error.localizedDescription
         }
     }
@@ -144,8 +165,8 @@ final class FamilyMemberViewModel {
             // Delete related tasks if requested
             if deleteRelatedTasks {
                 // IMPORTANT: Include familyId in query to satisfy Firestore security rules
-                let tasksSnapshot = try await db.collection("tasks")
-                    .whereField("familyId", isEqualTo: group.familyId)
+                let tasksSnapshot = try await db.collection(FirestoreCollections.tasks)
+                    .whereField(FirestoreFields.familyId, isEqualTo: group.familyId)
                     .whereField("groupId", isEqualTo: id)
                     .getDocuments()
                 
@@ -155,7 +176,7 @@ final class FamilyMemberViewModel {
             }
             
             // Add the group itself to batch
-            let groupRef = db.collection("taskGroups").document(id)
+            let groupRef = db.collection(FirestoreCollections.taskGroups).document(id)
             batch.deleteDocument(groupRef)
             
             // Commit the batch

@@ -100,7 +100,7 @@ struct SettingsView: View {
             }
             
             // MARK: - Subscription
-            Section("L10n.subscription") {
+            Section(L10n.subscription) {
                 Button {
                     if store.tier.isPremium {
                         // Already premium — show manage info
@@ -112,7 +112,7 @@ struct SettingsView: View {
                         Image(systemName: store.tier.isPremium ? "crown.fill" : "sparkles")
                             .foregroundStyle(store.tier.isPremium ? .yellow : .accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text("L10n.plan")
+                        Text(L10n.plan)
                             .foregroundStyle(.textPrimary)
                         Spacer()
                         Text(store.tier.displayName)
@@ -152,7 +152,7 @@ struct SettingsView: View {
                             Image(systemName: "gear")
                                 .foregroundStyle(.accentPrimary)
                                 .frame(width: DS.IconContainer.sm)
-                            Text("L10n.manageSubscription")
+                            Text(L10n.manageSubscription)
                                 .foregroundStyle(.accentPrimary)
                         }
                     }
@@ -243,7 +243,7 @@ struct SettingsView: View {
                         .frame(width: DS.IconContainer.sm)
                     Text(L10n.version)
                     Spacer()
-                    Text("L10n.100").foregroundStyle(.textSecondary)
+                    Text("1.0.0").foregroundStyle(.textSecondary)
                 }
                 .listRowBackground(Color.themeCardBackground)
             }

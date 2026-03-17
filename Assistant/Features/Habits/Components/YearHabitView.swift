@@ -123,12 +123,16 @@ struct YearHabitBarCard: View {
     }
     
     private func computeMonthlyRates() -> [Double] {
-        let yearStart = calendar.date(from: calendar.dateComponents([.year], from: currentYear))!
+        guard let yearStart = calendar.date(from: calendar.dateComponents([.year], from: currentYear)) else {
+            return Array(repeating: 0, count: 12)
+        }
         
         return (0..<12).map { monthOffset in
-            let monthDate = calendar.date(byAdding: .month, value: monthOffset, to: yearStart)!
-            let daysInMonth = calendar.range(of: .day, in: .month, for: monthDate)!.count
-            let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate))!
+            guard let monthDate = calendar.date(byAdding: .month, value: monthOffset, to: yearStart),
+                  let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: monthDate)) else {
+                return 0.0
+            }
+            let daysInMonth = calendar.range(of: .day, in: .month, for: monthDate)?.count ?? 30
             
             var completedDays = 0
             var countableDays = 0

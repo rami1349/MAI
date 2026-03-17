@@ -106,6 +106,17 @@ struct FamilyTask: Identifiable, Codable, Hashable {
             case .completed: return "checkmark.circle.fill"
             }
         }
+        
+        /// Semantic color for this task status.
+        /// Centralizes the status→color mapping that was duplicated across 20+ files.
+        var color: Color {
+            switch self {
+            case .todo: return Color.statusTodo
+            case .inProgress: return Color.statusInProgress
+            case .pendingVerification: return Color.statusPending
+            case .completed: return Color.statusCompleted
+            }
+        }
     }
     
     enum TaskPriority: String, Codable, CaseIterable {
@@ -120,6 +131,17 @@ struct FamilyTask: Identifiable, Codable, Hashable {
             case .medium: return L10n.medium
             case .high: return L10n.high
             case .urgent: return L10n.urgent
+            }
+        }
+        
+        /// Semantic color for this priority level.
+        /// Centralizes the priority→color mapping that was duplicated across files.
+        var color: Color {
+            switch self {
+            case .urgent: return Color.statusError
+            case .high: return Color.accentOrange
+            case .medium: return Color.statusWarning
+            case .low: return Color.statusSuccess
             }
         }
     }
@@ -428,14 +450,9 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         return .low
     }
     
-    /// Priority color for UI
+    /// Priority color for UI (uses displayPriority's color)
     var priorityColor: Color {
-        switch displayPriority {
-        case .urgent: return Color.statusError
-        case .high: return Color.accentOrange
-        case .medium: return Color.statusWarning
-        case .low: return Color.statusSuccess
-        }
+        displayPriority.color
     }
     
     /// Whether task is overdue
@@ -640,6 +657,10 @@ struct FamilyTask: Identifiable, Codable, Hashable {
 
 extension Array where Element == FamilyTask {
     
+    // ═══════════════════════════════════════════════════════════════════════
+    // MARK: Sorting
+    // ═══════════════════════════════════════════════════════════════════════
+    
     /// Sort by implicit priority (urgent first)
     func sortedByPriority() -> [FamilyTask] {
         sorted { $0.implicitPriorityScore > $1.implicitPriorityScore }
@@ -650,12 +671,54 @@ extension Array where Element == FamilyTask {
         sorted { $0.dueDate < $1.dueDate }
     }
     
-    /// Filter overdue tasks
-    var overdue: [FamilyTask] {
-        filter { $0.isOverdue }
+    // ═══════════════════════════════════════════════════════════════════════
+    // MARK: Filtering
+    // ═══════════════════════════════════════════════════════════════════════
+    
+    /// Tasks filtered by status.
+    func with(status: FamilyTask.TaskStatus) -> [FamilyTask] {
+        filter { $0.status == status }
     }
     
-    /// Filter tasks due soon
+    /// Tasks assigned to a specific user.
+    func assigned(to userId: String) -> [FamilyTask] {
+        filter { $0.assignedTo == userId }
+    }
+    
+    /// Tasks due within the specified date range.
+    func due(in range: ClosedRange<Date>) -> [FamilyTask] {
+        filter { range.contains($0.dueDate) }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // MARK: Computed Properties
+    // ═══════════════════════════════════════════════════════════════════════
+    
+    /// Number of completed tasks in this array.
+    var completedCount: Int {
+        filter { $0.status == .completed }.count
+    }
+    
+    /// Completion percentage (0-100) for this array of tasks.
+    /// Returns 0 if the array is empty.
+    var completionPercentage: Double {
+        guard !isEmpty else { return 0 }
+        return Double(completedCount) / Double(count) * 100
+    }
+    
+    /// Tasks due today.
+    var dueToday: [FamilyTask] {
+        let calendar = Calendar.current
+        return filter { calendar.isDateInToday($0.dueDate) }
+    }
+    
+    /// Overdue tasks (past due date and not completed).
+    var overdue: [FamilyTask] {
+        let now = Date()
+        return filter { $0.dueDate < now && $0.status != .completed }
+    }
+    
+    /// Tasks due soon (within 2 hours).
     var dueSoon: [FamilyTask] {
         filter { $0.isDueSoon }
     }

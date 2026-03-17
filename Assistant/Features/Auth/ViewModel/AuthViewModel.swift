@@ -99,6 +99,9 @@ class AuthViewModel {
     /// Removed and re-established each time a different user signs in.
     @ObservationIgnored private var userListener: ListenerRegistration?
     
+    /// NotificationCenter observer for FCM token refresh events.
+    @ObservationIgnored private var fcmObserver: NSObjectProtocol?
+    
     /// Firestore singleton accessor. @ObservationIgnored because db access
     /// is infrastructure — not UI state that views should observe.
     private var db: Firestore { Firestore.firestore() }
@@ -119,6 +122,9 @@ class AuthViewModel {
             Auth.auth().removeStateDidChangeListener(listener)
         }
         userListener?.remove()
+        if let observer = fcmObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
     
     // MARK: - FCM Token Observer
@@ -130,7 +136,7 @@ class AuthViewModel {
     /// this device with push notifications. The observer is weak-captured to avoid
     /// retaining the ViewModel from the NotificationCenter.
     private func setupFCMTokenObserver() {
-        NotificationCenter.default.addObserver(
+        fcmObserver = NotificationCenter.default.addObserver(
             forName: .fcmTokenReceived,
             object: nil,
             queue: .main
@@ -815,3 +821,4 @@ class AuthViewModel {
 // SUGGESTION 5 — markAllAsRead() in NotificationViewModel doesn't use batch writes:
 //   Individual Firestore writes in a loop should be replaced with a Firestore
 //   WriteBatch for atomicity and performance (see NotificationViewModel).
+

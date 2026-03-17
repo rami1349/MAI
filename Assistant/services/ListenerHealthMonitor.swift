@@ -220,7 +220,6 @@ struct ListenerHealthOverlay: View {
 
 @MainActor
 final class ListenerHealthMonitor {
-    static let shared = ListenerHealthMonitor()
     private init() {}
     
     @inlinable func register(_ name: String) {}

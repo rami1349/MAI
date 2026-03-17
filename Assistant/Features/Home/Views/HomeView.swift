@@ -114,95 +114,78 @@ struct HomeView: View {
         .tourTarget("home.addEvent")
     }
     
-    // MARK: - Static Formatters
-    
-    static let fullDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE, MMMM d"
-        return f
-    }()
-    
     // MARK: - Body
     
     var body: some View {
+        mainContent
+            .applyNavigationDestinations(
+                showTodayTasks: $showTodayTasks,
+                showTaskGroup: $showTaskGroup
+            )
+            .applySheets(
+                showNotifications: $showNotifications,
+                selectedTask: $selectedTask,
+                showAddTask: $showAddTask,
+                showAddHabit: $showAddHabit,
+                showAddEvent: $showAddEvent
+            )
+            .applyDataObservers(
+                resetTrigger: resetTrigger,
+                taskCount: taskVM.allTasks.count,
+                taskLoading: taskVM.isLoading,
+                habitCount: habitVM.habits.count,
+                memberCount: familyMemberVM.familyMembers.count,
+                groupCount: familyMemberVM.taskGroups.count,
+                eventCount: calendarVM.events.count,
+                selectedDate: calendarVM.selectedDate,
+                eventKitCount: eventKitService.events.count,
+                holidayCount: eventKitService.holidayEvents.count,
+                onReset: {
+                    showTodayTasks = false
+                    showTaskGroup = nil
+                    selectedTask = nil
+                },
+                onDismissTask: { selectedTask = nil },
+                onScheduleRebuild: { recomputeEvents in
+                    scheduleRebuild(recomputeEvents: recomputeEvents)
+                },
+                onLoad: { await loadData() }
+            )
+    }
+    
+    // MARK: - Main Content (extracted to reduce body complexity)
+    
+    @ViewBuilder
+    private var mainContent: some View {
         ZStack {
             Color.themeSurfacePrimary
                 .ignoresSafeArea()
             
             if familyVM.isLoading {
-                VStack(spacing: DS.Spacing.md) {
-                    ProgressView()
-                    Text(L10n.loading)
-                        .font(DS.Typography.bodySmall())
-                        .foregroundStyle(.textSecondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                loadingView
             } else {
-                if isRegularWidth {
-                    iPadLayout
-                } else {
-                    iPhoneLayout
-                }
+                layoutContent
             }
         }
-        .navigationDestination(isPresented: $showTodayTasks) {
-            TodayTasksView()
+        .id(habitVM.habits.count)
+    }
+    
+    private var loadingView: some View {
+        VStack(spacing: DS.Spacing.md) {
+            ProgressView()
+            Text(L10n.loading)
+                .font(DS.Typography.bodySmall())
+                .foregroundStyle(.textSecondary)
         }
-        .navigationDestination(item: $showTaskGroup) { group in
-            TaskGroupDetailView(taskGroup: group)
-        }
-        .sheet(isPresented: $showNotifications) {
-            NotificationsView()
-        }
-        .sheet(item: $selectedTask) { task in
-            TaskDetailView(task: task)
-        }
-        .sheet(isPresented: $showAddTask) {
-            AddTaskView()
-                .presentationBackground(Color.themeSurfacePrimary)
-        }
-        .sheet(isPresented: $showAddHabit) {
-            AddHabitView()
-                .presentationBackground(Color.themeSurfacePrimary)
-        }
-        .sheet(isPresented: $showAddEvent) {
-            AddEventView()
-                .presentationBackground(Color.themeSurfacePrimary)
-        }
-        .onChange(of: resetTrigger) { _, _ in
-            showTodayTasks = false
-            showTaskGroup = nil
-            selectedTask = nil
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
-            selectedTask = nil
-        }
-        .task {
-            await loadData()
-        }
-        // PERF: Debounced rebuild for @Observable ViewModels
-        // With @Observable, we track specific properties instead of objectWillChange.
-        // Track array counts as a lightweight proxy for data changes.
-        .onChange(of: taskVM.allTasks.count) { _, _ in
-            scheduleRebuild()
-        }
-        .onChange(of: taskVM.isLoading) { _, _ in
-            scheduleRebuild()
-        }
-        .onChange(of: familyMemberVM.familyMembers.count) { _, _ in
-            scheduleRebuild(recomputeEvents: true)
-        }
-        .onChange(of: calendarVM.events.count) { _, _ in
-            scheduleRebuild(recomputeEvents: true)
-        }
-        .onChange(of: calendarVM.selectedDate) { _, _ in
-            scheduleRebuild(recomputeEvents: true)
-        }
-        .onChange(of: eventKitService.events.count) { _, _ in
-            scheduleRebuild(recomputeEvents: true)
-        }
-        .onChange(of: eventKitService.holidayEvents.count) { _, _ in
-            scheduleRebuild(recomputeEvents: true)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    @ViewBuilder
+    private var layoutContent: some View {
+        if isRegularWidth {
+            iPadLayout
+        } else {
+            iPhoneLayout
         }
     }
     
@@ -212,7 +195,7 @@ struct HomeView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 // Date (small, muted) - on top
-                Text(Self.fullDateFormatter.string(from: Date()))
+                Text(SharedFormatters.fullDate.string(from: Date()))
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
                 
@@ -361,6 +344,89 @@ struct CircularProgressView: View {
                 .font(DS.Typography.micro())
                 .foregroundStyle(.textSecondary)
         }
+    }
+}
+
+// MARK: - HomeView Modifier Extensions
+// These extensions break up the massive modifier chain in HomeView.body
+// to prevent Swift compiler type-check timeout errors.
+
+extension View {
+    /// Applies navigation destinations for HomeView
+    func applyNavigationDestinations(
+        showTodayTasks: Binding<Bool>,
+        showTaskGroup: Binding<TaskGroup?>
+    ) -> some View {
+        self
+            .navigationDestination(isPresented: showTodayTasks) {
+                TodayTasksView()
+            }
+            .navigationDestination(item: showTaskGroup) { group in
+                TaskGroupDetailView(taskGroup: group)
+            }
+    }
+    
+    /// Applies sheet presentations for HomeView
+    func applySheets(
+        showNotifications: Binding<Bool>,
+        selectedTask: Binding<FamilyTask?>,
+        showAddTask: Binding<Bool>,
+        showAddHabit: Binding<Bool>,
+        showAddEvent: Binding<Bool>
+    ) -> some View {
+        self
+            .sheet(isPresented: showNotifications) {
+                NotificationsView()
+            }
+            .sheet(item: selectedTask) { task in
+                TaskDetailView(task: task)
+            }
+            .sheet(isPresented: showAddTask) {
+                AddTaskView()
+                    .presentationBackground(Color.themeSurfacePrimary)
+            }
+            .sheet(isPresented: showAddHabit) {
+                AddHabitView()
+                    .presentationBackground(Color.themeSurfacePrimary)
+            }
+            .sheet(isPresented: showAddEvent) {
+                AddEventView()
+                    .presentationBackground(Color.themeSurfacePrimary)
+            }
+    }
+    
+    /// Applies data observation and lifecycle handlers for HomeView
+    func applyDataObservers(
+        resetTrigger: UUID,
+        taskCount: Int,
+        taskLoading: Bool,
+        habitCount: Int,
+        memberCount: Int,
+        groupCount: Int,
+        eventCount: Int,
+        selectedDate: Date,
+        eventKitCount: Int,
+        holidayCount: Int,
+        onReset: @escaping () -> Void,
+        onDismissTask: @escaping () -> Void,
+        onScheduleRebuild: @escaping (Bool) -> Void,
+        onLoad: @escaping () async -> Void
+    ) -> some View {
+        self
+            .onChange(of: resetTrigger) { _, _ in onReset() }
+            .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
+                onDismissTask()
+            }
+            .task { await onLoad() }
+            .onChange(of: taskCount) { _, _ in onScheduleRebuild(false) }
+            .onChange(of: taskLoading) { _, _ in onScheduleRebuild(false) }
+            .onChange(of: habitCount) { _, _ in onScheduleRebuild(false) }
+            .onChange(of: memberCount) { _, _ in onScheduleRebuild(true) }
+            .onChange(of: groupCount) { _, _ in onScheduleRebuild(false) }
+            .onChange(of: eventCount) { _, _ in onScheduleRebuild(true) }
+            .onChange(of: selectedDate) { _, _ in onScheduleRebuild(true) }
+            .onChange(of: eventKitCount) { _, _ in onScheduleRebuild(true) }
+            .onChange(of: holidayCount) { _, _ in onScheduleRebuild(true) }
     }
 }
 

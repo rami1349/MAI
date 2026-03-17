@@ -159,7 +159,7 @@ actor AccountDeletionService {
 
         // ── Step 7: Delete user Firestore profile document ──
         do {
-            try await db.collection("users").document(userId).delete()
+            try await db.collection(FirestoreCollections.users).document(userId).delete()
         } catch {
             cleanupWarnings.append("User doc: \(error.localizedDescription)")
         }
@@ -206,64 +206,42 @@ actor AccountDeletionService {
 
     /// Batch-deletes all habits, habitLogs, and notifications for the user.
     ///
-    /// Uses a single Firestore `WriteBatch` for all three collections, capped at
-    /// 450 operations (below the Firestore 500-op limit). If the total document count
-    /// exceeds 450, this method commits the current batch and recursively calls itself
-    /// for the remaining documents.
-    ///
-    /// ⚠️ KNOWN BUG: The recursive retry pattern is flawed. After the first batch
-    /// is committed, the recursive call re-queries ALL documents (including those
-    /// already deleted). On the first recursion, it will attempt to delete already-
-    /// deleted documents (no-op) but may stop prematurely if total docs remain > 450.
-    /// See improvement suggestions below for a correct chunking pattern.
+    /// Uses proper chunking to handle large datasets safely. All document references
+    /// are collected first, then processed in batches of 450 (below Firestore's 500-op limit).
     ///
     /// - Parameter userId: Firebase UID of the user whose data to delete.
     private func batchDeleteUserOwnedData(userId: String) async throws {
-        let batch = db.batch()
-        var operationCount = 0
         let maxBatchSize = 450 // Conservative cap below Firestore's 500-op limit
-
-        // Fetch and queue habits for deletion
-        let habitsSnapshot = try await db.collection("habits")
+        
+        // Collect ALL document references first (no early exit)
+        var allDocRefs: [DocumentReference] = []
+        
+        // Fetch habits
+        let habitsSnapshot = try await db.collection(FirestoreCollections.habits)
             .whereField("userId", isEqualTo: userId)
             .getDocuments()
-
-        for doc in habitsSnapshot.documents {
-            batch.deleteDocument(doc.reference)
-            operationCount += 1
-        }
-
-        // Fetch and queue habit logs for deletion (may be many more than habits)
-        let habitLogsSnapshot = try await db.collection("habitLogs")
+        allDocRefs.append(contentsOf: habitsSnapshot.documents.map { $0.reference })
+        
+        // Fetch habit logs
+        let habitLogsSnapshot = try await db.collection(FirestoreCollections.habitLogs)
             .whereField("userId", isEqualTo: userId)
             .getDocuments()
-
-        for doc in habitLogsSnapshot.documents {
-            if operationCount >= maxBatchSize {
-                // Commit current batch and recurse for remaining documents
-                try await batch.commit()
-                return try await batchDeleteUserOwnedData(userId: userId)
+        allDocRefs.append(contentsOf: habitLogsSnapshot.documents.map { $0.reference })
+        
+        // Fetch notifications
+        let notificationsSnapshot = try await db.collection(FirestoreCollections.notifications)
+            .whereField("userId", isEqualTo: userId)
+            .getDocuments()
+        allDocRefs.append(contentsOf: notificationsSnapshot.documents.map { $0.reference })
+        
+        // Process in chunks of maxBatchSize
+        guard !allDocRefs.isEmpty else { return }
+        
+        for chunk in allDocRefs.chunked(into: maxBatchSize) {
+            let batch = db.batch()
+            for docRef in chunk {
+                batch.deleteDocument(docRef)
             }
-            batch.deleteDocument(doc.reference)
-            operationCount += 1
-        }
-
-        // Fetch and queue notifications for deletion
-        let notificationsSnapshot = try await db.collection("notifications")
-            .whereField("userId", isEqualTo: userId)
-            .getDocuments()
-
-        for doc in notificationsSnapshot.documents {
-            if operationCount >= maxBatchSize {
-                try await batch.commit()
-                return try await batchDeleteUserOwnedData(userId: userId)
-            }
-            batch.deleteDocument(doc.reference)
-            operationCount += 1
-        }
-
-        // Commit all queued deletions
-        if operationCount > 0 {
             try await batch.commit()
         }
     }
@@ -281,8 +259,8 @@ actor AccountDeletionService {
     ///
     /// - Parameter userId: Firebase UID of the user being unassigned.
     private func batchUnassignUserTasks(userId: String) async throws {
-        let snapshot = try await db.collection("tasks")
-            .whereField("assignedTo", isEqualTo: userId)
+        let snapshot = try await db.collection(FirestoreCollections.tasks)
+            .whereField(FirestoreFields.assignedTo, isEqualTo: userId)
             .getDocuments()
 
         guard !snapshot.documents.isEmpty else { return }
@@ -290,7 +268,7 @@ actor AccountDeletionService {
         let batch = db.batch()
         for doc in snapshot.documents {
             // Remove the assignedTo field entirely rather than setting to null
-            batch.updateData(["assignedTo": FieldValue.delete()], forDocument: doc.reference)
+            batch.updateData([FirestoreFields.assignedTo: FieldValue.delete()], forDocument: doc.reference)
         }
         try await batch.commit()
     }
@@ -308,14 +286,14 @@ actor AccountDeletionService {
     ///
     /// - Parameter userId: Firebase UID of the user whose created tasks to delete.
     private func deleteUserCreatedTasks(userId: String) async throws {
-        let snapshot = try await db.collection("tasks")
-            .whereField("createdBy", isEqualTo: userId) // ⚠️ Verify field name vs FamilyTask model
+        let snapshot = try await db.collection(FirestoreCollections.tasks)
+            .whereField(FirestoreFields.createdBy, isEqualTo: userId) // ⚠️ Verify field name vs FamilyTask model
             .getDocuments()
 
         for document in snapshot.documents {
             // Delete subcollection first — Firestore doesn't cascade parent deletes to subcollections
             let sessionsSnapshot = try await document.reference
-                .collection("focusSessions")
+                .collection(FirestoreCollections.focusSessions)
                 .getDocuments()
 
             if !sessionsSnapshot.documents.isEmpty {
@@ -337,8 +315,8 @@ actor AccountDeletionService {
     ///
     /// - Parameter userId: Firebase UID of the user whose events to delete.
     private func batchDeleteUserCreatedEvents(userId: String) async throws {
-        let snapshot = try await db.collection("events")
-            .whereField("createdBy", isEqualTo: userId)
+        let snapshot = try await db.collection(FirestoreCollections.events)
+            .whereField(FirestoreFields.createdBy, isEqualTo: userId)
             .getDocuments()
 
         guard !snapshot.documents.isEmpty else { return }
@@ -361,8 +339,8 @@ actor AccountDeletionService {
     ///   - userId: Firebase UID to remove.
     ///   - familyId: Firestore document ID of the family.
     private func removeUserFromFamily(userId: String, familyId: String) async throws {
-        try await db.collection("families").document(familyId).updateData([
-            "memberIds": FieldValue.arrayRemove([userId])
+        try await db.collection(FirestoreCollections.families).document(familyId).updateData([
+            FirestoreFields.memberIds: FieldValue.arrayRemove([userId])
         ])
     }
 }

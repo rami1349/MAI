@@ -16,14 +16,31 @@ import GoogleSignIn
 @main
 struct AssistantApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @State private var authViewModel = AuthViewModel()
-    @State private var familyViewModel = FamilyViewModel()
     
-    // @Observable uses @State (not @StateObject)
-    @State private var store = SubscriptionManager()
+    // ViewModels - initialized after Firebase via init()
+    @State private var authViewModel: AuthViewModel
+    @State private var familyViewModel: FamilyViewModel
+    @State private var store: SubscriptionManager
     
     // Keep observing ThemeManager for colorScheme reactivity at App level
     private var themeManager: ThemeManager { .shared }
+    
+    init() {
+        // Configure Firebase BEFORE creating any ViewModels
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+            
+            // Configure Firestore settings
+            let settings = FirestoreSettings()
+            settings.cacheSettings = PersistentCacheSettings(sizeBytes: 100 * 1024 * 1024 as NSNumber)
+            Firestore.firestore().settings = settings
+        }
+        
+        // Now safe to create ViewModels that use Firebase
+        _authViewModel = State(initialValue: AuthViewModel())
+        _familyViewModel = State(initialValue: FamilyViewModel())
+        _store = State(initialValue: SubscriptionManager())
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -64,20 +81,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        // 1. Configure Firebase FIRST
-        FirebaseApp.configure()
-        
-        // 2. Configure Google Sign-In with Firebase client ID
+        // Firebase is already configured in AssistantApp.init()
+        // Configure Google Sign-In with Firebase client ID
         if let clientID = FirebaseApp.app()?.options.clientID {
             GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
         }
         
-        // 3. Enable Firestore offline persistence with increased cache size
-        let settings = FirestoreSettings()
-        settings.cacheSettings = PersistentCacheSettings(sizeBytes: 100 * 1024 * 1024 as NSNumber) // 100 MB cache
-        Firestore.firestore().settings = settings
-        
-        // 4. Setup notification delegates
+        // Setup notification delegates
         UNUserNotificationCenter.current().delegate = LocalNotificationService.shared
         Messaging.messaging().delegate = LocalNotificationService.shared
         

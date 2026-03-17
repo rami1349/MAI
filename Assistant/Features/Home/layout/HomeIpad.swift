@@ -133,7 +133,7 @@ extension HomeView {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("L10n.focusNow")
+                Text(L10n.focusNow)
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -239,7 +239,7 @@ extension HomeView {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("L10n.todayTomorrow")
+                Text(L10n.todayTomorrow)
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -575,28 +575,5 @@ extension HomeView {
     }
 }
 
-// MARK: - Task Priority Color Extension
-
-private extension FamilyTask.TaskPriority {
-    var color: Color {
-        switch self {
-        case .urgent: return Color.accentRed
-        case .high: return Color.accentOrange
-        case .medium: return Color.accentPrimary
-        case .low: return Color.textTertiary
-        }
-    }
-}
-
-// MARK: - Task Status Color Extension
-
-private extension FamilyTask.TaskStatus {
-    var color: Color {
-        switch self {
-        case .todo: return Color.statusTodo
-        case .inProgress: return Color.statusInProgress
-        case .pendingVerification: return Color.statusPending
-        case .completed: return Color.statusCompleted
-        }
-    }
-}
+// NOTE: TaskStatus.color and TaskPriority.color are now defined
+// directly on the enums in FamilyTask.swift — no local extension needed.

@@ -31,7 +31,7 @@
 //   - FirebaseStorage    — proof image/video uploads
 //   - FirestoreDecode    — off-main-thread Codable decoding helper
 //   - SoundManager       — audio feedback on task events
-
+//
 
 import Foundation
 import Observation
@@ -301,14 +301,26 @@ final class TaskViewModel {
             isRecurring: isRecurring, recurrenceRule: recurrenceRule
         )
         
+        // Generate a temporary ID for optimistic update
+        let tempId = UUID().uuidString
+        task.id = tempId
+        
+        // OPTIMISTIC UPDATE: Add to local state BEFORE Firestore write
+        // This ensures the UI updates immediately, before the listener fires
+        var updatedTasks = allTasks
+        updatedTasks.append(task)
+        setTasks(updatedTasks)
+        
         do {
-            let ref = try db.collection("tasks").addDocument(from: task)
-            task.id = ref.documentID
-            
-            // OPTIMISTIC UPDATE: Add to local state immediately
-            var updatedTasks = allTasks
-            updatedTasks.append(task)
-            setTasks(updatedTasks)
+            let ref = try db.collection(FirestoreCollections.tasks).addDocument(from: FamilyTask(
+                familyId: familyId, groupId: groupId, title: title, description: description,
+                assignedTo: primaryAssignee, assignees: assignees, assignedBy: userId,
+                dueDate: dueDate, scheduledTime: scheduledTime,
+                status: .todo, priority: priority, createdAt: Date(), completedAt: nil,
+                hasReward: hasReward, rewardAmount: rewardAmount, requiresProof: requiresProof, proofType: proofType,
+                proofURL: nil, proofURLs: nil, proofVerifiedBy: nil, proofVerifiedAt: nil, rewardPaid: false,
+                isRecurring: isRecurring, recurrenceRule: recurrenceRule
+            ))
             
             // Schedule due date notifications if assigned to current user
             if assignees.contains(userId) || assignees.isEmpty {
@@ -317,6 +329,10 @@ final class TaskViewModel {
             
             return ref.documentID
         } catch {
+            // ROLLBACK: Remove the optimistic task on failure
+            var rollbackTasks = allTasks
+            rollbackTasks.removeAll { $0.id == tempId }
+            setTasks(rollbackTasks)
             errorMessage = error.localizedDescription
             return nil
         }
@@ -325,20 +341,31 @@ final class TaskViewModel {
     func createTask(_ task: FamilyTask) async throws {
         var newTask = task
         
+        // Generate a temporary ID for optimistic update
+        let tempId = UUID().uuidString
+        newTask.id = tempId
+        
+        // OPTIMISTIC UPDATE: Add to local state BEFORE Firestore write
+        // This ensures the UI updates immediately, before the listener fires
+        var updatedTasks = allTasks
+        updatedTasks.append(newTask)
+        setTasks(updatedTasks)
+        
         do {
-            let ref = try db.collection("tasks").addDocument(from: newTask)
-            newTask.id = ref.documentID
-            
-            // OPTIMISTIC UPDATE
-            var updatedTasks = allTasks
-            updatedTasks.append(newTask)
-            setTasks(updatedTasks)
+            // Write to Firestore - listener will fire and update with real ID
+            _ = try db.collection(FirestoreCollections.tasks).addDocument(from: task)
+            // Note: Don't update tasks here - the listener will handle it
+            // and replace the temp ID with the real Firestore document ID
             
             // Schedule notifications if assigned to current user
             if let userId = currentUserId, newTask.isAssigned(to: userId) {
                 LocalNotificationService.shared.scheduleTaskDueDateNotifications(tasks: allTasks, userId: userId)
             }
         } catch {
+            // ROLLBACK: Remove the optimistic task on failure
+            var rollbackTasks = allTasks
+            rollbackTasks.removeAll { $0.id == tempId }
+            setTasks(rollbackTasks)
             throw error
         }
     }

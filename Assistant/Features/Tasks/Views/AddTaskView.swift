@@ -514,7 +514,7 @@ struct AddTaskView: View {
     private static func defaultDueDate() -> Date {
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: Date())
-        components.day! += 1
+        components.day = (components.day ?? 1) + 1
         components.hour = 17
         components.minute = 0
         return calendar.date(from: components) ?? Date()

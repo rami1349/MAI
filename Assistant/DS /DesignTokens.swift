@@ -889,7 +889,6 @@ private func elevationSample(_ label: String, _ level: Int) -> some View {
         .background(RoundedRectangle(cornerRadius: 12).fill(Color.themeCardBackground))
     
     switch level {
-    case 0: base.elevationNone()
     case 1: base.elevation1()
     case 2: base.elevation2()
     case 3: base.elevation3()

@@ -56,9 +56,11 @@ struct MonthHabitCard: View {
     
     // Generate calendar grid data
     private var calendarGrid: [[Date?]] {
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else {
+            return []
+        }
         let firstWeekday = calendar.component(.weekday, from: startOfMonth)
-        let daysInMonth = calendar.range(of: .day, in: .month, for: currentDate)!.count
+        let daysInMonth = calendar.range(of: .day, in: .month, for: currentDate)?.count ?? 30
         
         var grid: [[Date?]] = []
         var currentDay = 1
@@ -83,8 +85,10 @@ struct MonthHabitCard: View {
     
     // Count completed days
     private var completedCount: Int {
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate))!
-        let daysInMonth = calendar.range(of: .day, in: .month, for: currentDate)!.count
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: currentDate)) else {
+            return 0
+        }
+        let daysInMonth = calendar.range(of: .day, in: .month, for: currentDate)?.count ?? 30
         
         var count = 0
         for day in 0..<daysInMonth {
