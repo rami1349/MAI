@@ -40,7 +40,7 @@ struct HomeTimelineSection: View {
                                 .fill(Color.accentPrimary.opacity(0.1))
                         )
                     
-                    Text("L10n.todayTomorrow")
+                    Text( "todayTomorrow")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                     
@@ -143,11 +143,11 @@ struct HomeTimelineSection: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("L10n.clearSchedule")
+                Text( "clearSchedule")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
                 
-                Text("L10n.nothingScheduledForTodayOrTomorrow")
+                Text( "nothingScheduledForTodayOrTomorrow")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }

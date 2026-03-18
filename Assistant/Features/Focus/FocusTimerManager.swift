@@ -3,13 +3,6 @@
 //  Assistant
 //
 //  Created by Ramiro  on 1/25/26.
-//
-
-
-//
-//  FocusTimerManager.swift
-//  FamilyHub
-//
 //  Manages Pomodoro timer state, background notifications, and persistence
 //
 
@@ -19,7 +12,7 @@ import AVFoundation
 
 @MainActor
 @Observable
-class FocusTimerManager {
+final class FocusTimerManager {
     static let shared = FocusTimerManager()
     
     // MARK: - Published Properties
@@ -240,8 +233,13 @@ class FocusTimerManager {
     private func startTimer() {
         timer?.invalidate()
         
+        // P-7 FIX: Use MainActor.assumeIsolated instead of Task { @MainActor in }.
+        // Timer fires on RunLoop.main (main thread guaranteed), so assumeIsolated
+        // is correct and avoids allocating a Task object every second.
+        // Before: 1 Task allocation per tick × 60 ticks/min = 60 allocations/min.
+        // After: 0 allocations — synchronous main-thread call.
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            MainActor.assumeIsolated {
                 self?.tick()
             }
         }

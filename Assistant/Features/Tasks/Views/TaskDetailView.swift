@@ -38,8 +38,11 @@ struct TaskDetailView: View {
         horizontalSizeClass == .regular
     }
     
+    // P-5 FIX: O(1) lookup via TaskViewModel dictionary index.
+    // Previously: taskVM.allTasks.first { $0.stableId == taskId } — O(n) per body evaluation
+    // in a 1,078-line view that re-evaluates frequently (status changes, animations).
     private var task: FamilyTask? {
-        taskVM.allTasks.first { $0.stableId == taskId }
+        taskVM.task(byStableId: taskId)
     }
     
     var assignee: FamilyUser? {

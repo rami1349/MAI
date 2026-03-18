@@ -460,7 +460,7 @@ struct HomeworkVerificationView: View {
             }
             
             HStack {
-                Text("L10n.student")
+                Text(L10n.student)
                     .foregroundStyle(.secondary)
                 Text(question.studentAnswer)
                     .fontWeight(.medium)
@@ -469,7 +469,7 @@ struct HomeworkVerificationView: View {
             
             if question.assessment != .likelyCorrect, let expected = question.expectedAnswer {
                 HStack {
-                    Text("L10n.maiSuggests")
+                    Text(L10n.maiSuggests)
                         .foregroundStyle(.secondary)
                     Text(expected)
                         .foregroundStyle(.statusSuccess)
@@ -510,7 +510,7 @@ struct HomeworkVerificationView: View {
     
     private func areasCard(_ areas: [String]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("L10n.suggestedPracticeAreas", systemImage: "lightbulb.fill")
+            Label(L10n.suggestedPracticeAreas, systemImage: "lightbulb.fill")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(.statusWarning)
@@ -539,7 +539,7 @@ struct HomeworkVerificationView: View {
                 Image(systemName: "info.circle.fill")
                     .foregroundStyle(.statusInfo)
                 
-                Text("L10n.maiLimitations")
+                Text(L10n.maiLimitations)
                     .font(.caption)
                     .fontWeight(.semibold)
             }
@@ -558,7 +558,7 @@ struct HomeworkVerificationView: View {
     
     private func parentActionButtons(confidence: Double) -> some View {
         VStack(spacing: 12) {
-            Text("L10n.yourDecision")
+            Text(L10n.yourDecision)
                 .font(.headline)
             
             // Low confidence reminder
@@ -566,7 +566,7 @@ struct HomeworkVerificationView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundStyle(.statusWarning)
-                    Text("L10n.lowAiConfidencePleaseReviewCarefully")
+                    Text(L10n.lowAiConfidencePleaseReviewCarefully)
                         .font(.caption)
                         .foregroundStyle(.statusWarning)
                 }
@@ -588,7 +588,7 @@ struct HomeworkVerificationView: View {
                     onApprove?()
                     dismiss()
                 } label: {
-                    Label("L10n.approve", systemImage: "checkmark")
+                    Label(L10n.approve, systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -596,7 +596,7 @@ struct HomeworkVerificationView: View {
                 .tint(.green)
             }
             
-            Text("L10n.onlyYouCanApproveOrRejectAiCannotMakeThis")
+            Text(L10n.onlyYouCanApproveOrRejectAiCannotMakeThis)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -614,15 +614,15 @@ struct HomeworkVerificationView: View {
                 .font(DS.Typography.displayLarge())
                 .foregroundStyle(.statusWarning)
             
-            Text("10n.couldNotAnalyze")
+            Text(L10n.couldNotAnalyze)
                 .font(.headline)
             
-            Text("message")
+            Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
-            Text("L10n.pleaseReviewTheHomeworkManually")
+            Text(L10n.pleaseReviewTheHomeworkManually)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
@@ -634,7 +634,7 @@ struct HomeworkVerificationView: View {
                     .buttonStyle(.bordered)
                 }
                 
-                Button("L10n.reviewManually") {
+                Button(L10n.reviewManually) {
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)

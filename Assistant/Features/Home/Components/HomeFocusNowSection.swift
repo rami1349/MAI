@@ -81,11 +81,11 @@ struct HomeFocusNowSection: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("L10n.allCaughtUp")
+                Text( "allCaughtUp")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
-                Text("L10n.noUrgentTasksRightNow")
+                Text( "noUrgentTasksRightNow")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }

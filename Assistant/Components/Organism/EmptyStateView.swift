@@ -352,7 +352,7 @@ private struct NotificationsIllustration: View {
                 }
             
             // "Z" sleep indicators
-            Text("L10n.zZZ")
+            Text("ZZZ")
                 .font(DS.Typography.label()) // was .rounded
                 .foregroundStyle(.textTertiary)
                 .offset(x: 30, y: -30)

@@ -307,7 +307,10 @@ struct CalendarView: View {
             // Calendar grid
             let days = calendarDays(for: monthGridMonth)
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DS.Spacing.xs), count: 7), spacing: DS.Spacing.xs) {
-                ForEach(days, id: \.self) { date in
+                // FIX: Use \.offset as ID instead of \.self — padding days are nil,
+                // and multiple nils as \.self IDs causes "ID nil occurs multiple times" warning.
+                // Same pattern used in MonthGridOverlay.swift line 107.
+                ForEach(Array(days.enumerated()), id: \.offset) { _, date in
                     iPadDayCell(date: date)
                 }
             }

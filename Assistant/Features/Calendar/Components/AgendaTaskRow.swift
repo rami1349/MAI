@@ -87,7 +87,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .stroke(Color.textTertiary.opacity(0.4), lineWidth: 1)
                     .frame(width: 10, height: 10)
-                Text("L10n.toDo")
+                Text("toDo")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textTertiary)
             }

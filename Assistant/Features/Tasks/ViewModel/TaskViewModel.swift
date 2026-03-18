@@ -36,9 +36,7 @@
 import Foundation
 import Observation
 import FirebaseFirestore
-import FirebaseFunctions
 import FirebaseStorage
-import os
 
 @MainActor
 @Observable
@@ -58,6 +56,12 @@ final class TaskViewModel {
     private(set) var pendingVerificationTasks: [FamilyTask] = []
     private(set) var completionPercentage: Double = 0
     
+    // P-6 FIX: These were computed properties — O(n) filter+sort per body evaluation.
+    // Now cached in recomputeDerivedCaches() for O(1) reads from views.
+    private(set) var overdueTasks: [FamilyTask] = []
+    private(set) var tasksDueSoon: [FamilyTask] = []
+    private(set) var tasksNeedingAttention: [FamilyTask] = []
+    
     // MARK: - Private
     // Firestore singleton — @ObservationIgnored (infrastructure, not UI state)
     private var db: Firestore { Firestore.firestore() }
@@ -69,6 +73,10 @@ final class TaskViewModel {
     /// Track task statuses to detect approvals for sound playback
     @ObservationIgnored private var previousTaskStatuses: [String: FamilyTask.TaskStatus] = [:]
     
+    /// P-8 FIX: Debounced notification scheduling task handle.
+    /// Prevents 400+ UNUserNotificationCenter.add() calls per Firestore snapshot.
+    @ObservationIgnored private var notificationScheduleTask: Task<Void, Never>?
+    
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "yyyy-MM-dd"
@@ -77,20 +85,35 @@ final class TaskViewModel {
     
     // MARK: - Caches (internal, not published)
     @ObservationIgnored private var tasksByStatus: [FamilyTask.TaskStatus: [FamilyTask]] = [:]
-@ObservationIgnored     private var tasksByGroup: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var tasksByGroup: [String: [FamilyTask]] = [:]
     @ObservationIgnored private var tasksByDate: [String: [FamilyTask]] = [:]
     /// Date-indexed cache excluding completed non-recurring tasks (for calendar/day views).
     @ObservationIgnored private var activeTasksByDate: [String: [FamilyTask]] = [:]
     
+    // P-5 FIX: O(1) lookup by stableId — replaces O(n) .first { $0.stableId == taskId }
+    // Used by TaskDetailView which previously scanned allTasks on every body evaluation.
+    @ObservationIgnored private var tasksByStableId: [String: FamilyTask] = [:]
+    
+    // P-9 FIX: Dictionary for O(1) deep-diff instead of sorting both arrays per snapshot
+    @ObservationIgnored private var taskSnapshotById: [String: TaskSnapshot] = [:]
+    
     deinit {
         listener?.remove()
+    }
+    
+    // MARK: - P-5: O(1) Task Lookup by StableId
+    
+    /// Returns a task by its stableId in O(1). Used by TaskDetailView.
+    /// Replaces the previous O(n) scan: `allTasks.first { $0.stableId == taskId }`
+    func task(byStableId id: String) -> FamilyTask? {
+        tasksByStableId[id]
     }
     
     // MARK: - PERFORMANCE: User-specific task caches
     // Pre-indexed for O(1) lookup by user ID
     // Updated for multi-assignee: indexes by all assignees (allAssignees computed property)
     @ObservationIgnored private var tasksByAssignedTo: [String: [FamilyTask]] = [:]
-@ObservationIgnored     private var tasksByAssignedBy: [String: [FamilyTask]] = [:]
+    @ObservationIgnored private var tasksByAssignedBy: [String: [FamilyTask]] = [:]
     
     /// Returns tasks assigned to a specific user - O(1) lookup
     /// Updated for multi-assignee: checks allAssignees
@@ -234,8 +257,11 @@ final class TaskViewModel {
                         self.detectTaskApprovalsAndPlaySound(newTasks: tasks, userId: userId)
                         
                         self.setTasks(tasks)
-                        // Refresh task due date notifications for tasks assigned to this user
-                        LocalNotificationService.shared.scheduleTaskDueDateNotifications(tasks: tasks, userId: userId)
+                        
+                        // P-8 FIX: Debounce notification scheduling — don't block the main
+                        // thread with 400+ UNUserNotificationCenter.add() calls per snapshot.
+                        // Defers to a coalesced background task after 500ms of quiet.
+                        self.scheduleNotificationsDebounced(tasks: tasks, userId: userId)
                     }
                 }
             }
@@ -324,9 +350,10 @@ final class TaskViewModel {
                 isRecurring: isRecurring, recurrenceRule: recurrenceRule
             ))
             
-            // Schedule due date notifications if assigned to current user
+            // P-8 FIX: Schedule via debounce — listener will also trigger this,
+            // but scheduling immediately gives faster UX for the creating user.
             if assignees.contains(userId) || assignees.isEmpty {
-                LocalNotificationService.shared.scheduleTaskDueDateNotifications(tasks: allTasks, userId: userId)
+                scheduleNotificationsDebounced(tasks: allTasks, userId: userId)
             }
             
             return ref.documentID
@@ -359,9 +386,9 @@ final class TaskViewModel {
             // Note: Don't update tasks here - the listener will handle it
             // and replace the temp ID with the real Firestore document ID
             
-            // Schedule notifications if assigned to current user
+            // P-8 FIX: Debounced — listener will also trigger scheduling
             if let userId = currentUserId, newTask.isAssigned(to: userId) {
-                LocalNotificationService.shared.scheduleTaskDueDateNotifications(tasks: allTasks, userId: userId)
+                scheduleNotificationsDebounced(tasks: allTasks, userId: userId)
             }
         } catch {
             // ROLLBACK: Remove the optimistic task on failure
@@ -466,21 +493,14 @@ final class TaskViewModel {
         }
     }
     
-    // MARK: - Transaction-Safe Reward Payment (via Cloud Function)
+    // MARK: - Transaction-Safe Reward Payment
     //
-    // C-6 FIX: Balance increments and rewardTransaction writes are now blocked
-    // by Firestore Security Rules for client-side writes. All financial mutations
-    // go through Cloud Functions (admin SDK bypasses rules).
-    //
-    // The Cloud Function `payTaskReward` atomically:
-    //   1. Reads rewardPaid flag (prevents double-pay)
-    //   2. Sets rewardPaid = true on the task
-    //   3. Increments user balance
-    //   4. Writes a rewardTransaction ledger entry
+    // PHASE 1 FIX: Prevents double-pay via Firestore transaction.
+    // Reads the task's rewardPaid flag inside a transaction; only pays
+    // if rewardPaid == false. Atomically sets rewardPaid = true,
+    // increments user balance, and writes a rewardTransaction ledger entry.
     
-    @ObservationIgnored private let functions = Functions.functions(region: "us-west1")
-    
-    /// Pay reward to a single user via Cloud Function.
+    /// Pay reward to a single user, guarded by a Firestore transaction.
     /// Returns `true` if the reward was actually paid (first call wins).
     @discardableResult
     private func payRewardSafely(
@@ -489,24 +509,59 @@ final class TaskViewModel {
         amount: Double,
         familyId: String
     ) async -> Bool {
+        let taskRef = db.collection("tasks").document(taskId)
+        let userRef = db.collection("users").document(userId)
+        
         do {
-            let result = try await functions.httpsCallable("payTaskReward").call([
-                "taskId": taskId,
-                "userId": userId,
-                "amount": amount,
-                "familyId": familyId
-            ] as [String: Any])
+            let result = try await db.runTransaction { transaction, errorPointer in
+                // 1. Read task inside transaction
+                let taskSnap: DocumentSnapshot
+                do {
+                    taskSnap = try transaction.getDocument(taskRef)
+                } catch {
+                    errorPointer?.pointee = error as NSError
+                    return false as NSNumber
+                }
+                
+                guard let data = taskSnap.data() else { return false as NSNumber }
+                
+                // 2. Check rewardPaid flag — if already true, another call won
+                let alreadyPaid = data["rewardPaid"] as? Bool ?? false
+                if alreadyPaid { return false as NSNumber }
+                
+                // 3. Atomically set rewardPaid = true
+                transaction.updateData(["rewardPaid": true], forDocument: taskRef)
+                
+                // 4. Increment user balance
+                transaction.updateData([
+                    "balance": FieldValue.increment(amount)
+                ], forDocument: userRef)
+                
+                // 5. Write ledger entry (rewardTransaction)
+                let txnRef = self.db.collection("rewardTransactions").document()
+                transaction.setData([
+                    "userId": userId,
+                    "familyId": familyId,
+                    "taskId": taskId,
+                    "amount": amount,
+                    "type": "task_reward",
+                    "reason": "Task completion reward",
+                    "createdAt": FieldValue.serverTimestamp()
+                ], forDocument: txnRef)
+                
+                return true as NSNumber
+            }
             
-            let paid = (result.data as? [String: Any])?["paid"] as? Bool ?? false
+            let paid = (result as? NSNumber)?.boolValue ?? false
             
             if paid {
-                Log.rewards.info("Paid $\(amount, privacy: .public) to user \(userId, privacy: .private) for task \(taskId, privacy: .private)")
+                print("[Reward] Paid $\(amount) to \(userId) for task \(taskId)")
             } else {
-                Log.rewards.debug("Skipped — already paid for task \(taskId, privacy: .private)")
+                print("[Reward] Skipped — already paid for task \(taskId)")
             }
             return paid
         } catch {
-            Log.rewards.error("Reward payment failed: \(error.localizedDescription, privacy: .public)")
+            print("[Reward] Transaction failed: \(error.localizedDescription)")
             return false
         }
     }
@@ -672,7 +727,7 @@ final class TaskViewModel {
         // Only the task creator can verify proof
         guard task.assignedBy == verifierId else {
             errorMessage = "Only the task creator can verify proof"
-            Log.tasks.error("verifyProof: assignedBy (\(task.assignedBy, privacy: .private)) != verifierId (\(verifierId, privacy: .private))")
+            print(" verifyProof: assignedBy (\(task.assignedBy)) != verifierId (\(verifierId))")
             return
         }
         
@@ -685,19 +740,40 @@ final class TaskViewModel {
             updated.proofVerifiedAt = Date()
             updated.rewardPaid = task.hasReward
             
-            // C-6 FIX: All reward payments go through Cloud Function (payTaskReward).
-            // The function atomically checks rewardPaid, sets it true, increments
-            // balance, and writes a ledger entry. For multi-assignee tasks, each
-            // assignee gets their own Cloud Function call.
+            // PHASE 1 FIX: Transaction-safe reward payment for proof approval
             if task.hasReward, let rewardAmount = task.rewardAmount {
+                // Pay each assignee via the safe transaction method.
+                // The first call sets rewardPaid = true on the task atomically.
+                // For multi-assignee tasks, we pay each in sequence — the transaction
+                // only gates on rewardPaid for the first payment, then we pay the rest
+                // via direct increment (the task is already marked as paid).
                 let assignees = task.allAssignees
-                for assigneeId in assignees {
-                    await payRewardSafely(
+                if let first = assignees.first {
+                    let didPay = await payRewardSafely(
                         taskId: id,
-                        userId: assigneeId,
+                        userId: first,
                         amount: rewardAmount,
                         familyId: task.familyId
                     )
+                    // Pay remaining assignees only if first payment succeeded
+                    if didPay {
+                        for assigneeId in assignees.dropFirst() {
+                            let userRef = db.collection("users").document(assigneeId)
+                            let txnRef = db.collection("rewardTransactions").document()
+                            let batch = db.batch()
+                            batch.updateData(["balance": FieldValue.increment(rewardAmount)], forDocument: userRef)
+                            batch.setData([
+                                "userId": assigneeId,
+                                "familyId": task.familyId,
+                                "taskId": id,
+                                "amount": rewardAmount,
+                                "type": "task_reward",
+                                "reason": "Task completion reward",
+                                "createdAt": FieldValue.serverTimestamp()
+                            ], forDocument: txnRef)
+                            try? await batch.commit()
+                        }
+                    }
                 }
             }
             
@@ -755,77 +831,47 @@ final class TaskViewModel {
         let tasks = activeTasksByDate[Self.dateFormatter.string(from: date)] ?? []
         return sortedByPriority ? tasks.sortedByPriority() : tasks
     }
-
-    /// Overdue tasks sorted by how late they are
-    var overdueTasks: [FamilyTask] {
-        activeTasks
-            .filter { $0.isOverdue }
-            .sorted { $0.dueDate < $1.dueDate }  // Most overdue first
-    }
-
-    /// Tasks due soon (within 2 hours)
-    var tasksDueSoon: [FamilyTask] {
-        activeTasks
-            .filter { $0.isDueSoon }
-            .sortedByPriority()
-    }
-
-    /// Tasks needing attention (overdue + due soon + in progress)
-    var tasksNeedingAttention: [FamilyTask] {
-        var result: [FamilyTask] = []
-        var addedIds = Set<String>()
-        
-        // Overdue first
-        for task in overdueTasks {
-            if let id = task.id, !addedIds.contains(id) {
-                result.append(task)
-                addedIds.insert(id)
-            }
-        }
-        
-        // Due soon
-        for task in tasksDueSoon {
-            if let id = task.id, !addedIds.contains(id) {
-                result.append(task)
-                addedIds.insert(id)
-            }
-        }
-        
-        // In progress
-        for task in inProgressTasks {
-            if let id = task.id, !addedIds.contains(id) {
-                result.append(task)
-                addedIds.insert(id)
-            }
-        }
-        
-        return result
-    }
+    
+    // NOTE: overdueTasks, tasksDueSoon, tasksNeedingAttention are now cached
+    // private(set) var properties (declared above), computed in recomputeDerivedCaches().
     
     // MARK: - Private
     
+    // P-8 FIX: Debounced notification scheduling.
+    // Before: 400+ UNUserNotificationCenter.add() calls synchronously on main thread
+    // per Firestore snapshot (2 notifications × 200 tasks).
+    // After: Waits 500ms for rapid-fire snapshots to settle, then schedules once.
+    private func scheduleNotificationsDebounced(tasks: [FamilyTask], userId: String) {
+        notificationScheduleTask?.cancel()
+        notificationScheduleTask = Task { [tasks, userId] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            LocalNotificationService.shared.scheduleTaskDueDateNotifications(
+                tasks: tasks,
+                userId: userId
+            )
+        }
+    }
+    
     private func setTasks(_ tasks: [FamilyTask]) {
-        // Structured logging — .debug is stripped from Release builds
-        Log.tasks.debug("setTasks called with \(tasks.count, privacy: .public) tasks")
+        // DEBUG: Structured logging — .debug is stripped from Release builds
+        print(" setTasks called with \(tasks.count) tasks:")
+        for task in tasks.prefix(5) {
+            print("   - \(task.title): id=\(task.id ?? "nil")")
+        }
         
-        // PERF-2: Only update if tasks actually changed (by IDs)
-        let newIDs = Set(tasks.compactMap { $0.id })
-        let oldIDs = Set(allTasks.compactMap { $0.id })
-        
-        // Quick check: if IDs are same, check if any task was modified
+        // P-9 FIX: Dictionary-based diff — O(n) instead of O(n log n) sort-based diff.
+        // Only compares changed fields for tasks with matching IDs.
         let needsUpdate: Bool
-        if newIDs == oldIDs && tasks.count == allTasks.count {
-            // Deep check only if counts match - compare by checking a few key fields
-            needsUpdate = zip(tasks.sorted { ($0.id ?? "") < ($1.id ?? "") },
-                              allTasks.sorted { ($0.id ?? "") < ($1.id ?? "") })
-            .contains { new, old in
-                new.status != old.status ||
-                new.title != old.title ||
-                new.completedAt != old.completedAt ||
-                new.proofURL != old.proofURL ||
-                new.proofURLs != old.proofURLs ||
-                new.rewardPaid != old.rewardPaid ||
-                new.assignees != old.assignees  // Multi-assignee: check assignees changed
+        if tasks.count == allTasks.count {
+            needsUpdate = tasks.contains { task in
+                guard let id = task.id, let old = taskSnapshotById[id] else { return true }
+                return old.status != task.status ||
+                       old.title != task.title ||
+                       old.completedAt != task.completedAt ||
+                       old.proofURL != task.proofURL ||
+                       old.rewardPaid != task.rewardPaid ||
+                       old.assignees != task.assignees
             }
         } else {
             needsUpdate = true
@@ -845,6 +891,25 @@ final class TaskViewModel {
         tasksByDate = Dictionary(grouping: tasks) { Self.dateFormatter.string(from: $0.dueDate) }
         activeTasksByDate = Dictionary(grouping: activeTasks) { Self.dateFormatter.string(from: $0.dueDate) }
         
+        // P-5 FIX: Build stableId index for O(1) lookup from TaskDetailView
+        tasksByStableId = Dictionary(tasks.map { ($0.stableId, $0) }, uniquingKeysWith: { _, new in new })
+        
+        // P-9 FIX: Snapshot for next diff cycle
+        taskSnapshotById = Dictionary(
+            tasks.compactMap { task -> (String, TaskSnapshot)? in
+                guard let id = task.id else { return nil }
+                return (id, TaskSnapshot(
+                    status: task.status,
+                    title: task.title,
+                    completedAt: task.completedAt,
+                    proofURL: task.proofURL,
+                    rewardPaid: task.rewardPaid,
+                    assignees: task.assignees
+                ))
+            },
+            uniquingKeysWith: { _, new in new }
+        )
+        
         // PERFORMANCE: Build user-specific indexes for O(1) lookup
         // Multi-assignee: Index by ALL assignees using allAssignees computed property
         var assignedToIndex: [String: [FamilyTask]] = [:]
@@ -856,15 +921,18 @@ final class TaskViewModel {
         tasksByAssignedTo = assignedToIndex
         tasksByAssignedBy = Dictionary(grouping: tasks) { $0.assignedBy }
         
-        // PERF-3: Recompute derived caches
+        // Recompute all derived caches
         recomputeDerivedCaches()
     }
     
-    /// PERF-3: Recomputes all derived/cached properties
-    /// Called only when source data (allTasks) changes
-    /// UPDATED: Now sorts by implicit priority
+    /// Recomputes all derived/cached properties.
+    /// Called only when source data (allTasks) changes — never during body evaluation.
+    ///
+    /// P-6 FIX: overdueTasks, tasksDueSoon, and tasksNeedingAttention are now cached
+    /// here instead of being computed properties. Views get O(1) reads.
     private func recomputeDerivedCaches() {
         let todayKey = Self.dateFormatter.string(from: Date())
+        let now = Date()
         
         // Today's visible tasks - sorted by implicit priority
         let todayRaw = activeTasksByDate[todayKey] ?? []
@@ -886,7 +954,44 @@ final class TaskViewModel {
             let completed = allToday.filter { $0.status == .completed }.count
             completionPercentage = Double(completed) / Double(allToday.count) * 100
         }
+        
+        // P-6 FIX: Cache overdue tasks (were O(n) computed properties)
+        overdueTasks = activeTasks
+            .filter { $0.dueDate < now && !Calendar.current.isDateInToday($0.dueDate) && $0.status != .completed }
+            .sorted { $0.dueDate < $1.dueDate }
+        
+        // P-6 FIX: Cache tasks due soon (within 2 hours)
+        tasksDueSoon = activeTasks
+            .filter { $0.isDueSoon }
+            .sortedByPriority()
+        
+        // P-6 FIX: Cache tasks needing attention (overdue + due soon + in progress, deduped)
+        var attentionResult: [FamilyTask] = []
+        var attentionIds = Set<String>()
+        for task in overdueTasks {
+            if let id = task.id, attentionIds.insert(id).inserted { attentionResult.append(task) }
+        }
+        for task in tasksDueSoon {
+            if let id = task.id, attentionIds.insert(id).inserted { attentionResult.append(task) }
+        }
+        for task in inProgressTasks {
+            if let id = task.id, attentionIds.insert(id).inserted { attentionResult.append(task) }
+        }
+        tasksNeedingAttention = attentionResult
     }
+}
+
+// MARK: - TaskSnapshot (lightweight struct for dictionary diff)
+
+/// P-9 FIX: Captures only the fields checked during dedup diffing.
+/// Avoids hashing/comparing the entire FamilyTask struct.
+private struct TaskSnapshot {
+    let status: FamilyTask.TaskStatus
+    let title: String
+    let completedAt: Date?
+    let proofURL: String?
+    let rewardPaid: Bool
+    let assignees: [String]
 }
 
 

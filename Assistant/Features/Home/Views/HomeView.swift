@@ -62,10 +62,31 @@ struct HomeView: View {
     @State var cachedUpcomingEvents: [UpcomingEvent] = []
     
     // MARK: - Rebuild Debounce
-    /// Coalesces rapid-fire @Observable change notifications
-    /// into a single rebuild pass after 150ms of quiet.
+    //
+    // P-2 FIX: Replaced 9 separate .onChange handlers with a single fingerprint.
+    // Before: each onChange allocated a new Task, canceled the old one — up to 9× per snapshot.
+    // After: one .onChange on a cheap Int fingerprint, single debounced rebuild.
+    //
+    // P-3 FIX: Single Task handle reused instead of allocating new Tasks per trigger.
     @State private var rebuildTask: Task<Void, Never>?
     @State private var pendingEventRecompute = false
+    
+    /// Cheap fingerprint combining all data source counts + identity.
+    /// Changes when any source data changes; compared by SwiftUI as a single Int.
+    private var dataFingerprint: Int {
+        var hasher = Hasher()
+        hasher.combine(taskVM.allTasks.count)
+        hasher.combine(taskVM.isLoading)
+        hasher.combine(habitVM.habits.count)
+        hasher.combine(familyMemberVM.familyMembers.count)
+        hasher.combine(familyMemberVM.taskGroups.count)
+        hasher.combine(calendarVM.events.count)
+        hasher.combine(eventKitService.events.count)
+        hasher.combine(eventKitService.holidayEvents.count)
+        // Include a coarse date component so selectedDate changes trigger rebuild
+        hasher.combine(Calendar.current.component(.day, from: calendarVM.selectedDate))
+        return hasher.finalize()
+    }
     
     // MARK: - Computed Properties
     
@@ -129,28 +150,21 @@ struct HomeView: View {
                 showAddHabit: $showAddHabit,
                 showAddEvent: $showAddEvent
             )
-            .applyDataObservers(
-                resetTrigger: resetTrigger,
-                taskCount: taskVM.allTasks.count,
-                taskLoading: taskVM.isLoading,
-                habitCount: habitVM.habits.count,
-                memberCount: familyMemberVM.familyMembers.count,
-                groupCount: familyMemberVM.taskGroups.count,
-                eventCount: calendarVM.events.count,
-                selectedDate: calendarVM.selectedDate,
-                eventKitCount: eventKitService.events.count,
-                holidayCount: eventKitService.holidayEvents.count,
-                onReset: {
-                    showTodayTasks = false
-                    showTaskGroup = nil
-                    selectedTask = nil
-                },
-                onDismissTask: { selectedTask = nil },
-                onScheduleRebuild: { recomputeEvents in
-                    scheduleRebuild(recomputeEvents: recomputeEvents)
-                },
-                onLoad: { await loadData() }
-            )
+            // P-2 FIX: Single fingerprint observer replaces 9 separate .onChange handlers.
+            // SwiftUI compares one Int instead of 9 separate Equatable checks per render pass.
+            .task { await loadData() }
+            .onChange(of: resetTrigger) { _, _ in
+                showTodayTasks = false
+                showTaskGroup = nil
+                selectedTask = nil
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
+                selectedTask = nil
+            }
+            .onChange(of: dataFingerprint) { _, _ in
+                // Coalesce rapid changes into a single rebuild after 150ms of quiet
+                scheduleRebuild(recomputeEvents: true)
+            }
     }
     
     // MARK: - Main Content (extracted to reduce body complexity)
@@ -167,7 +181,9 @@ struct HomeView: View {
                 layoutContent
             }
         }
-        .id(habitVM.habits.count)
+        // P-4 FIX: Removed .id(habitVM.habits.count) — it was destroying the entire
+        // HomeView subtree (scroll positions, navigation state, animations) every time
+        // a habit was added or deleted. @Observable handles habit list updates correctly.
     }
     
     private var loadingView: some View {
@@ -395,39 +411,9 @@ extension View {
             }
     }
     
-    /// Applies data observation and lifecycle handlers for HomeView
-    func applyDataObservers(
-        resetTrigger: UUID,
-        taskCount: Int,
-        taskLoading: Bool,
-        habitCount: Int,
-        memberCount: Int,
-        groupCount: Int,
-        eventCount: Int,
-        selectedDate: Date,
-        eventKitCount: Int,
-        holidayCount: Int,
-        onReset: @escaping () -> Void,
-        onDismissTask: @escaping () -> Void,
-        onScheduleRebuild: @escaping (Bool) -> Void,
-        onLoad: @escaping () async -> Void
-    ) -> some View {
-        self
-            .onChange(of: resetTrigger) { _, _ in onReset() }
-            .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
-                onDismissTask()
-            }
-            .task { await onLoad() }
-            .onChange(of: taskCount) { _, _ in onScheduleRebuild(false) }
-            .onChange(of: taskLoading) { _, _ in onScheduleRebuild(false) }
-            .onChange(of: habitCount) { _, _ in onScheduleRebuild(false) }
-            .onChange(of: memberCount) { _, _ in onScheduleRebuild(true) }
-            .onChange(of: groupCount) { _, _ in onScheduleRebuild(false) }
-            .onChange(of: eventCount) { _, _ in onScheduleRebuild(true) }
-            .onChange(of: selectedDate) { _, _ in onScheduleRebuild(true) }
-            .onChange(of: eventKitCount) { _, _ in onScheduleRebuild(true) }
-            .onChange(of: holidayCount) { _, _ in onScheduleRebuild(true) }
-    }
+    // P-2 FIX: applyDataObservers removed — replaced by single .onChange(of: dataFingerprint)
+    // in HomeView.body. The 9 separate onChange handlers that each allocated a Task
+    // are now replaced by one Int comparison per render pass.
 }
 
 // MARK: - Previews

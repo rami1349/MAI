@@ -1,4 +1,3 @@
-
 //  AgendaDataCache.swift
 //  FamilyHub
 //
@@ -111,47 +110,46 @@ final class AgendaDataCache {
         
         guard let monthInterval = calendar.dateInterval(of: .month, for: anchorDate) else { return }
         
-        // Pre-filter to month (single pass each)
-        let monthEvents = events.filter { event in
+        let noFilter = selectedMemberIds.isEmpty
+        
+        // Single-pass: filter to month + member filter + group by day key.
+        // Replaces the previous 30-iteration while loop that re-filtered all
+        // events and tasks per day (30 × E + 30 × T comparisons).
+        
+        let filteredEvents = events.filter { event in
             event.linkedTaskId == nil &&
             event.startDate >= monthInterval.start &&
-            event.startDate < monthInterval.end
+            event.startDate < monthInterval.end &&
+            (noFilter ||
+             selectedMemberIds.contains(event.createdBy) ||
+             event.participants.contains(where: { selectedMemberIds.contains($0) }))
         }
-        let monthTasks = tasks.filter { task in
+        
+        let filteredTasks = tasks.filter { task in
             task.dueDate >= monthInterval.start &&
-            task.dueDate < monthInterval.end
-        }
-        
-        // Build per-day lookup
-        var newAgendas: [String: DayAgenda] = [:]
-        var date = monthInterval.start
-        
-        while date < monthInterval.end {
-            let key = Self.dayKey(for: date)
-            
-            let dayEvents = monthEvents.filter { event in
-                calendar.isDate(event.startDate, inSameDayAs: date)
-            }.filter { event in
-                selectedMemberIds.isEmpty ||
-                selectedMemberIds.contains(event.createdBy) ||
-                event.participants.contains(where: { selectedMemberIds.contains($0) })
-            }
-            
-            let dayTasks = monthTasks.filter { task in
-                calendar.isDate(task.dueDate, inSameDayAs: date)
-            }.filter { task in
-                if selectedMemberIds.isEmpty { return true }
+            task.dueDate < monthInterval.end &&
+            (noFilter || {
                 if let assignedTo = task.assignedTo {
                     return selectedMemberIds.contains(assignedTo)
                 }
                 return selectedMemberIds.contains(task.assignedBy)
-            }
-            
-            if !dayEvents.isEmpty || !dayTasks.isEmpty {
-                newAgendas[key] = DayAgenda(events: dayEvents, tasks: dayTasks)
-            }
-            
-            date = calendar.date(byAdding: .day, value: 1, to: date)!
+            }())
+        }
+        
+        // Group by day key — one pass each, O(1) lookup per day afterward
+        let eventsByDay = Dictionary(grouping: filteredEvents) { Self.dayKey(for: $0.startDate) }
+        let tasksByDay = Dictionary(grouping: filteredTasks) { Self.dayKey(for: $0.dueDate) }
+        
+        // Merge into day agendas — only create entries for days that have content
+        let allDayKeys = Set(eventsByDay.keys).union(tasksByDay.keys)
+        var newAgendas: [String: DayAgenda] = [:]
+        newAgendas.reserveCapacity(allDayKeys.count)
+        
+        for key in allDayKeys {
+            newAgendas[key] = DayAgenda(
+                events: eventsByDay[key] ?? [],
+                tasks: tasksByDay[key] ?? []
+            )
         }
         
         dayAgendas = newAgendas

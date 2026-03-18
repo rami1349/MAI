@@ -102,7 +102,7 @@ struct HomeWeekEventsSection: View {
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
-                    Text("L10n.enjoyAPeacefulWeek")
+                    Text(" enjoyAPeacefulWeek")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                 }

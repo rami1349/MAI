@@ -132,7 +132,7 @@ struct MemberDetailView: View {
                 Text("\(activeMemberTasks.count)")
                     .font(.title2)
                     .fontWeight(.bold)
-                Text("L10n.active")
+                Text( "active" )
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -194,7 +194,7 @@ struct MemberDetailView: View {
             HStack {
                 Image(systemName: "checklist")
                     .foregroundStyle(.accentPrimary)
-                Text("L10n.activeTasks")
+                Text( "activeTasks")
                     .font(.headline)
             }
             

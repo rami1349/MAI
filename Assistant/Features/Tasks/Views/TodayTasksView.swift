@@ -130,7 +130,7 @@ struct TodayTasksView: View {
             Spacer()
             
             // Title
-            Text("L10n.schedule")
+            Text(" schedule")
                 .font(DS.Typography.subheading())
                 .foregroundStyle(.textPrimary)
             
@@ -569,7 +569,7 @@ struct TodayTaskCard: View {
                         Image(systemName: "play.fill")
                             .font(DS.Typography.micro())
                     }
-                    Text("L10n.start")
+                    Text("start")
                         .font(DS.Typography.captionMedium())
                 }
                 .foregroundStyle(.accentPrimary)

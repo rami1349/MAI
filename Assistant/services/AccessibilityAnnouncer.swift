@@ -466,7 +466,7 @@ extension View {
         AccessibleFABButton(action: {}, contextLabel: "task")
         
         // Test Dynamic Type scaling
-        Text("L10n.dynamicTypeTest")
+        Text( "dynamicTypeTest")
             .dynamicTypeScaling()
     }
     .padding()
