@@ -11,6 +11,7 @@
 import Foundation
 import Observation
 import FirebaseAuth
+import os
 
 // MARK: - Stream Event Types
 
@@ -37,7 +38,7 @@ protocol StreamingChatDelegate: AnyObject {
 // MARK: - Streaming Chat Service
 
 @Observable
-class StreamingChatService: NSObject {
+final class StreamingChatService: NSObject {
     
     // MARK: - Published State (must be accessed on MainActor)
     
@@ -193,10 +194,10 @@ class StreamingChatService: NSObject {
         case "meta":
             let remaining = data["remaining"] as? Int
             let isUnlimited = data["isUnlimited"] as? Bool ?? false
-            print("[Stream] Meta: remaining=\(remaining ?? -1), unlimited=\(isUnlimited)")
+            Log.stream.debug("Meta: remaining=\(remaining ?? -1, privacy: .public), unlimited=\(isUnlimited, privacy: .public)")
             
         case "start":
-            print("[Stream] Started")
+            Log.stream.debug("Stream started")
             
         case "content":
             let delta = data["delta"] as? String ?? ""
@@ -211,7 +212,7 @@ class StreamingChatService: NSObject {
             
         case "processing":
             let message = data["message"] as? String ?? "Processing..."
-            print("[Stream] Processing: \(message)")
+            Log.stream.debug("Processing: \(message, privacy: .public)")
             
         case "done":
             isStreaming = false
@@ -236,7 +237,7 @@ class StreamingChatService: NSObject {
             onError?(streamError)
             
         default:
-            print("[Stream] Unknown event: \(type)")
+            Log.stream.debug("Unknown event: \(type, privacy: .public)")
         }
     }
     

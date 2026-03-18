@@ -1,6 +1,5 @@
 // ============================================================================
 // Family.swift
-// FamilyHub
 //
 // PURPOSE:
 //   Represents a family group — the root organizational unit of the app.

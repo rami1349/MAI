@@ -1,7 +1,4 @@
-//
 //  CalendarEvent.swift
-//  FamilyHub
-//
 //  Calendar event model
 //
 

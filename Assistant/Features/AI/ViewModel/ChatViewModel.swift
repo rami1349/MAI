@@ -4,12 +4,13 @@
 import SwiftUI
 import FirebaseFunctions
 import FirebaseAuth
+import os
 
 // MARK: - Constants
 
 private enum ChatConstants {
     static let maxHistoryMessages = 20
-    static let confirmationDismissDelay: UInt64 = 1_500_000_000
+    static let confirmationDismissDelay: Duration = .seconds(1.5)
     static let maxRetryAttempts = 3
     static let baseRetryDelaySeconds: Double = 2.0
     static let persistenceKey = "chat_history_v1"
@@ -204,7 +205,7 @@ struct AnyCodable: Codable {
 
 @MainActor
 @Observable
-class ChatViewModel {
+final class ChatViewModel {
     // MARK: Published State
     
     var messages: [ChatMessage] = []
@@ -533,7 +534,7 @@ class ChatViewModel {
                 if shouldRetry && retryCount < ChatConstants.maxRetryAttempts {
                     retryCount += 1
                     let delay = ChatConstants.baseRetryDelaySeconds * pow(2, Double(retryCount - 1))
-                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    try? await Task.sleep(for: .seconds(delay))
                 } else {
                     return
                 }
@@ -801,7 +802,7 @@ class ChatViewModel {
             let data = try JSONEncoder().encode(toSave)
             UserDefaults.standard.set(data, forKey: ChatConstants.persistenceKey)
         } catch {
-            print("[Chat] Failed to persist: \(error)")
+            Log.chat.debug("Failed to persist: \(error, privacy: .public)")
         }
     }
     
@@ -811,7 +812,7 @@ class ChatViewModel {
             let loaded = try JSONDecoder().decode([ChatMessage].self, from: data)
             messages = loaded.filter { !$0.isError && !$0.isRateLimit }
         } catch {
-            print("[Chat] Failed to load: \(error)")
+            Log.chat.debug("Failed to load: \(error, privacy: .public)")
         }
     }
     
@@ -824,10 +825,10 @@ class ChatViewModel {
         Task {
             do {
                 let _ = try await functions.httpsCallable("clearChatSummary").call()
-                print("[ChatViewModel] Cleared backend summary cache")
+                Log.chat.debug("Cleared backend summary cache")
             } catch {
                 // Non-critical - just log the error
-                print("[ChatViewModel] Failed to clear summary cache: \(error.localizedDescription)")
+                Log.chat.debug("Failed to clear summary cache: \(error.localizedDescription, privacy: .public)")
             }
         }
     }

@@ -1,12 +1,4 @@
 //
-//  StoreProduct.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/1/26.
-//
-
-
-//
 //  SubscriptionManager.swift
 //  Assistant
 //
@@ -29,6 +21,7 @@
 
 import StoreKit
 import SwiftUI
+import os
 
 // Disambiguate StoreKit types from FirebaseFirestore.Transaction / VerificationResult
 typealias StoreTransaction = StoreKit.Transaction
@@ -143,7 +136,7 @@ final class SubscriptionManager {
                     .sorted { $0.price < $1.price }
             }
         } catch {
-            print("⚠️ StoreKit: Failed to load products: \(error)")
+            Log.store.error("StoreKit: Failed to load products: \(error, privacy: .public)")
         }
     }
     
@@ -232,7 +225,7 @@ final class SubscriptionManager {
     // MARK: - Transaction Handling
     
     private func listenForTransactions() -> Task<Void, Never> {
-        Task.detached { [weak self] in
+        Task.detached { @Sendable [weak self] in
             for await result in StoreTransaction.updates {
                 guard let self else { return }
                 do {
@@ -240,7 +233,7 @@ final class SubscriptionManager {
                     await self.handleTransaction(transaction)
                     await transaction.finish()
                 } catch {
-                    print("⚠️ StoreKit: Unverified transaction: \(error)")
+                    Log.store.error("StoreKit: Unverified transaction: \(error, privacy: .public)")
                 }
             }
         }

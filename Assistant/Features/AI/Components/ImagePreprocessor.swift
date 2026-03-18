@@ -16,6 +16,7 @@ import UIKit
 import Vision
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import os
 
 // MARK: - Preprocessing Result
 
@@ -182,7 +183,7 @@ class ImagePreprocessor {
             do {
                 try handler.perform([request])
             } catch {
-                print("[ImagePreprocessor] Rectangle detection failed: \(error)")
+                Log.media.debug("Rectangle detection failed: \(error, privacy: .public)")
                 continuation.resume(returning: nil)
             }
         }
@@ -339,7 +340,7 @@ class ImagePreprocessor {
             do {
                 try handler.perform([request])
             } catch {
-                print("[ImagePreprocessor] Text detection failed: \(error)")
+                Log.media.debug("Text detection failed: \(error, privacy: .public)")
                 continuation.resume(returning: (false, 0))
             }
         }

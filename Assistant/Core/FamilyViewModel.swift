@@ -60,6 +60,7 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseFunctions
 import FirebaseStorage
+import os
 
 @MainActor
 @Observable
@@ -416,7 +417,7 @@ final class FamilyViewModel {
                     "homeworkSubject": task.homeworkSubject?.rawValue ?? "other"
                 ])
             } catch {
-                print("[FamilyViewModel] Background verification failed: \(error)")
+                Log.verification.error("Background verification failed: \(error, privacy: .public)")
                 // Mark as failed so UI shows appropriate state
                 try? await db.collection("tasks").document(taskId).updateData([
                     "aiVerificationStatus": "failed"

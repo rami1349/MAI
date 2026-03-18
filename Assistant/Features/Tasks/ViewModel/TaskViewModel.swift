@@ -36,7 +36,9 @@
 import Foundation
 import Observation
 import FirebaseFirestore
+import FirebaseFunctions
 import FirebaseStorage
+import os
 
 @MainActor
 @Observable
@@ -464,14 +466,21 @@ final class TaskViewModel {
         }
     }
     
-    // MARK: - Transaction-Safe Reward Payment
+    // MARK: - Transaction-Safe Reward Payment (via Cloud Function)
     //
-    // PHASE 1 FIX: Prevents double-pay via Firestore transaction.
-    // Reads the task's rewardPaid flag inside a transaction; only pays
-    // if rewardPaid == false. Atomically sets rewardPaid = true,
-    // increments user balance, and writes a rewardTransaction ledger entry.
+    // C-6 FIX: Balance increments and rewardTransaction writes are now blocked
+    // by Firestore Security Rules for client-side writes. All financial mutations
+    // go through Cloud Functions (admin SDK bypasses rules).
+    //
+    // The Cloud Function `payTaskReward` atomically:
+    //   1. Reads rewardPaid flag (prevents double-pay)
+    //   2. Sets rewardPaid = true on the task
+    //   3. Increments user balance
+    //   4. Writes a rewardTransaction ledger entry
     
-    /// Pay reward to a single user, guarded by a Firestore transaction.
+    @ObservationIgnored private let functions = Functions.functions(region: "us-west1")
+    
+    /// Pay reward to a single user via Cloud Function.
     /// Returns `true` if the reward was actually paid (first call wins).
     @discardableResult
     private func payRewardSafely(
@@ -480,59 +489,24 @@ final class TaskViewModel {
         amount: Double,
         familyId: String
     ) async -> Bool {
-        let taskRef = db.collection("tasks").document(taskId)
-        let userRef = db.collection("users").document(userId)
-        
         do {
-            let result = try await db.runTransaction { transaction, errorPointer in
-                // 1. Read task inside transaction
-                let taskSnap: DocumentSnapshot
-                do {
-                    taskSnap = try transaction.getDocument(taskRef)
-                } catch {
-                    errorPointer?.pointee = error as NSError
-                    return false as NSNumber
-                }
-                
-                guard let data = taskSnap.data() else { return false as NSNumber }
-                
-                // 2. Check rewardPaid flag — if already true, another call won
-                let alreadyPaid = data["rewardPaid"] as? Bool ?? false
-                if alreadyPaid { return false as NSNumber }
-                
-                // 3. Atomically set rewardPaid = true
-                transaction.updateData(["rewardPaid": true], forDocument: taskRef)
-                
-                // 4. Increment user balance
-                transaction.updateData([
-                    "balance": FieldValue.increment(amount)
-                ], forDocument: userRef)
-                
-                // 5. Write ledger entry (rewardTransaction)
-                let txnRef = self.db.collection("rewardTransactions").document()
-                transaction.setData([
-                    "userId": userId,
-                    "familyId": familyId,
-                    "taskId": taskId,
-                    "amount": amount,
-                    "type": "task_reward",
-                    "reason": "Task completion reward",
-                    "createdAt": FieldValue.serverTimestamp()
-                ], forDocument: txnRef)
-                
-                return true as NSNumber
-            }
+            let result = try await functions.httpsCallable("payTaskReward").call([
+                "taskId": taskId,
+                "userId": userId,
+                "amount": amount,
+                "familyId": familyId
+            ] as [String: Any])
             
-            let paid = (result as? NSNumber)?.boolValue ?? false
+            let paid = (result.data as? [String: Any])?["paid"] as? Bool ?? false
             
             if paid {
-                print("[Reward] Paid $\(amount) to \(userId) for task \(taskId)")
+                Log.rewards.info("Paid $\(amount, privacy: .public) to user \(userId, privacy: .private) for task \(taskId, privacy: .private)")
             } else {
-                print("[Reward] Skipped — already paid for task \(taskId)")
+                Log.rewards.debug("Skipped — already paid for task \(taskId, privacy: .private)")
             }
             return paid
         } catch {
-            print("[Reward] Transaction failed: \(error.localizedDescription)")
+            Log.rewards.error("Reward payment failed: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
@@ -698,7 +672,7 @@ final class TaskViewModel {
         // Only the task creator can verify proof
         guard task.assignedBy == verifierId else {
             errorMessage = "Only the task creator can verify proof"
-            print(" verifyProof: assignedBy (\(task.assignedBy)) != verifierId (\(verifierId))")
+            Log.tasks.error("verifyProof: assignedBy (\(task.assignedBy, privacy: .private)) != verifierId (\(verifierId, privacy: .private))")
             return
         }
         
@@ -711,40 +685,19 @@ final class TaskViewModel {
             updated.proofVerifiedAt = Date()
             updated.rewardPaid = task.hasReward
             
-            // PHASE 1 FIX: Transaction-safe reward payment for proof approval
+            // C-6 FIX: All reward payments go through Cloud Function (payTaskReward).
+            // The function atomically checks rewardPaid, sets it true, increments
+            // balance, and writes a ledger entry. For multi-assignee tasks, each
+            // assignee gets their own Cloud Function call.
             if task.hasReward, let rewardAmount = task.rewardAmount {
-                // Pay each assignee via the safe transaction method.
-                // The first call sets rewardPaid = true on the task atomically.
-                // For multi-assignee tasks, we pay each in sequence — the transaction
-                // only gates on rewardPaid for the first payment, then we pay the rest
-                // via direct increment (the task is already marked as paid).
                 let assignees = task.allAssignees
-                if let first = assignees.first {
-                    let didPay = await payRewardSafely(
+                for assigneeId in assignees {
+                    await payRewardSafely(
                         taskId: id,
-                        userId: first,
+                        userId: assigneeId,
                         amount: rewardAmount,
                         familyId: task.familyId
                     )
-                    // Pay remaining assignees only if first payment succeeded
-                    if didPay {
-                        for assigneeId in assignees.dropFirst() {
-                            let userRef = db.collection("users").document(assigneeId)
-                            let txnRef = db.collection("rewardTransactions").document()
-                            let batch = db.batch()
-                            batch.updateData(["balance": FieldValue.increment(rewardAmount)], forDocument: userRef)
-                            batch.setData([
-                                "userId": assigneeId,
-                                "familyId": task.familyId,
-                                "taskId": id,
-                                "amount": rewardAmount,
-                                "type": "task_reward",
-                                "reason": "Task completion reward",
-                                "createdAt": FieldValue.serverTimestamp()
-                            ], forDocument: txnRef)
-                            try? await batch.commit()
-                        }
-                    }
                 }
             }
             
@@ -852,11 +805,8 @@ final class TaskViewModel {
     // MARK: - Private
     
     private func setTasks(_ tasks: [FamilyTask]) {
-        // DEBUG: Log incoming tasks and their IDs
-        print(" setTasks called with \(tasks.count) tasks:")
-        for task in tasks.prefix(5) {
-            print("   - \(task.title): id=\(task.id ?? "nil")")
-        }
+        // Structured logging — .debug is stripped from Release builds
+        Log.tasks.debug("setTasks called with \(tasks.count, privacy: .public) tasks")
         
         // PERF-2: Only update if tasks actually changed (by IDs)
         let newIDs = Set(tasks.compactMap { $0.id })

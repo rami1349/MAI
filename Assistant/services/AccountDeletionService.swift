@@ -47,6 +47,7 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import os
 
 // MARK: - Result Model
 
@@ -171,7 +172,7 @@ actor AccountDeletionService {
             try await user.delete()
 
             if !cleanupWarnings.isEmpty {
-                print("⚠️ Account deleted with cleanup warnings: \(cleanupWarnings)")
+                Log.account.info("Account deleted with cleanup warnings: \(cleanupWarnings, privacy: .public)")
             }
 
             return AccountDeletionResult(

@@ -38,6 +38,8 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseFunctions
+import os
 
 // MARK: - Result Types
 
@@ -82,6 +84,7 @@ actor FamilyManagementService {
     
     static let shared = FamilyManagementService()
     private var db: Firestore { Firestore.firestore() }
+    private let functions = Functions.functions(region: "us-west1")
     private init() {}
     
     /// Maximum retry attempts for generating a unique invite code
@@ -243,12 +246,13 @@ actor FamilyManagementService {
         }
     }
     
-    // MARK: - Update User Balance
+    // MARK: - Update User Balance (via Cloud Function)
     
-    /// Atomically adjusts the user's reward wallet balance by a delta amount.
+    /// Adjusts the user's reward wallet balance by a delta amount via Cloud Function.
     ///
-    /// Uses `FieldValue.increment()` for atomic server-side arithmetic.
-    /// Safe for concurrent calls — all updates are applied without race conditions.
+    /// C-6 FIX: The `balance` field on user documents is now write-protected by
+    /// Firestore Security Rules. All balance mutations go through the
+    /// `updateUserBalance` Cloud Function, which validates permissions.
     ///
     /// - Parameters:
     ///   - userId: Firebase UID of the user whose balance to update.
@@ -256,12 +260,13 @@ actor FamilyManagementService {
     /// - Returns: `true` if the update succeeded, `false` on failure.
     func updateUserBalance(userId: String, amount: Double) async -> Bool {
         do {
-            try await db.collection("users").document(userId).updateData([
-                "balance": FieldValue.increment(amount)
-            ])
+            let _ = try await functions.httpsCallable("updateUserBalance").call([
+                "userId": userId,
+                "amount": amount
+            ] as [String: Any])
             return true
         } catch {
-            print("Failed to update balance: \(error.localizedDescription)")
+            Log.family.error("Failed to update balance: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
@@ -299,15 +304,15 @@ actor FamilyManagementService {
             ])
             return true
         } catch {
-            print("Failed to save onboarding state: \(error.localizedDescription)")
+            Log.family.error("Failed to save onboarding state: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
     
+    #if DEBUG
     /// Resets onboarding state to `false` for testing and QA purposes.
     ///
-    /// - Warning: For development/debug use only. Should be gated behind `#if DEBUG`
-    ///   to prevent accidental invocation from production UI.
+    /// - Warning: For development/debug use only. Gated behind `#if DEBUG`.
     ///
     /// - Parameter userId: Firebase UID of the user to reset.
     /// - Returns: `true` if the Firestore write succeeded.
@@ -318,10 +323,11 @@ actor FamilyManagementService {
             ])
             return true
         } catch {
-            print("Failed to reset onboarding: \(error.localizedDescription)")
+            Log.family.error("Failed to reset onboarding: \(error.localizedDescription, privacy: .public)")
             return false
         }
     }
+    #endif
     
     // MARK: - Utilities
     

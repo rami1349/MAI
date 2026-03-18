@@ -40,6 +40,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import GoogleSignIn
 import AuthenticationServices
+import os
 
 /// Manages authentication state and user session for the entire FamilyHub app.
 ///
@@ -49,7 +50,7 @@ import AuthenticationServices
 /// all sign-in/sign-out/OAuth flows.
 @MainActor
 @Observable
-class AuthViewModel {
+final class AuthViewModel {
     
     // MARK: - Published State
     //
@@ -642,7 +643,7 @@ class AuthViewModel {
             // Auth listener fires after Firebase Auth deletion → state reset automatically
             if !result.warnings.isEmpty {
                 // Non-fatal cleanup failures (e.g., orphaned Storage files)
-                print("Account deleted with warnings: \(result.warnings)")
+                Log.account.info("Account deleted with warnings: \(result.warnings, privacy: .public)")
             }
         } else if result.requiresReauthentication {
             // Firebase token too old — prompt user to re-verify identity
@@ -729,9 +730,11 @@ class AuthViewModel {
         }
     }
     
+    #if DEBUG
     /// Resets onboarding state for testing and QA purposes.
     ///
-    /// - Warning: Development/debug only. Should not be callable from production UI.
+    /// - Warning: Development/debug only. Gated behind #if DEBUG to prevent
+    ///   accidental invocation from production UI.
     func resetOnboarding() async {
         guard let userId = currentUser?.id else { return }
         
@@ -739,6 +742,7 @@ class AuthViewModel {
             currentUser?.hasCompletedOnboarding = false
         }
     }
+    #endif
     
     // MARK: - ========================
     // MARK: - ERROR HANDLING
@@ -821,4 +825,3 @@ class AuthViewModel {
 // SUGGESTION 5 — markAllAsRead() in NotificationViewModel doesn't use batch writes:
 //   Individual Firestore writes in a loop should be replaced with a Firestore
 //   WriteBatch for atomicity and performance (see NotificationViewModel).
-

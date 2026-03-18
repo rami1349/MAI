@@ -6,6 +6,7 @@
 
 import SwiftUI
 import UIKit
+import os
 
 // MARK: - Pending Verification Section
 
@@ -185,9 +186,7 @@ struct PendingVerificationCard: View {
             HStack(spacing: DS.Spacing.md) {
                 // Reject
                 Button(action: {
-                    print(" Reject button tapped")
-                    print("   - task.id: \(task.id ?? "nil")")
-                    print("   - currentUser.id: \(authViewModel.currentUser?.id ?? "nil")")
+                    Log.tasks.debug("Reject tapped for task \(task.id ?? "nil", privacy: .private)")
                     guard !actionInFlight else { return }
                     actionInFlight = true
                     Task {
@@ -221,9 +220,7 @@ struct PendingVerificationCard: View {
                 
                 // Approve
                 Button(action: {
-                    print(" Approve button tapped")
-                    print("   - task.id: \(task.id ?? "nil")")
-                    print("   - currentUser.id: \(authViewModel.currentUser?.id ?? "nil")")
+                    Log.tasks.debug("Approve tapped for task \(task.id ?? "nil", privacy: .private)")
                     guard !actionInFlight else { return }
                     actionInFlight = true
                     Task {

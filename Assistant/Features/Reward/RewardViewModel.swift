@@ -10,10 +10,12 @@
 import Foundation
 import Observation
 import FirebaseFirestore
+import FirebaseFunctions
+import os
 
 @MainActor
 @Observable
-class RewardViewModel {
+final class RewardViewModel {
     // MARK: - Published State
     private(set) var transactions: [RewardTransaction] = []
     private(set) var pendingWithdrawals: [WithdrawalRequest] = []
@@ -23,6 +25,7 @@ class RewardViewModel {
     
     // MARK: - Private
     private var db: Firestore { Firestore.firestore() }
+    @ObservationIgnored private let functions = Functions.functions(region: "us-west1")
     @ObservationIgnored private var transactionListener: ListenerRegistration?
     @ObservationIgnored private var withdrawalListener: ListenerRegistration?
     
@@ -87,10 +90,13 @@ class RewardViewModel {
         allWithdrawals.filter { $0.userId == userId }
     }
     
-    // MARK: - Record Task Reward
+    // MARK: - Record Task Reward (via Cloud Function)
     
     /// Called when a task with reward is completed (from TaskViewModel).
-    /// Records the transaction in the ledger.
+    /// Records the transaction in the ledger via Cloud Function.
+    ///
+    /// C-6 FIX: rewardTransactions are now write-protected by Firestore Security Rules.
+    /// Only Cloud Functions (admin SDK) can create ledger entries.
     func recordTaskReward(
         familyId: String,
         userId: String,
@@ -101,30 +107,32 @@ class RewardViewModel {
         createdByName: String,
         recipientName: String
     ) async {
-        let transaction = RewardTransaction(
-            familyId: familyId,
-            userId: userId,
-            amount: amount,
-            type: .taskReward,
-            status: .completed,
-            description: taskTitle,
-            taskId: taskId,
-            createdBy: createdBy,
-            createdByName: createdByName,
-            recipientName: recipientName,
-            createdAt: Date()
-        )
-        
         do {
-            try db.collection("rewardTransactions").addDocument(from: transaction)
+            let _ = try await functions.httpsCallable("recordRewardPayout").call([
+                "familyId": familyId,
+                "userId": userId,
+                "amount": amount,
+                "taskTitle": taskTitle,
+                "taskId": taskId ?? "",
+                "createdBy": createdBy,
+                "createdByName": createdByName,
+                "recipientName": recipientName
+            ] as [String: Any])
         } catch {
+            Log.rewards.error("Failed to record task reward: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
         }
     }
     
     // MARK: - Withdrawal Requests
     
-    /// Parent pays out a member's balance (full or partial).
+    /// Parent pays out a member's balance (full or partial) via Cloud Function.
+    ///
+    /// C-6 FIX: Balance deductions and ledger entries are now performed server-side.
+    /// The Cloud Function validates:
+    ///   - Caller is adult/admin in the same family
+    ///   - Target member has sufficient balance
+    ///   - Amount is positive and within limits
     func payOut(
         familyId: String,
         member: FamilyUser,
@@ -136,37 +144,16 @@ class RewardViewModel {
         guard let memberId = member.id else { return }
         
         do {
-            let batch = db.batch()
-            
-            // Deduct from member's balance
-            let userRef = db.collection("users").document(memberId)
-            batch.updateData([
-                "balance": FieldValue.increment(-amount)
-            ], forDocument: userRef)
-            
-            // Record withdrawal transaction in ledger
-            let transaction = RewardTransaction(
-                familyId: familyId,
-                userId: memberId,
-                amount: -amount,
-                type: .withdrawal,
-                status: .approved,
-                description: note ?? "Paid out by \(paidByName)",
-                createdBy: paidBy,
-                createdByName: paidByName,
-                recipientName: member.displayName,
-                createdAt: Date(),
-                reviewedBy: paidBy,
-                reviewedAt: Date()
-            )
-            let txRef = db.collection("rewardTransactions").document()
-            try batch.setData(from: transaction, forDocument: txRef)
-            
-            try await batch.commit()
+            let _ = try await functions.httpsCallable("payOutMember").call([
+                "memberId": memberId,
+                "amount": amount,
+                "note": note ?? "Paid out by \(paidByName)"
+            ] as [String: Any])
             
             // #SOUND: Play success sound for the payer
             SoundManager.shared.playRewardEarned()
         } catch {
+            Log.rewards.error("PayOut failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
         }
     }
@@ -199,7 +186,14 @@ class RewardViewModel {
         }
     }
     
-    /// Parent approves a withdrawal request.
+    /// Parent approves a withdrawal request via Cloud Function.
+    ///
+    /// C-6 FIX: The Cloud Function validates:
+    ///   - Request is still pending
+    ///   - Caller is not the requester (can't self-approve)
+    ///   - Caller is adult/admin in the same family
+    ///   - Target user has sufficient balance
+    /// Atomically: updates request status + deducts balance + writes ledger entry.
     func approveWithdrawal(
         _ request: WithdrawalRequest,
         reviewerId: String,
@@ -208,51 +202,22 @@ class RewardViewModel {
         guard let id = request.id else { return }
         
         do {
-            let batch = db.batch()
-            
-            // Update request status
-            let requestRef = db.collection("withdrawalRequests").document(id)
-            batch.updateData([
-                "status": WithdrawalRequest.RequestStatus.approved.rawValue,
-                "reviewedBy": reviewerId,
-                "reviewedByName": reviewerName,
-                "reviewedAt": Timestamp(date: Date())
-            ], forDocument: requestRef)
-            
-            // Deduct from user balance
-            let userRef = db.collection("users").document(request.userId)
-            batch.updateData([
-                "balance": FieldValue.increment(-request.amount)
-            ], forDocument: userRef)
-            
-            // Record withdrawal transaction in ledger
-            let transaction = RewardTransaction(
-                familyId: request.familyId,
-                userId: request.userId,
-                amount: -request.amount,
-                type: .withdrawal,
-                status: .approved,
-                description: request.note ?? "Withdrawal",
-                createdBy: request.userId,
-                createdByName: request.userName,
-                recipientName: request.userName,
-                createdAt: Date(),
-                reviewedBy: reviewerId,
-                reviewedAt: Date()
-            )
-            let txRef = db.collection("rewardTransactions").document()
-            try batch.setData(from: transaction, forDocument: txRef)
-            
-            try await batch.commit()
+            let _ = try await functions.httpsCallable("approveWithdrawal").call([
+                "requestId": id
+            ])
             
             // #SOUND: Play success sound for the approver
             SoundManager.shared.playTaskCompleted()
         } catch {
+            Log.rewards.error("Approve withdrawal failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
         }
     }
     
-    /// Parent rejects a withdrawal request.
+    /// Parent rejects a withdrawal request via Cloud Function.
+    ///
+    /// C-6 FIX: Status update goes through Cloud Function to prevent
+    /// a user from rejecting their own request or modifying status directly.
     func rejectWithdrawal(
         _ request: WithdrawalRequest,
         reviewerId: String,
@@ -262,17 +227,15 @@ class RewardViewModel {
         guard let id = request.id else { return }
         
         do {
-            try await db.collection("withdrawalRequests").document(id).updateData([
-                "status": WithdrawalRequest.RequestStatus.rejected.rawValue,
-                "reviewedBy": reviewerId,
-                "reviewedByName": reviewerName,
-                "reviewedAt": Timestamp(date: Date()),
-                "rejectionReason": (reason ?? "") as String
-            ])
+            let _ = try await functions.httpsCallable("rejectWithdrawal").call([
+                "requestId": id,
+                "reason": reason ?? ""
+            ] as [String: Any])
             
             // #SOUND: Subtle confirmation for rejection
             SoundManager.shared.playConfirm()
         } catch {
+            Log.rewards.error("Reject withdrawal failed: \(error.localizedDescription, privacy: .public)")
             errorMessage = error.localizedDescription
         }
     }

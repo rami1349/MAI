@@ -438,7 +438,7 @@ private struct PayoutRequestCard: View {
     @Environment(AuthViewModel.self) var authViewModel
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(RewardViewModel.self) var rewardVM
-    @Environment(NotificationViewModel.self) var notificationVM // ✅ Added
+    @Environment(NotificationViewModel.self) var notificationVM
     
     let request: WithdrawalRequest
     

@@ -1,6 +1,5 @@
 // ============================================================================
 // FamilyTask.swift
-// FamilyHub
 //
 // PURPOSE:
 //   The core task model. Represents a unit of work assigned within a family —

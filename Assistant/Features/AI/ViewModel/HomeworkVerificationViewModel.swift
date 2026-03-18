@@ -9,12 +9,13 @@
 
 import SwiftUI
 import FirebaseFunctions
+import os
 
 // MARK: - ViewModel
 
 @MainActor
 @Observable
-class HomeworkVerificationViewModel {
+final class HomeworkVerificationViewModel {
     
     // MARK: - Published State
     
@@ -218,7 +219,7 @@ class HomeworkVerificationViewModel {
     }
     
     private func handleError(_ error: Error) {
-        print("[HomeworkVerification] Error: \(error)")
+        Log.verification.error("Error: \(error, privacy: .public)")
         
         // Handle our custom errors
         if let verificationError = error as? VerificationError {

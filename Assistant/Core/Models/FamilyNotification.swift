@@ -1,6 +1,4 @@
-//
 //  FamilyNotification.swift
-//  FamilyHub
 //
 //  Notification model
 //

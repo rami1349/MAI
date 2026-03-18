@@ -15,6 +15,7 @@ import PDFKit
 import UniformTypeIdentifiers
 import QuickLook
 import UniformTypeIdentifiers
+import os.log
 
 // MARK: - Proof Item Model
 
@@ -542,7 +543,7 @@ struct ProofCaptureView: View {
                 let result = try await image.preprocessedForVerification(options: .default)
                 
 #if DEBUG
-                print("[ProofCapture] \(result)")
+                Log.media.debug("ProofCapture preprocessing result: \(String(describing: result), privacy: .private)")
 #endif
                 
                 await MainActor.run {
@@ -582,7 +583,7 @@ struct ProofCaptureView: View {
                 }
                 
             } catch {
-                print("[ProofCapture] Preprocessing failed: \(error)")
+                Log.media.error("Preprocessing failed: \(error, privacy: .public)")
                 await MainActor.run {
                     addImageProofSimple(image, originalData: data)
                     isProcessingImage = false

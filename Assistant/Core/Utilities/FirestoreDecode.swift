@@ -32,18 +32,19 @@
 
 import Foundation
 import FirebaseFirestore
+import os
 
 enum FirestoreDecode {
     
     /// Decodes an array of Firestore documents on a background thread
     /// and manually injects document IDs
-    static func documents<T: Decodable>(
+    static func documents<T: Decodable & Sendable>(
         _ documents: [QueryDocumentSnapshot],
         as type: T.Type
     ) async -> [T] {
         guard !documents.isEmpty else { return [] }
         
-        return await Task.detached(priority: .userInitiated) {
+        return await Task.detached(priority: .userInitiated) { @Sendable in
             documents.compactMap { doc -> T? in
                 let decoded = try? doc.data(as: T.self)
                 return injectID(decoded, documentID: doc.documentID)
@@ -53,11 +54,11 @@ enum FirestoreDecode {
     
     /// Decodes a single Firestore document on a background thread
     /// and manually injects document ID
-    static func document<T: Decodable>(
+    static func document<T: Decodable & Sendable>(
         _ document: DocumentSnapshot,
         as type: T.Type
     ) async -> T? {
-        return await Task.detached(priority: .userInitiated) {
+        return await Task.detached(priority: .userInitiated) { @Sendable in
             injectID(try? document.data(as: T.self), documentID: document.documentID)
         }.value
     }
@@ -70,7 +71,7 @@ enum FirestoreDecode {
         // Type-specific ID injection
         switch decoded {
         case var task as FamilyTask:
-            print("🔑 Injecting ID '\(documentID)' into task '\(task.title)'")
+            Log.data.debug("Injecting ID '\(documentID, privacy: .private)' into task '\(task.title, privacy: .private)'")
             task.id = documentID
             return task as? T
         case var group as TaskGroup:
