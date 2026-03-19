@@ -1,10 +1,5 @@
 //
 //  TaskDetailView.swift
-//  FamilyHub
-//
-//  IMPROVED: Smart verification UI
-//  - Homework: Shows AI analysis inline (no modal)
-//  - Chores: Simple approve/reject (no AI UI)
 //
 
 import SwiftUI
@@ -38,9 +33,6 @@ struct TaskDetailView: View {
         horizontalSizeClass == .regular
     }
     
-    // P-5 FIX: O(1) lookup via TaskViewModel dictionary index.
-    // Previously: taskVM.allTasks.first { $0.stableId == taskId } — O(n) per body evaluation
-    // in a 1,078-line view that re-evaluates frequently (status changes, animations).
     private var task: FamilyTask? {
         taskVM.task(byStableId: taskId)
     }

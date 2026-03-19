@@ -21,10 +21,10 @@ struct PriorityBadge: View {
     
     private var text: String {
         switch priority {
-        case .low: return L10n.low
-        case .medium: return L10n.medium
-        case .high: return L10n.high
-        case .urgent: return L10n.urgent
+        case .low: return "Low"
+        case .medium: return "Medium"
+        case .high: return "High"
+        case .urgent: return "Urgent"
         }
     }
     

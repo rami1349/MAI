@@ -69,9 +69,11 @@ struct HomeworkVerificationView: View {
     
     private var aiSuggestionBanner: some View {
         HStack(spacing: 10) {
-            Image(systemName: "sparkles")
-                .font(.title3)
-                .foregroundStyle(.purple)
+            Image("samy")
+                .resizable()
+                .scaledToFit()
+                .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
+                .foregroundStyle(.statusInfo)
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("mai")
@@ -84,16 +86,6 @@ struct HomeworkVerificationView: View {
             }
             
             Spacer()
-            
-            // Beta badge
-            Text("L10n.beta")
-                .font(.caption2)
-                .fontWeight(.bold)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.purple.opacity(0.2))
-                .foregroundStyle(.purple)
-                .clipShape(Capsule())
         }
         .padding()
         .background(Color.purple.opacity(0.08))
@@ -133,7 +125,7 @@ struct HomeworkVerificationView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(Color(.systemGray4), lineWidth: 1)
             )
-            .accessibilityLabel("L10n.homeworkProofImage")
+            .accessibilityLabel("Homework ProofImage")
     }
     
     // MARK: - Initial View
@@ -146,10 +138,10 @@ struct HomeworkVerificationView: View {
                 .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
                 .foregroundStyle(.statusInfo)
             
-            Text("L10n.mai")
+            Text("mai")
                 .font(.headline)
             
-            Text("L10n.getMaiRecommendationToHelpYouReviewThisHom")
+            Text("getMaiRecommendationToHelpYouReviewThisHom")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -163,7 +155,7 @@ struct HomeworkVerificationView: View {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundStyle(.statusWarning)
                     
-                    Text("L10n.maiMayMakeMistakesReadingHandwritingOrSolvi")
+                    Text("MaiMayMakeMistakes")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -175,7 +167,7 @@ struct HomeworkVerificationView: View {
             Button {
                 Task { await verify() }
             } label: {
-                Label("L10n.getMaiSuggestion", image: "samy")
+                Label("getMaiSuggestion", image: "samy")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -195,18 +187,18 @@ struct HomeworkVerificationView: View {
             ProgressView()
                 .scaleEffect(1.5)
             
-            Text("L10n.analyzingHomework")
+            Text("analyzingHomework")
                 .font(.headline)
             
             VStack(spacing: 4) {
-                Text("L10n.readingHandwritingCheckingAnswers")
+                Text("CheckingAnswers")
                 Text(L10n.thisMayTakeAMoment)
             }
             .font(.caption)
             .foregroundStyle(.secondary)
             
             // Reminder during loading
-            Text("L10n.rememberMaiSuggestionsMayBeInaccurate")
+            Text("rememberMaiSuggestionsMayBeInaccurate")
                 .font(.caption2)
                 .foregroundStyle(.statusWarning)
                 .padding(.top, 8)
@@ -216,7 +208,7 @@ struct HomeworkVerificationView: View {
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("L10n.analyzingHomeworkPleaseWait")
+        .accessibilityLabel("analyzingHomeworkPleaseWait")
     }
     
     // MARK: - Results View
@@ -283,7 +275,7 @@ struct HomeworkVerificationView: View {
         .background(Color.orange.opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("L10n.warningLowConfidenceAnalysisManualReviewStro")
+        .accessibilityLabel("warningLowConfidenceAnalysisManualReviewStro")
     }
     
     // MARK: - Recommendation Banner
@@ -300,7 +292,7 @@ struct HomeworkVerificationView: View {
                             .font(.headline)
                             .fontWeight(.bold)
                         
-                        Text("L10n.suggestion")
+                        Text("suggestion")
                             .font(.caption)
                             .foregroundStyle(.textOnAccent.opacity(0.8))
                     }
@@ -544,13 +536,13 @@ struct HomeworkVerificationView: View {
                     .fontWeight(.semibold)
             }
             
-            Text("• Results are suggestions, not guarantees\n• Handwriting recognition may be inaccurate\n• Math solving can contain errors\n• You make the final decision")
+            Text("• Results are suggestions, not guarantees\n• Handwriting recognition may be inaccurate\n• You make the final decision")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .background(Color.blue.opacity(0.1))
+        .background(Color.blue.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.sm))
     }
     
@@ -665,7 +657,7 @@ struct HomeworkVerificationView: View {
             id: "preview",
             familyId: "fam1",
             groupId: nil,
-            title: "Math Homework",
+            title: " Homework",
             description: "Complete problems 1-10",
             assignedTo: "user1",
             assignees: [],
