@@ -78,9 +78,9 @@ struct CustomTextField: View {
 
 #Preview {
     VStack(spacing: 16) {
-        CustomTextField(placeholder: L10n.email, text: .constant(""), icon: "envelope")
-        CustomTextField(placeholder: L10n.password, text: .constant("secret"), isSecure: true, icon: "lock")
-        CustomTextField(placeholder: L10n.invalidEmailFormat, text: .constant("bad@"), icon: "envelope", hasError: true)
+        CustomTextField(placeholder: AppStrings.localized("email"), text: .constant(""), icon: "envelope")
+        CustomTextField(placeholder: AppStrings.localized("password"), text: .constant("secret"), isSecure: true, icon: "lock")
+        CustomTextField(placeholder: AppStrings.localized("invalid_email_format"), text: .constant("bad@"), icon: "envelope", hasError: true)
     }
     .padding()
     .background(Color.themeSurfacePrimary)

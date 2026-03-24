@@ -1,6 +1,6 @@
 //
 //  FilterChip.swift
-//  FamilyHub
+//  
 //
 //  Selectable filter chip component
 //  Filter chip with refined elevation

@@ -1,6 +1,6 @@
 // ============================================================================
 // StreamingChatService.swift
-// FamilyHub
+// 
 //
 // Service for handling Server-Sent Events (SSE) streaming from AI chat
 // Provides real-time response streaming instead of waiting for complete response

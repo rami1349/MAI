@@ -1,6 +1,6 @@
 //
 //  RewardWalletView.swift
-//  FamilyHub
+//
 //
 //  UNICORN REDESIGN - Unified Reward System
 //
@@ -49,11 +49,11 @@ struct RewardWalletView: View {
                     .padding(.top, DS.Spacing.lg)
                 }
             }
-            .navigationTitle(L10n.rewardWallet)
+            .navigationTitle("reward_wallet")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) { dismiss() }
+                    Button("close") { dismiss() }
                         .foregroundStyle(.textSecondary)
                 }
             }
@@ -106,7 +106,7 @@ struct RewardWalletView: View {
             
             result.append(OwedByPerson(
                 odId: assignerId,
-                userName: member?.displayName ?? L10n.someone,
+                userName: member?.displayName ?? "someone",
                 user: member,
                 amount: owedAmount,
                 hasPendingRequest: pendingByTarget[assignerId] == true
@@ -157,7 +157,7 @@ struct RewardWalletView: View {
                     .foregroundStyle(.textOnAccent)
                 
                 if totalTasksCompleted > 0 {
-                    Text(L10n.earnedFromTasks(totalTasksCompleted))
+                    Text(AppStrings.earnedFromTasks(totalTasksCompleted))
                         .font(DS.Typography.body())
                         .foregroundStyle(.textOnAccent.opacity(0.8))
                 }
@@ -167,7 +167,7 @@ struct RewardWalletView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "clock.fill")
                         .font(DS.Typography.bodySmall())
-                    Text(L10n.payoutRequested)
+                    Text("payout_requested")
                         .font(DS.Typography.caption())
                 }
                 .foregroundStyle(.textOnAccent.opacity(0.9))
@@ -196,7 +196,7 @@ struct RewardWalletView: View {
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: "bell.badge.fill")
                     .foregroundStyle(.accentOrange)
-                Text(L10n.payoutRequestsToYou)
+                Text("payout_requests_to_you")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -222,7 +222,7 @@ struct RewardWalletView: View {
     
     private var whoOwesYouSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text(L10n.whoOwesYou)
+            Text("who_owes_you")
                 .font(DS.Typography.subheading())
                 .foregroundStyle(.textPrimary)
             
@@ -241,7 +241,7 @@ struct RewardWalletView: View {
             HStack(spacing: DS.Spacing.sm) {
                 Text("🎉")
                     .font(DS.Typography.heading())
-                Text(L10n.recentEarnings)
+                Text("recent_earnings")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
             }
@@ -306,7 +306,7 @@ private struct EarningRow: View {
                     .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
-                Text(L10n.fromPerson(assignerName))
+                Text(AppStrings.fromPerson(assignerName))
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }
@@ -354,7 +354,7 @@ private struct WhoOwesYouCard: View {
                     .fontWeight(.medium)
                     .foregroundStyle(.textPrimary)
                 
-                Text(L10n.owesYou)
+                Text("owes_you")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }
@@ -366,7 +366,7 @@ private struct WhoOwesYouCard: View {
                 .foregroundStyle(.accentGreen)
             
             if owed.hasPendingRequest || showSuccess {
-                Text(L10n.requested)
+                Text("requested")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.accentOrange)
                     .padding(.horizontal, 8)
@@ -452,9 +452,9 @@ private struct PayoutRequestCard: View {
     private var relativeDate: String {
         let calendar = Calendar.current
         if calendar.isDateInToday(request.createdAt) {
-            return L10n.today
+            return "today"
         } else if calendar.isDateInYesterday(request.createdAt) {
-            return L10n.yesterday
+            return "yesterday"
         } else {
             let formatter = DateFormatter()
             formatter.dateFormat = "MMM d"
@@ -483,7 +483,7 @@ private struct PayoutRequestCard: View {
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
                     
-                    Text(L10n.requestedPayout)
+                    Text("requested_payout")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                     
@@ -508,11 +508,11 @@ private struct PayoutRequestCard: View {
                     } else if showSuccess {
                         Image(systemName: "checkmark")
                             .font(DS.Typography.label())
-                        Text(L10n.paid)
+                        Text("paid")
                     } else {
                         Image(systemName: "dollarsign.circle.fill")
                             .font(DS.Typography.body())
-                        Text(L10n.payAmount("\(Int(request.amount))"))
+                        Text(AppStrings.payAmount("\(Int(request.amount))"))
                     }
                 }
                 .font(DS.Typography.label())

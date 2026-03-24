@@ -1,6 +1,6 @@
 //
 //  HabitSquare.swift
-//  FamilyHub
+//  
 //
 //  Square habit completion indicator for month grid
 //

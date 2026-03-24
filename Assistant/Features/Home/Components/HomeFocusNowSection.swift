@@ -1,6 +1,6 @@
 //
 //  HomeFocusNowSection.swift
-//  FamilyHub
+//  
 //
 //  "Focus Now" section: Top 5 highest-priority tasks needing attention.
 //  Shows overdue, due today, urgent/high priority tasks.
@@ -30,7 +30,7 @@ struct HomeFocusNowSection: View {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("10n.focusNow")
+                Text("focus_now")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -81,11 +81,11 @@ struct HomeFocusNowSection: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text( "allCaughtUp")
+                Text( "all_caught_up")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
-                Text( "noUrgentTasksRightNow")
+                Text( "no_urgent_tasks_right_now")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }

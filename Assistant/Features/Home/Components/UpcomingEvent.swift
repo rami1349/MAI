@@ -1,5 +1,5 @@
 //  UpcomingEvent.swift
-//  FamilyHub
+//
 //
 //  Upcoming event model used by HomeView, week events, and countdown cards.
 //  Standalone file so every view can reference it without cross-dependencies.
@@ -40,11 +40,11 @@ struct UpcomingEvent: Identifiable {
     
     var countdownText: String {
         if daysUntil == 0 {
-            return L10n.todayExclamation
+            return "today_exclamation"
         } else if daysUntil == 1 {
-            return L10n.tomorrow
+            return "tomorrow"
         } else {
-            return L10n.xDays(daysUntil)
+            return AppStrings.xDays(daysUntil)
         }
     }
 }

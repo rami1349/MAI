@@ -1,6 +1,6 @@
 //
 //  HomeUnifiedTaskList.swift
-//  FamilyHub
+//  
 //
 //  Unified task list with search bar, compact rows, and swipe actions.
 //  Uses LazyVStack for 60fps scrolling with stable IDs.
@@ -56,7 +56,7 @@ struct HomeUnifiedTaskList: View {
                 .font(.subheadline)
                 .foregroundStyle(.accentPrimary)
             
-            Text(L10n.myTasks)
+            Text("my_tasks")
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(.textPrimary)
@@ -81,7 +81,7 @@ struct HomeUnifiedTaskList: View {
                 .font(.subheadline)
                 .foregroundStyle(.textTertiary)
             
-            TextField(L10n.search, text: $searchText)
+            TextField("search", text: $searchText)
                 .font(.subheadline)
                 .foregroundStyle(.textPrimary)
                 .autocorrectionDisabled()
@@ -107,7 +107,7 @@ struct HomeUnifiedTaskList: View {
                 .stroke(Color.themeCardBorder, lineWidth: DS.Border.hairline)
         )
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("10n.searchTasks")
+        .accessibilityLabel("search_tasks")
     }
     
     // MARK: - Completed Toggle
@@ -117,7 +117,6 @@ struct HomeUnifiedTaskList: View {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: showCompleted ? "eye.fill" : "eye.slash")
                     .font(.caption)
-                // TODO: Add L10n keys: "show_completed" / "hide_completed"
                 Text(showCompleted ? "Hide Completed" : "Show Completed")
                     .font(.caption)
                 Text("(\(completedCount))")
@@ -181,7 +180,7 @@ struct HomeUnifiedTaskList: View {
                 Image(systemName: "magnifyingglass")
                     .font(.title2)
                     .foregroundStyle(.textTertiary)
-                Text(L10n.noTasksFilter)
+                Text("no_tasks_filter")
                     .font(.subheadline)
                     .foregroundStyle(.textSecondary)
             }
@@ -193,10 +192,10 @@ struct HomeUnifiedTaskList: View {
                 Image(systemName: "checkmark.circle")
                     .font(.title2)
                     .foregroundStyle(.textTertiary)
-                Text(L10n.noTasks)
+                Text("no_tasks")
                     .font(.subheadline)
                     .foregroundStyle(.textSecondary)
-                Text(L10n.addTasksToStart)
+                Text("add_tasks_to_start")
                     .font(.caption)
                     .foregroundStyle(.textTertiary)
             }

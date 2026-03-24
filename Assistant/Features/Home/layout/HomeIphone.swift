@@ -1,29 +1,42 @@
-//  HomeIphone.swift
-//  FamilyHub
+// HomeIphone.swift
 //
-//  SIMPLIFIED HOME LAYOUT
-//  - Focus Now: Top 5 priority tasks (what needs attention)
-//  - Today habits (quick daily tracking)
-//  - Timeline: Merged tasks + events for today/tomorrow
-//  - All Tasks: Search + full task list
-//  - Groups: Task organization
+
+// REMOVED FROM HOME (v1 → v2):
+//   - Timeline section → absorbed into Slots 3 + 5
+//   - Week Events → Calendar tab
+//   - Calendar Permission prompt → Settings (Me tab)
+//   - Task Groups grid → Tasks tab
+//   - Full task search → Tasks tab
+//   - Pending Verification section → becomes Action Card (Slot 2)
 //
-//  Empty-state inline CTAs appear when sections are empty,
-//  doubling as tour targets for first-time users.
 
 import SwiftUI
 
 extension HomeView {
-    
-    // MARK: - iPhone Layout (Linear Scroll)
-    
+
+    // MARK: - iPhone Layout (5-Slot Linear Scroll)
+
     var iPhoneLayout: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: DS.Spacing.xl) {
-                // Header (includes date + greeting)
-                headerSection
-                
-                // ── Tasks Section ──
+
+                // ── SLOT 1: Greeting + Personal Stat ─────────────
+                HomeGreetingSection(
+                    userName: authVM.currentUser?.displayName ?? "",
+                    stat: derived.personalStat,
+                    unreadNotificationCount: notificationVM.unreadCount,
+                    onNotificationsTapped: { showNotifications = true }
+                )
+
+                // ── SLOT 2: Action Card (conditional) ────────────
+                if let actionCard = derived.actionCard {
+                    HomeActionCard(data: actionCard) {
+                        handleActionCardTap(actionCard)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+
+                // ── SLOT 3: My Tasks (Focus Now) ─────────────────
                 if !derived.focusTasks.isEmpty {
                     HomeFocusNowSection(
                         tasks: derived.focusTasks,
@@ -34,12 +47,12 @@ extension HomeView {
                         }
                     )
                     .tourTarget("home.focusNow")
-                } else if derived.activeTasks.isEmpty {
+                } else {
                     addTaskCTA
                         .padding(.horizontal, DS.Spacing.screenH)
                 }
-                
-                // ── Habits Section ──
+
+                // ── SLOT 4: My Habits (Today) ────────────────────
                 if !habitVM.habits.isEmpty {
                     QuickHabitsWidget()
                         .tourTarget("home.habitsWidget")
@@ -48,90 +61,39 @@ extension HomeView {
                     addHabitCTA
                         .padding(.horizontal, DS.Spacing.screenH)
                 }
-                
-                // Calendar Permission (if needed)
-                if eventKitService.authStatus == .denied || eventKitService.authStatus == .notDetermined {
-                    CalendarPermissionPrompt(
-                        authStatus: eventKitService.authStatus,
-                        onRequestAccess: {
-                            Task {
-                                await eventKitService.requestAccessIfNeeded()
-                                await eventKitService.loadEvents()
-                            }
-                        }
-                    )
-                    .padding(.horizontal, DS.Spacing.screenH)
-                }
-                
-                // ── Events / Timeline Section ──
-                if !derived.timelineItems.isEmpty {
-                    HomeTimelineSection(
-                        items: derived.timelineItems,
-                        groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
-                        memberLookup: { familyMemberVM.getMember(by: $0) },
-                        onSelectTask: { selectedTask = $0 },
-                        onDeleteEvent: deleteUpcomingEvent
-                    )
-                    .tourTarget("home.timeline")
-                }
-                
-                if !derived.weekEvents.isEmpty {
-                    HomeWeekEventsSection(
-                        events: derived.weekEvents,
-                        isLoading: eventKitService.isLoading,
-                        onDeleteEvent: deleteUpcomingEvent
-                    )
-                    .tourTarget("home.upcomingEvents")
-                } else if derived.timelineItems.isEmpty {
-                    addEventCTA
-                        .padding(.horizontal, DS.Spacing.screenH)
-                }
-                
-                // All Tasks (search + full list) — only show when tasks exist
-                if !derived.activeTasks.isEmpty || !derived.completedTasks.isEmpty {
-                    HomeUnifiedTaskList(
-                        tasks: derived.displayedTasks,
-                        totalActive: derived.activeTasks.count,
-                        completedCount: derived.completedTasks.count,
-                        searchText: $derived.searchText,
-                        showCompleted: $derived.showCompleted,
-                        isSearchActive: !derived.searchText.isEmpty,
-                        groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
-                        memberLookup: { familyMemberVM.getMember(by: $0) },
-                        onSelectTask: { selectedTask = $0 },
-                        onCompleteTask: { task in
-                            await familyVM.updateTaskStatus(task, to: .completed)
+
+                // ── SLOT 5: My Events (Today/Tomorrow) ───────────
+                if !derived.todayTomorrowEvents.isEmpty {
+                    HomeEventsSection(
+                        events: derived.todayTomorrowEvents,
+                        onSeeAll: {
+                            // Navigate to Calendar tab
+                            // Parent view handles this via tab selection binding
                         },
-                        onDeleteTask: { task in
-                            await familyVM.deleteTask(task)
-                        }
+                        onDeleteEvent: deleteUpcomingEvent
                     )
                 }
-                
-                // Task Groups
-                if !derived.myVisibleGroups.isEmpty {
-                    HomeCompactGroupsSection(
-                        groups: derived.myVisibleGroups,
-                        onSelectGroup: { showTaskGroup = $0 },
-                        onDeleteGroup: { group in
-                            await familyVM.deleteTaskGroup(group)
-                        }
-                    )
-                }
-                
-                // Pending Verification (for parents)
-                if !derived.myPendingVerificationTasks.isEmpty {
-                    HomePendingVerificationSection(
-                        tasks: derived.myPendingVerificationTasks
-                    )
-                }
-                
+
                 Spacer().frame(height: 120)
             }
             .padding(.top, DS.Spacing.md)
+            .animation(.spring(response: 0.3), value: derived.actionCard != nil)
         }
         .refreshable {
             await refreshData()
+        }
+    }
+
+    // MARK: - Action Card Tap Handler
+
+    private func handleActionCardTap(_ card: ActionCardData) {
+        switch card {
+        case .reviewHomework(let task):
+            selectedTask = task
+        case .overdueTask(let task):
+            selectedTask = task
+        case .claimReward:
+            break
         }
     }
 }
@@ -143,11 +105,11 @@ extension HomeView {
 struct HomeInlineCTA: View {
     let icon: String
     let iconColor: Color
-    let title: String
-    let subtitle: String
-    let buttonLabel: String
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+    let buttonLabel: LocalizedStringKey
     let action: () -> Void
-    
+
     var body: some View {
         VStack(spacing: DS.Spacing.md) {
             HStack(spacing: DS.Spacing.md) {
@@ -156,27 +118,27 @@ struct HomeInlineCTA: View {
                     Circle()
                         .fill(iconColor.opacity(0.1))
                         .frame(width: 44, height: 44)
-                    
+
                     Image(systemName: icon)
                         .font(DS.Typography.heading())
                         .foregroundStyle(iconColor)
                 }
-                
+
                 // Text
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(DS.Typography.label())
                         .foregroundStyle(.textPrimary)
-                    
+
                     Text(subtitle)
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                         .lineLimit(2)
                 }
-                
+
                 Spacer(minLength: 0)
             }
-            
+
             // Action button
             Button(action: action) {
                 HStack(spacing: DS.Spacing.xs) {

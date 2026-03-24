@@ -1,6 +1,6 @@
 // ============================================================================
 // AppLogger.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Centralized structured logging using Apple's os.Logger framework.
@@ -38,7 +38,7 @@ import Foundation
 
 // MARK: - App Logger Namespace
 
-/// Structured logger categories for FamilyHub.
+/// Structured logger categories for .
 ///
 /// Each category maps to a subsystem+category pair in Apple's unified logging
 /// system. Logs are viewable in Console.app filtered by subsystem.

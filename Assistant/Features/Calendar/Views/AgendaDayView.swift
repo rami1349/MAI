@@ -39,7 +39,7 @@ struct AgendaDayView: View {
     private var dayHeader: some View {
         HStack(spacing: DS.Spacing.sm) {
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                Text(selectedDay.isToday ? L10n.today : selectedDay.formattedDate)
+                Text(selectedDay.isToday ? "today" : selectedDay.formattedDate)
                     .font(DS.Typography.heading())
                     .foregroundStyle(.textPrimary)
                 
@@ -90,7 +90,7 @@ struct AgendaDayView: View {
             }
             
             VStack(spacing: DS.Spacing.xs) {
-                Text(L10n.noEvents)
+                Text("noEvents")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -112,7 +112,7 @@ struct AgendaDayView: View {
             // Section header
             sectionHeader(
                 icon: "checklist",
-                title: L10n.tasks,
+                title: "tasks",
                 count: agenda.tasks.count
             )
             
@@ -145,7 +145,7 @@ struct AgendaDayView: View {
             // Section header
             sectionHeader(
                 icon: "calendar",
-                title: L10n.calendar,
+                title: "calendar",
                 count: agenda.events.count
             )
             
@@ -201,7 +201,7 @@ struct AgendaDayView: View {
     private func expandButton(isExpanded: Bool, remaining: Int, toggle: @escaping () -> Void) -> some View {
         Button(action: toggle) {
             HStack(spacing: DS.Spacing.xs) {
-                Text(isExpanded ? L10n.showLess : "+ \(remaining) more")
+                Text(isExpanded ? "showLess" : "+ \(remaining) more")
                     .font(DS.Typography.captionMedium())
                 
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")

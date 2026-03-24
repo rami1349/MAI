@@ -47,10 +47,10 @@ struct FamilyMembersListView: View {
                             Image(systemName: "person.badge.plus")
                                 .font(.largeTitle)
                                 .foregroundStyle(.textTertiary)
-                            Text(L10n.noOtherMembers)
+                            Text("no_other_members")
                                 .font(.subheadline)
                                 .foregroundStyle(.textSecondary)
-                            Text(L10n.inviteFamilyMember)
+                            Text("invite_family_member")
                                 .font(.caption)
                                 .foregroundStyle(.textTertiary)
                         }
@@ -70,11 +70,11 @@ struct FamilyMembersListView: View {
                 .constrainedWidth(.card)
             }
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.familyMembers)
+            .navigationTitle("family_members")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
             .sheet(item: $selectedMember) { member in
@@ -115,12 +115,7 @@ struct FamilyMemberCard: View {
                             .foregroundStyle(.textPrimary)
                         
                         HStack(spacing: DS.Spacing.sm) {
-                            RoleBadge(role: member.role)
-                            if member.isAdult {
-                                Text(L10n.adult)
-                                    .font(.caption)
-                                    .foregroundStyle(.textSecondary)
-                            }
+                            CapabilityBadge(preset: member.resolvedPreset)
                         }
                     }
                     
@@ -136,7 +131,7 @@ struct FamilyMemberCard: View {
                         Text("\(memberTasks.count)")
                             .font(.subheadline)
                             .fontWeight(.bold)
-                        Text(L10n.tasks)
+                        Text("tasks")
                             .font(.caption2)
                             .foregroundStyle(.textSecondary)
                     }
@@ -149,7 +144,7 @@ struct FamilyMemberCard: View {
                             .font(.subheadline)
                             .fontWeight(.bold)
                             .foregroundStyle(.accentGreen)
-                        Text(L10n.done)
+                        Text("done")
                             .font(.caption2)
                             .foregroundStyle(.textSecondary)
                     }
@@ -162,7 +157,7 @@ struct FamilyMemberCard: View {
                             .font(.subheadline)
                             .fontWeight(.bold)
                             .foregroundStyle(.accentOrange)
-                        Text(L10n.balance)
+                        Text("balance")
                             .font(.caption2)
                             .foregroundStyle(.textSecondary)
                     }

@@ -1,5 +1,5 @@
 //  HomeDerivedState.swift
-//  FamilyHub
+//
 //
 //  Performance cache for HomeView.
 //  Precomputes filtered task lists + week events once when source data changes.
@@ -55,7 +55,6 @@ final class HomeDerivedState {
     private(set) var displayedTasks: [FamilyTask] = []
     
     /// Focus Now: Top 5 highest-priority tasks that need attention.
-    /// Prioritizes: overdue > due today > urgent/high priority > due soon
     private(set) var focusTasks: [FamilyTask] = []
     
     /// This-week upcoming events (max 7), excludes today/tomorrow (those go in timeline).
@@ -69,13 +68,22 @@ final class HomeDerivedState {
         didSet { refilter() }
     }
     
-    /// Visible task groups with stats for current user (moved from HomeView computed property).
-    /// Previously re-scanned ALL tasks on every body evaluation.
+    /// Visible task groups with stats for current user.
     private(set) var myVisibleGroups: [TaskGroup] = []
     
-    /// Tasks pending verification that were assigned BY this user (parent review queue).
-    /// Previously re-filtered on every body evaluation.
+    /// Tasks pending verification that were assigned BY this user.
     private(set) var myPendingVerificationTasks: [FamilyTask] = []
+
+    // MARK: - v2 Home Slots
+
+    /// Slot 1: Capability-driven personal stat. First match wins, zero branching.
+    private(set) var personalStat: PersonalStat = .fallback
+
+    /// Slot 2: Single most important pending action. Nil = slot collapses.
+    private(set) var actionCard: ActionCardData? = nil
+
+    /// Slot 5: Events for today/tomorrow only, max 5.
+    private(set) var todayTomorrowEvents: [UpcomingEvent] = []
     
     /// Search text - drives debounced refilter.
     var searchText: String = "" {
@@ -116,10 +124,13 @@ final class HomeDerivedState {
     func rebuild(
         allTasks: [FamilyTask],
         userId: String,
-        isAdult: Bool,
+        capabilities: MemberCapabilities,
         members: [FamilyUser],
         groups: [TaskGroup],
-        upcomingEvents: [UpcomingEvent]
+        upcomingEvents: [UpcomingEvent],
+        habitStreakDays: Int = 0,
+        weeklyEarnings: Double = 0,
+        pendingPayoutAmount: Double = 0
     ) {
         // Comprehensive fingerprint: tasks + members + groups
         var hasher = Hasher()
@@ -180,7 +191,7 @@ final class HomeDerivedState {
         }
         
         // ── Pending Verification Tasks (moved from HomeView computed property) ──
-        if isAdult {
+        if capabilities.canVerifyHomework {
             myPendingVerificationTasks = allTasks.filter {
                 $0.status == .pendingVerification && $0.assignedBy == userId
             }
@@ -226,6 +237,31 @@ final class HomeDerivedState {
         // Build unified timeline
         buildTimeline(tasks: active, events: upcomingEvents)
         
+        // ── v2 Slot 1: Personal Stat ─────────────────────────────────
+        personalStat = PersonalStat.resolve(
+            capabilities: capabilities,
+            pendingReviewCount: myPendingVerificationTasks.count,
+            weeklyEarnings: weeklyEarnings,
+            habitStreakDays: habitStreakDays
+        )
+        
+        // ── v2 Slot 2: Action Card ───────────────────────────────────
+        let overdueTasks = active.filter { $0.isOverdue }
+        actionCard = ActionCardData.resolve(
+            capabilities: capabilities,
+            pendingVerificationTasks: myPendingVerificationTasks,
+            overdueTasks: overdueTasks,
+            pendingPayoutAmount: pendingPayoutAmount
+        )
+        
+        // ── v2 Slot 5: Today/Tomorrow Events ─────────────────────────
+        todayTomorrowEvents = Array(
+            upcomingEvents
+                .filter { $0.daysUntil <= 1 }
+                .sorted { $0.date < $1.date }
+                .prefix(5)
+        )
+        
         // Build search index
         var index: [String: String] = [:]
         for task in myTasks {
@@ -249,7 +285,7 @@ final class HomeDerivedState {
     
     private func buildFocusTasks(from active: [FamilyTask]) {
         let calendar = Calendar.current
-        let now = Date()
+        let now = Date.now
         
         // Score each task for focus priority
         let scored = active.map { task -> (task: FamilyTask, score: Int) in

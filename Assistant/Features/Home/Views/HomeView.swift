@@ -1,6 +1,6 @@
 //
 //  HomeView.swift
-//  FamilyHub
+//
 //
 //  LUXURY CALM REDESIGN
 //  - Clean, minimal header with soft notification badge
@@ -103,9 +103,9 @@ struct HomeView: View {
         HomeInlineCTA(
             icon: "checkmark.circle",
             iconColor: Color.accentPrimary,
-            title: "Create Your First Task",
-            subtitle: "Organize to-dos and chores for the whole family.",
-            buttonLabel: "Add Task",
+            title: "create_your_first_task",
+            subtitle: "create_your_first_task_subtitle",
+            buttonLabel: "add_task",
             action: { showAddTask = true }
         )
         .tourTarget("home.addTask")
@@ -115,9 +115,9 @@ struct HomeView: View {
         HomeInlineCTA(
             icon: "flame",
             iconColor: Color.accentGreen,
-            title: "Start Tracking Habits",
-            subtitle: "Build daily routines like reading, exercise, or chores.",
-            buttonLabel: "Add Habit",
+            title: "start_tracking_habits",
+            subtitle: "start_tracking_habits_subtitle",
+            buttonLabel: "add_habit",
             action: { showAddHabit = true }
         )
         .tourTarget("home.addHabit")
@@ -127,9 +127,9 @@ struct HomeView: View {
         HomeInlineCTA(
             icon: "calendar.badge.plus",
             iconColor: Color.accentOrange,
-            title: "Add a Family Event",
-            subtitle: "Birthdays, appointments, and activities in one place.",
-            buttonLabel: "Add Event",
+            title: "add_family_event",
+            subtitle: "add_family_event_subtitle",
+            buttonLabel: "add_event",
             action: { showAddEvent = true }
         )
         .tourTarget("home.addEvent")
@@ -189,7 +189,7 @@ struct HomeView: View {
     private var loadingView: some View {
         VStack(spacing: DS.Spacing.md) {
             ProgressView()
-            Text(L10n.loading)
+            Text("loading")
                 .font(DS.Typography.bodySmall())
                 .foregroundStyle(.textSecondary)
         }
@@ -211,7 +211,7 @@ struct HomeView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 // Date (small, muted) - on top
-                Text(SharedFormatters.fullDate.string(from: Date()))
+                Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()))
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
                 
@@ -249,11 +249,11 @@ struct HomeView: View {
     }
     
     var greetingText: String {
-        let hour = Calendar.current.component(.hour, from: Date())
+        let hour = Calendar.current.component(.hour, from: .now)
         switch hour {
-        case 0..<12: return L10n.goodMorning
-        case 12..<17: return L10n.goodAfternoon
-        default: return L10n.goodEvening
+        case 0..<12: return "good_morning"
+        case 12..<17: return "good_afternoon"
+        default: return "good_evening"
         }
     }
     
@@ -280,9 +280,9 @@ struct HomeView: View {
     }
     
     func loadData() async {
-        let today = Date()
+        let today = Date.now
         let startOfWeek = today.startOfWeek
-        let endOfWeek = Calendar.current.date(byAdding: .day, value: 6, to: startOfWeek) ?? today
+        let endOfWeek = Calendar.current.date(byAdding: .day, value: 6, to: startOfWeek) ?? .now
         let calendar = Calendar.current
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         let startOfNextMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
@@ -310,11 +310,66 @@ struct HomeView: View {
         derived.rebuild(
             allTasks: taskVM.activeTasks,
             userId: authVM.currentUser?.id ?? "",
-            isAdult: authVM.currentUser?.isAdult == true,
+            capabilities: authVM.currentUser?.resolvedCapabilities
+                ?? CapabilityPreset.standard.capabilities(),
             members: familyMemberVM.familyMembers,
             groups: familyMemberVM.taskGroups,
-            upcomingEvents: cachedUpcomingEvents
+            upcomingEvents: cachedUpcomingEvents,
+            habitStreakDays: computeHabitStreak(),
+            weeklyEarnings: computeWeeklyEarnings()
         )
+    }
+    
+    /// Compute the current user's longest active habit streak (consecutive days including today).
+    private func computeHabitStreak() -> Int {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let logs = habitVM.habitLogs
+        
+        guard !logs.isEmpty else { return 0 }
+        
+        // Check each habit for a streak ending today, return the longest
+        var longestStreak = 0
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        for (_, dates) in logs {
+            let todayStr = dateFormatter.string(from: today)
+            guard dates.contains(todayStr) else { continue }
+            
+            var streak = 1
+            var checkDate = today
+            while true {
+                guard let prev = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
+                let prevStr = dateFormatter.string(from: prev)
+                if dates.contains(prevStr) {
+                    streak += 1
+                    checkDate = prev
+                } else {
+                    break
+                }
+            }
+            longestStreak = max(longestStreak, streak)
+        }
+        return longestStreak
+    }
+    
+    /// Compute reward earnings this week for the current user.
+    private func computeWeeklyEarnings() -> Double {
+        let calendar = Calendar.current
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: .now)?.start ?? .now
+        let userId = authVM.currentUser?.id ?? ""
+        
+        // Sum completed tasks with rewards this week assigned to this user
+        return taskVM.allTasks
+            .filter { task in
+                task.status == .completed &&
+                task.isAssigned(to: userId) &&
+                task.hasReward &&
+                task.dueDate >= startOfWeek
+            }
+            .compactMap { $0.rewardAmount }
+            .reduce(0, +)
     }
     
     func recomputeUpcomingEvents() {
@@ -323,7 +378,7 @@ struct HomeView: View {
             eventKitHolidays: eventKitService.holidayEvents,
             eventKitEvents: eventKitService.events,
             firestoreEvents: calendarVM.events,
-            month: Date(),
+            month: .now,
             maxDays: 60,
             includeEventKitRegularEvents: false
         )

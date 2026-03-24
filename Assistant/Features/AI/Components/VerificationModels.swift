@@ -1,6 +1,6 @@
 // ============================================================================
 // VerificationModels.swift
-// FamilyHub
+// 
 //
 // UNIFIED AI VERIFICATION MODELS
 //
@@ -43,10 +43,10 @@ enum AIRecommendation: String, Codable {
     
     var title: String {
         switch self {
-        case .approve: return L10n.looksCorrect
-        case .review: return L10n.needsReviewLabel      // ✅ FIXED: was L10n.needsReview
-        case .unclear: return L10n.unclearLabel         // ✅ FIXED: was L10n.unclear
-        case .cannotVerify: return L10n.cannotVerify
+        case .approve: return "looksCorrect"
+        case .review: return "needsReviewLabel"
+        case .unclear: return "unclearLabel"
+        case .cannotVerify: return "cannotVerify"
         }
     }
     
@@ -90,10 +90,10 @@ enum QuestionAssessment: String, Codable {
     
     var accessibilityLabel: String {
         switch self {
-        case .likelyCorrect: return L10n.likelyCorrectLabel     // ✅ FIXED: was L10n.likelyCorrect
-        case .likelyIncorrect: return L10n.likelyIncorrectLabel // ✅ FIXED: was L10n.likelyIncorrect
-        case .uncertain: return L10n.uncertainLabel             // ✅ FIXED: was L10n.uncertain
-        case .needsReview: return L10n.needsReviewLabel         // ✅ FIXED: was L10n.needsReviewStringlocalized
+        case .likelyCorrect: return "likelyCorrectLabel"
+        case .likelyIncorrect: return "likelyIncorrectLabel"
+        case .uncertain: return "uncertainLabel"
+        case .needsReview: return "needsReviewLabel"
         }
     }
 }

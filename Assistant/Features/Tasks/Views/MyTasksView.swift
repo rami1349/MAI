@@ -1,9 +1,19 @@
+// ============================================================================
+// MyTasksView.swift
 //
-//  MyTasksView.swift
-//  FamilyHub
+// v2: PURE TASK EXECUTION
 //
-//  FIX-VISIBILITY: Uses myTasksFiltered to hide completed tasks from assignee
+// Three columns: To Do · In Progress · Done
 //
+// WHAT CHANGED (v1 → v2):
+//   - Search bar added (blueprint §6.2)
+//   - Filter chips: All / Assigned to me / Created by me + group chips
+//   - .pendingVerification → shows in To Do (blueprint §6)
+//   - camelCase keys → snake_case matching xcstrings
+//   - Removed: TasksViewMode, habits toggle
+//   - Uses existing FilterChip / IconFilterChip components
+//
+// ============================================================================
 
 import SwiftUI
 
@@ -12,82 +22,142 @@ struct MyTasksView: View {
     @Environment(FamilyViewModel.self) var familyViewModel
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(TaskViewModel.self) var taskVM
-    
-    @State private var selectedFilter: TaskStatusFilter = .todo
+
+    // MARK: - State
+
+    @State private var selectedStatus: TaskStatusFilter = .todo
+    @State private var selectedOwnership: OwnershipFilter = .all
+    @State private var selectedGroupId: String? = nil
+    @State private var searchText = ""
     @State private var selectedTask: FamilyTask? = nil
     @State private var focusTask: FamilyTask? = nil
     @State private var inFlightActions: Set<String> = []
     @State private var toast: ToastMessage? = nil
-    
-    // MARK: - Filter Enum (3-state: matches mental model)
-    
+
+    // MARK: - Status Filter (3-state)
+
     enum TaskStatusFilter: CaseIterable {
         case todo
         case inProgress
         case done
-        
-        var displayName: String {
+
+        var label: String {
             switch self {
-            case .todo: return L10n.todo
-            case .inProgress: return L10n.inProgress
-            case .done: return L10n.done
+            case .todo:       AppStrings.localized("todo")
+            case .inProgress: AppStrings.localized("in_progress")
+            case .done:       AppStrings.localized("done")
             }
         }
     }
-    
-    // MARK: - Task Filtering
-    
-    // FIX-VISIBILITY: Use myTasksFiltered instead of tasksFor
-    // This hides completed tasks that were assigned TO the user
-    // But shows completed tasks that the user assigned to others (for monitoring)
-    var myTasks: [FamilyTask] {
-        guard let userId = authViewModel.currentUser?.id else { return [] }
-        return taskVM.myTasksFiltered(userId: userId)
-    }
-    
-    // For the "Done" filter, we need ALL tasks (including hidden completed ones)
-    // so users can still see their completed tasks if they specifically filter for them
-    var allMyTasks: [FamilyTask] {
-        guard let userId = authViewModel.currentUser?.id else { return [] }
-        return taskVM.tasksFor(userId: userId)
-    }
-    
-    var filteredTasks: [FamilyTask] {
-        switch selectedFilter {
-        case .todo:
-            return myTasks.filter { $0.status == .todo }
-        case .inProgress:
-            return myTasks.filter { $0.status == .inProgress || $0.status == .pendingVerification }
-        case .done:
-            // Only show completed recurring tasks - one-offs are hidden and auto-deleted
-            return allMyTasks.filter { $0.status == .completed && $0.isRecurring }
+
+    // MARK: - Ownership Filter
+
+    enum OwnershipFilter: CaseIterable {
+        case all
+        case assignedToMe
+        case createdByMe
+
+        var label: String {
+            switch self {
+            case .all:          AppStrings.localized("all")
+            case .assignedToMe: AppStrings.localized("assigned_to_me")
+            case .createdByMe:  AppStrings.localized("created_by_me")
+            }
         }
     }
-    
+
+    // MARK: - Derived Data
+
+    private var userId: String {
+        authViewModel.currentUser?.id ?? ""
+    }
+
+    /// All tasks the user is involved with.
+    private var allMyTasks: [FamilyTask] {
+        taskVM.tasksFor(userId: userId)
+    }
+
+    /// Task groups visible to this user.
+    private var visibleGroups: [TaskGroup] {
+        familyMemberVM.taskGroups.filter { group in
+            allMyTasks.contains { $0.groupId == group.id }
+        }
+    }
+
+    /// Fully filtered: status → ownership → group → search.
+    private var filteredTasks: [FamilyTask] {
+        var tasks = allMyTasks
+
+        // 1. Status
+        switch selectedStatus {
+        case .todo:
+            tasks = tasks.filter { $0.status == .todo || $0.status == .pendingVerification }
+        case .inProgress:
+            tasks = tasks.filter { $0.status == .inProgress }
+        case .done:
+            tasks = tasks.filter { $0.status == .completed }
+        }
+
+        // 2. Ownership
+        switch selectedOwnership {
+        case .all: break
+        case .assignedToMe:
+            tasks = tasks.filter { $0.isAssigned(to: userId) }
+        case .createdByMe:
+            tasks = tasks.filter { $0.assignedBy == userId }
+        }
+
+        // 3. Group
+        if let groupId = selectedGroupId {
+            tasks = tasks.filter { $0.groupId == groupId }
+        }
+
+        // 4. Search
+        if !searchText.isEmpty {
+            let query = searchText.lowercased()
+            tasks = tasks.filter { task in
+                task.title.lowercased().contains(query) ||
+                (task.description?.lowercased().contains(query) == true) ||
+                assigneeName(for: task).lowercased().contains(query) ||
+                groupName(for: task).lowercased().contains(query)
+            }
+        }
+
+        // Sort: overdue first, then by due date
+        return tasks.sorted { lhs, rhs in
+            if lhs.isOverdue != rhs.isOverdue { return lhs.isOverdue }
+            return lhs.dueDate < rhs.dueDate
+        }
+    }
+
+    // Stat counts
+    private var todoCount: Int {
+        allMyTasks.filter { $0.status == .todo || $0.status == .pendingVerification }.count
+    }
+    private var inProgressCount: Int {
+        allMyTasks.filter { $0.status == .inProgress }.count
+    }
+    private var doneCount: Int {
+        allMyTasks.filter { $0.status == .completed }.count
+    }
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            filterSection
+            searchBar
+            statusFilterSection
             statsSection
-            
+            filterChipsSection
+
             if taskVM.isLoading {
-                // Skeleton loading state
-                ScrollView(showsIndicators: false) {
-                    LazyVStack(spacing: DS.Spacing.md) {
-                        ForEach(0..<5, id: \.self) { _ in
-                            TaskCardSkeleton()
-                        }
-                    }
-                    .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
-                    .constrainedWidth(.content)
-                }
+                skeletonList
             } else if filteredTasks.isEmpty {
                 Spacer()
                 EmptyStateView(
                     icon: "checklist",
-                    title: L10n.noTasks,
-                    message: L10n.noTasksFilter
+                    title: "no_tasks",
+                    message: "no_tasks_filter"
                 )
                 Spacer()
             } else {
@@ -99,25 +169,55 @@ struct MyTasksView: View {
         }
         .toastBanner(item: $toast)
     }
-    
-    // MARK: - Filter Section
-    
-    private var filterSection: some View {
+
+    // MARK: - Search Bar
+
+    private var searchBar: some View {
+        HStack(spacing: DS.Spacing.sm) {
+            Image(systemName: "magnifyingglass")
+                .font(DS.Typography.body())
+                .foregroundStyle(.textTertiary)
+
+            TextField("search_tasks", text: $searchText)
+                .font(DS.Typography.body())
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+
+            if !searchText.isEmpty {
+                Button(action: { searchText = "" }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textTertiary)
+                }
+            }
+        }
+        .padding(DS.Spacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .fill(Color.themeCardBackground)
+        )
+        .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
+        .padding(.bottom, DS.Spacing.md)
+    }
+
+    // MARK: - Status Filter (3-state toggle)
+
+    private var statusFilterSection: some View {
         HStack(spacing: 0) {
             ForEach(TaskStatusFilter.allCases, id: \.self) { filter in
                 Button {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        selectedFilter = filter
+                        selectedStatus = filter
                     }
                 } label: {
-                    Text(filter.displayName)
+                    Text(filter.label)
                         .font(DS.Typography.label())
-                        .foregroundStyle(selectedFilter == filter ? .textPrimary : .textSecondary)
+                        .foregroundStyle(selectedStatus == filter ? .textPrimary : .textSecondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, DS.Spacing.sm)
                         .background(
                             Group {
-                                if selectedFilter == filter {
+                                if selectedStatus == filter {
                                     RoundedRectangle(cornerRadius: DS.Radius.md)
                                         .fill(Color.backgroundCard)
                                         .elevation1()
@@ -135,9 +235,9 @@ struct MyTasksView: View {
         .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
         .padding(.bottom, DS.Spacing.md)
     }
-    
-    // MARK: - Stats Section
-    
+
+    // MARK: - Stats
+
     private var statsSection: some View {
         Group {
             if taskVM.isLoading {
@@ -147,23 +247,72 @@ struct MyTasksView: View {
                     StatCardSkeleton()
                 }
             } else {
-                let todoCount = allMyTasks.filter { $0.status == .todo }.count
-                let inProgressCount = allMyTasks.filter { $0.status == .inProgress || $0.status == .pendingVerification }.count
-                let doneCount = allMyTasks.filter { $0.status == .completed && $0.isRecurring }.count
-                
                 HStack(spacing: DS.Spacing.md) {
-                    StatCard(title: L10n.todo, count: todoCount, color: Color.statusTodo)
-                    StatCard(title: L10n.inProgress, count: inProgressCount, color: Color.statusInProgress)
-                    StatCard(title: L10n.done, count: doneCount, color: Color.statusCompleted)
+                    StatCard(
+                        title: AppStrings.localized("todo"),
+                        count: todoCount,
+                        color: Color.statusTodo
+                    )
+                    StatCard(
+                        title: AppStrings.localized("in_progress"),
+                        count: inProgressCount,
+                        color: Color.statusInProgress
+                    )
+                    StatCard(
+                        title: AppStrings.localized("done"),
+                        count: doneCount,
+                        color: Color.statusCompleted
+                    )
                 }
             }
         }
         .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
-        .padding(.bottom, DS.Spacing.lg)
+        .padding(.bottom, DS.Spacing.md)
     }
-    
+
+    // MARK: - Filter Chips (Ownership + Groups)
+
+    private var filterChipsSection: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DS.Spacing.sm) {
+                // Ownership chips
+                ForEach(OwnershipFilter.allCases, id: \.self) { filter in
+                    FilterChip(
+                        title: filter.label,
+                        isSelected: selectedOwnership == filter
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            selectedOwnership = filter
+                        }
+                    }
+                }
+
+                // Group chips
+                if !visibleGroups.isEmpty {
+                    Circle()
+                        .fill(Color.textTertiary.opacity(0.3))
+                        .frame(width: 4, height: 4)
+
+                    ForEach(visibleGroups, id: \.id) { group in
+                        IconFilterChip(
+                            title: group.name,
+                            icon: group.icon,
+                            isSelected: selectedGroupId == group.id
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                selectedGroupId = selectedGroupId == group.id ? nil : group.id
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
+        }
+        .padding(.bottom, DS.Spacing.md)
+    }
+
     // MARK: - Tasks List
-    
+
     private var tasksList: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: DS.Spacing.md) {
@@ -172,7 +321,7 @@ struct MyTasksView: View {
                     let group = task.groupId.flatMap { familyMemberVM.getTaskGroup(by: $0) }
                     let canComplete = task.status != .completed && task.status != .pendingVerification
                     let isBusy = inFlightActions.contains(taskId)
-                    
+
                     TaskCard(
                         task: task,
                         groupName: group?.name,
@@ -183,19 +332,17 @@ struct MyTasksView: View {
                             Task {
                                 await familyViewModel.updateTaskStatus(task, to: .inProgress)
                                 inFlightActions.remove(taskId)
-                                toast = .success(L10n.taskStarted)
+                                toast = .success(AppStrings.localized("task_started"))
                             }
                         },
-                        onStartFocus: {
-                            focusTask = task
-                        },
+                        onStartFocus: { focusTask = task },
                         onMarkComplete: {
                             guard !inFlightActions.contains(taskId) else { return }
                             inFlightActions.insert(taskId)
                             Task {
                                 await familyViewModel.updateTaskStatus(task, to: .completed, authViewModel: authViewModel)
                                 inFlightActions.remove(taskId)
-                                toast = .success(L10n.taskCompleted)
+                                toast = .success(AppStrings.localized("task_completed"))
                             }
                         },
                         showActions: true,
@@ -235,6 +382,32 @@ struct MyTasksView: View {
                 .presentationDetents([.large])
         }
     }
+
+    // MARK: - Skeleton
+
+    private var skeletonList: some View {
+        ScrollView(showsIndicators: false) {
+            LazyVStack(spacing: DS.Spacing.md) {
+                ForEach(0..<5, id: \.self) { _ in
+                    TaskCardSkeleton()
+                }
+            }
+            .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
+            .constrainedWidth(.content)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func assigneeName(for task: FamilyTask) -> String {
+        guard let id = task.assignedTo else { return "" }
+        return familyMemberVM.getMember(by: id)?.displayName ?? ""
+    }
+
+    private func groupName(for task: FamilyTask) -> String {
+        guard let id = task.groupId else { return "" }
+        return familyMemberVM.getTaskGroup(by: id)?.name ?? ""
+    }
 }
 
 // MARK: - Stat Card
@@ -243,14 +416,14 @@ struct StatCard: View {
     let title: String
     let count: Int
     let color: Color
-    
+
     var body: some View {
         VStack(spacing: DS.Spacing.sm) {
             Text("\(count)")
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundStyle(color)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.textSecondary)
@@ -268,12 +441,14 @@ struct StatCard: View {
 
 #Preview {
     let familyVM = FamilyViewModel()
-    MyTasksView()
-        .environment(AuthViewModel())
-        .environment(familyVM)
-        .environment(familyVM.familyMemberVM)
-        .environment(familyVM.taskVM)
-        .environment(familyVM.calendarVM)
-        .environment(familyVM.habitVM)
-        .environment(familyVM.notificationVM)
+    NavigationStack {
+        MyTasksView()
+            .environment(AuthViewModel())
+            .environment(familyVM)
+            .environment(familyVM.familyMemberVM)
+            .environment(familyVM.taskVM)
+            .environment(familyVM.calendarVM)
+            .environment(familyVM.habitVM)
+            .environment(familyVM.notificationVM)
+    }
 }

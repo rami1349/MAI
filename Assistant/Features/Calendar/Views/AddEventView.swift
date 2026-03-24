@@ -1,6 +1,6 @@
 //
 //  AddEventView.swift
-//  FamilyHub
+//
 //
 //  UNICORN REDESIGN - Progressive Disclosure Pattern
 //  - Hero title input with large font
@@ -70,12 +70,12 @@ struct AddEventView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
-                    Text(L10n.addEvent)
+                    Text("add_event")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                 }
@@ -85,7 +85,7 @@ struct AddEventView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Text(L10n.add)
+                            Text("add")
                                 .font(DS.Typography.label())
                                 .fontWeight(.semibold)
                         }
@@ -96,7 +96,7 @@ struct AddEventView: View {
             }
             .overlay {
                 if showSuccess {
-                    SuccessDismissOverlay(message: L10n.eventCreated) {
+                    SuccessDismissOverlay(message: "event_created") {
                         dismiss()
                     }
                 }
@@ -108,11 +108,11 @@ struct AddEventView: View {
     // MARK: - Hero Title Section
     private var heroTitleSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-            Text(L10n.eventWhatHappening)
+            Text("event_what_happening")
                 .font(DS.Typography.caption())
                 .foregroundStyle(.textTertiary)
             
-            TextField(L10n.eventTitlePlaceholder, text: $title)
+            TextField("event_title_placeholder", text: $title)
                 .font(DS.Typography.displayMedium())
                 .foregroundStyle(.textPrimary)
                 .focused($isTitleFocused)
@@ -149,7 +149,7 @@ struct AddEventView: View {
                             .foregroundStyle(.textPrimary)
                         
                         if isAllDay {
-                            Text(L10n.allDay)
+                            Text("all_day")
                                 .font(DS.Typography.caption())
                                 .foregroundStyle(.textSecondary)
                         }
@@ -158,7 +158,7 @@ struct AddEventView: View {
                     Spacer()
                     
                     HStack(spacing: DS.Spacing.xs) {
-                        Text(L10n.change)
+                        Text("change")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.accentPrimary)
                         
@@ -196,7 +196,7 @@ struct AddEventView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DS.Spacing.sm) {
                 QuickTimeChip(
-                    label: L10n.tonight,
+                    label: "tonight",
                     sublabel: "6:00 PM",
                     isSelected: isTonight
                 ) {
@@ -204,7 +204,7 @@ struct AddEventView: View {
                 }
                 
                 QuickTimeChip(
-                    label: L10n.tomorrow,
+                    label:"tomorrow",
                     sublabel: "9:00 AM",
                     isSelected: isTomorrowMorning
                 ) {
@@ -212,7 +212,7 @@ struct AddEventView: View {
                 }
                 
                 QuickTimeChip(
-                    label: L10n.thisWeekend,
+                    label: "this_weekend",
                     sublabel: saturdayLabel,
                     isSelected: isThisWeekend
                 ) {
@@ -220,8 +220,8 @@ struct AddEventView: View {
                 }
                 
                 QuickTimeChip(
-                    label: L10n.allDay,
-                    sublabel: L10n.tomorrow,
+                    label: "all_day",
+                    sublabel: "tomorrow",
                     isSelected: isAllDay && isTomorrowAllDay
                 ) {
                     setAllDayTomorrow()
@@ -241,7 +241,7 @@ struct AddEventView: View {
                         .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
-                    Text(L10n.allDay)
+                    Text("all_day")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textPrimary)
                 }
@@ -268,7 +268,7 @@ struct AddEventView: View {
                     .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
-                Text(L10n.starts)
+                Text("starts")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -297,7 +297,7 @@ struct AddEventView: View {
                     .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
-                Text(L10n.ends)
+                Text("ends")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -323,7 +323,7 @@ struct AddEventView: View {
                         .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.duration)
+                    Text("duration")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -370,7 +370,7 @@ struct AddEventView: View {
                         .foregroundStyle(showMoreOptions ? .accentPrimary : .textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.moreOptions)
+                    Text("more_options")
                         .font(DS.Typography.body())
                         .foregroundStyle(showMoreOptions ? .textPrimary : .textSecondary)
                     
@@ -411,12 +411,12 @@ struct AddEventView: View {
                         .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.notes)
+                    Text("notes")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
                 
-                TextField(L10n.addNotes, text: $notes, axis: .vertical)
+                TextField("addNotes", text: $notes, axis: .vertical)
                     .font(DS.Typography.body())
                     .lineLimit(2...4)
                     .focused($isNotesFocused)
@@ -433,7 +433,7 @@ struct AddEventView: View {
                     .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
-                Text(L10n.color)
+                Text("color")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
                 
@@ -470,9 +470,9 @@ struct AddEventView: View {
         timeFormatter.dateFormat = "h:mm a"
         
         if calendar.isDateInToday(startDate) {
-            dateFormatter.dateFormat = "'\(L10n.today)'"
+            dateFormatter.dateFormat = "'\(AppStrings.localized("today"))'"
         } else if calendar.isDateInTomorrow(startDate) {
-            dateFormatter.dateFormat = "'\(L10n.tomorrow)'"
+            dateFormatter.dateFormat = "'\(AppStrings.localized("tomorrow"))'"
         } else {
             dateFormatter.dateFormat = "EEE, MMM d"
         }
@@ -499,16 +499,16 @@ struct AddEventView: View {
         
         if let days = components.day, days > 0 {
             if let hours = components.hour, hours > 0 {
-                return "\(days) \(days == 1 ? L10n.day : L10n.days), \(hours) \(L10n.hr)"
+                return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days")), \(hours) \(AppStrings.localized("hr"))"
             }
-            return "\(days) \(days == 1 ? L10n.day : L10n.days)"
+            return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days"))"
         } else if let hours = components.hour, hours > 0 {
             if let minutes = components.minute, minutes > 0 {
-                return "\(hours) \(L10n.hr) \(minutes) \(L10n.min)"
+                return "\(hours) \(AppStrings.localized("hr")) \(minutes) \(AppStrings.localized("min"))"
             }
-            return "\(hours) \(hours == 1 ? L10n.hour : L10n.hours)"
+            return "\(hours) \(hours == 1 ? "hour" : "hours")"
         } else if let minutes = components.minute {
-            return "\(minutes) \(L10n.min)"
+            return "\(minutes) \(AppStrings.localized("min"))"
         }
         return ""
     }
@@ -748,7 +748,7 @@ private struct CollapsibleParticipantsRow: View {
                         .frame(width: 24)
                     
                     if selectedIds.isEmpty {
-                        Text(L10n.addParticipants)
+                        Text("add_participants")
                             .font(DS.Typography.body())
                             .foregroundStyle(.textTertiary)
                     } else {

@@ -1,6 +1,6 @@
 //
 //  DatePickerSheet.swift
-//  FamilyHub
+//
 //
 //  Reusable date picker modal
 //  UPDATED: Uses transparent blur background instead of solid theme color
@@ -11,7 +11,7 @@ import SwiftUI
 struct DatePickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @Binding var selectedDate: Date
-    var title: String = L10n.date
+    var title: String = AppStrings.localized("date")
     var allowFutureDates: Bool = false
     
     var body: some View {
@@ -43,7 +43,7 @@ struct DatePickerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) {
+                    Button("done") {
                         dismiss()
                     }
                 }
@@ -72,7 +72,7 @@ struct TimePickerSheet: View {
                 .datePickerStyle(.wheel)
                 .labelsHidden()
                 
-                Button(L10n.clearTime) {
+                Button("clearTime") {
                     hasTime = false
                     selectedTime = nil
                     dismiss()
@@ -83,14 +83,14 @@ struct TimePickerSheet: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle(L10n.selectTime)
+            .navigationTitle("select_time")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) {
+                    Button("done") {
                         hasTime = true
                         selectedTime = tempTime
                         dismiss()

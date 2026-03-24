@@ -1,6 +1,6 @@
 
 //  CalendarCells.swift
-//  FamilyHub
+//  
 //
 //  Core calendar cell components for day and year views
 //

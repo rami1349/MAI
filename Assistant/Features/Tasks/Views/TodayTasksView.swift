@@ -1,6 +1,6 @@
 //
 //  TodayTasksView.swift
-//  FamilyHub
+//  
 //
 //  LUXURY CALM REDESIGN
 //  - Clean, minimal navigation (no gradient header)
@@ -143,7 +143,7 @@ struct TodayTasksView: View {
                     currentWeekStart = Date().startOfWeek
                 }
             } label: {
-                Text(L10n.today)
+                Text("today")
                     .font(DS.Typography.captionMedium())
                     .foregroundStyle(isSelectedToday ? .textTertiary : .accentPrimary)
                     .padding(.horizontal, DS.Spacing.md)
@@ -519,7 +519,7 @@ struct TodayTaskCard: View {
                 Circle()
                     .fill(Color.statusInProgress)
                     .frame(width: 6, height: 6)
-                Text(L10n.inProgress)
+                Text("in_progress")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.statusInProgress)
             }
@@ -535,7 +535,7 @@ struct TodayTaskCard: View {
                 Circle()
                     .fill(Color.statusPending)
                     .frame(width: 6, height: 6)
-                Text(L10n.pending)
+                Text("pending")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.statusPending)
             }
@@ -589,7 +589,7 @@ struct TodayTaskCard: View {
                     HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: "scope")
                             .font(DS.Typography.micro())
-                        Text(L10n.focus)
+                        Text("focus")
                             .font(DS.Typography.captionMedium())
                     }
                     .foregroundStyle(.textSecondary)
@@ -613,7 +613,7 @@ struct TodayTaskCard: View {
                                 Image(systemName: "checkmark")
                                     .font(DS.Typography.micro())
                             }
-                            Text(L10n.done)
+                            Text("done")
                                 .font(DS.Typography.captionMedium())
                         }
                         .foregroundStyle(.textOnAccent)

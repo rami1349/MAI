@@ -1,5 +1,5 @@
 //  AdaptiveLayout.swift
-//  FamilyHub
+//  
 //
 //  Comprehensive adaptive layout system for iPhone, iPad, and macOS.
 //  Provides: Size class detection, adaptive spacing, keyboard shortcuts,

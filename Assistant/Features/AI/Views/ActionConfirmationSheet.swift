@@ -49,20 +49,20 @@ struct ActionConfirmationSheet: View {
     
     private var header: some View {
         HStack {
-            Button(L10n.cancel) {
+            Button("cancel") {
                 onCancel()
             }
             .foregroundStyle(.statusError)
             
             Spacer()
             
-            Text(L10n.confirmAction)
+            Text("confirmAction")
                 .font(.headline)
             
             Spacer()
             
             // Invisible button for balance
-            Button(L10n.cancel) {}
+            Button("cancel") {}
                 .opacity(0)
         }
         .padding()
@@ -97,7 +97,7 @@ struct ActionConfirmationSheet: View {
     
     private var detailsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(L10n.details)
+            Text("details")
                 .font(.headline)
             
             VStack(spacing: 8) {
@@ -172,7 +172,7 @@ struct ActionConfirmationSheet: View {
             Image(systemName: "info.circle.fill")
                 .foregroundStyle(.statusInfo)
             
-            Text(L10n.thisActionWillBePerformedAfterYouConfirm)
+            Text("thisActionWillBePerformedAfterYouConfirm")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -198,7 +198,7 @@ struct ActionConfirmationSheet: View {
                 Button {
                     onCancel()
                 } label: {
-                    Text(L10n.cancel)
+                    Text("cancel")
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -213,7 +213,7 @@ struct ActionConfirmationSheet: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                     } else {
-                        Text(L10n.confirm)
+                        Text("confirm")
                             .frame(maxWidth: .infinity)
                             .padding()
                     }

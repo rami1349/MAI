@@ -1,6 +1,6 @@
 //
 //  PriorityBadge.swift
-//  FamilyHub
+//  
 //
 //  Task priority badge component
 //

@@ -1,6 +1,6 @@
 // ============================================================================
 // Reward.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Models the reward ledger (RewardTransaction) and withdrawal workflow

@@ -1,6 +1,6 @@
 //
 //  AIChatView.swift
-//  FamilyHub
+//
 //
 //  AI Chat assistant view with streaming support
 //
@@ -117,7 +117,7 @@ struct AIChatView: View {
             // Center: assistant info
             VStack(spacing: 1) {
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.assistantName)
+                    Text("MAI")
                         .font(DS.Typography.heading())
                         .foregroundStyle(.textPrimary)
                     
@@ -267,17 +267,17 @@ struct AIChatView: View {
                 .font(DS.Typography.displayMedium())
                 .foregroundStyle(.statusWarning)
             
-            Text(L10n.dailyLimitReached)
+            Text("daily_limit_reached")
                 .font(DS.Typography.heading())
                 .foregroundStyle(.textPrimary)
             
             if credits > 0 {
-                Text(L10n.dailyLimitUsedWithCredits(limit, credits))
+                Text(AppStrings.dailyLimitUsedWithCredits(limit, credits))
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             } else {
-                Text(L10n.dailyLimitUsed(limit))
+                Text(AppStrings.dailyLimitUsed(limit))
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -290,7 +290,7 @@ struct AIChatView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "crown.fill")
                                     .font(.caption2)
-                                Text(L10n.upgrade)
+                                Text("upgrade")
                                     .font(.caption)
                                     .fontWeight(.semibold)
                             }
@@ -307,7 +307,7 @@ struct AIChatView: View {
                         HStack(spacing: 4) {
                             Image(systemName: "bolt.fill")
                                 .font(.caption2)
-                            Text(L10n.buyCredits)
+                            Text("buy_credits")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -367,14 +367,9 @@ struct AIChatView: View {
             }
             
             VStack(spacing: DS.Spacing.sm) {
-                Text(L10n.assistantName)
+                Text("MAI")
                     .font(DS.Typography.displayMedium())
                     .foregroundStyle(.textPrimary)
-                
-                Text(L10n.assistantDescription)
-                    .font(DS.Typography.body())
-                    .foregroundStyle(.textSecondary)
-                    .multilineTextAlignment(.center)
             }
             
             VStack(spacing: DS.Spacing.sm) {
@@ -475,7 +470,7 @@ struct AIChatView: View {
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.accentPrimary)
                     
-                    Text(L10n.usingCreditsRemaining(store.aiCredits))
+                    Text(AppStrings.usingCreditsRemaining(store.aiCredits))
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                     
@@ -484,7 +479,7 @@ struct AIChatView: View {
                     Button {
                         store.showCreditsPurchase = true
                     } label: {
-                        Text(L10n.getMore)
+                        Text("getMore")
                             .font(.caption)
                             .foregroundStyle(.accentPrimary)
                     }
@@ -501,7 +496,7 @@ struct AIChatView: View {
                         .font(DS.Typography.body())
                         .foregroundStyle(.statusWarning)
                     
-                    Text(L10n.dailyLimitResets)
+                    Text("dailyLimitResets")
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                     
@@ -512,7 +507,7 @@ struct AIChatView: View {
                             Button {
                                 store.showPaywall = true
                             } label: {
-                                Text(L10n.upgrade)
+                                Text("upgrade")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.textOnAccent)
@@ -528,7 +523,7 @@ struct AIChatView: View {
                             HStack(spacing: 2) {
                                 Image(systemName: "bolt.fill")
                                     .font(DS.Typography.micro())
-                                Text(L10n.credits)
+                                Text("credits")
                                     .font(.caption2)
                                     .fontWeight(.semibold)
                             }
@@ -546,7 +541,7 @@ struct AIChatView: View {
             } else {
                 // Normal input
                 HStack(alignment: .bottom, spacing: DS.Spacing.sm) {
-                    TextField(L10n.messagePlaceholder, text: $inputText, axis: .vertical)
+                    TextField("messagePlaceholder", text: $inputText, axis: .vertical)
                         .font(DS.Typography.body())
                         .lineLimit(1...5)
                         .padding(.horizontal, DS.Spacing.md)
@@ -742,7 +737,7 @@ struct MessageBubble: View {
                         HStack(spacing: 4) {
                             Image(systemName: "arrow.clockwise")
                                 .font(DS.Typography.micro())
-                            Text(L10n.retry)
+                            Text("retry")
                                 .font(DS.Typography.badge())
                         }
                         .foregroundStyle(.accentPrimary)

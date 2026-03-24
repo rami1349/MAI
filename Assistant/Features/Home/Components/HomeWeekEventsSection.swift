@@ -43,7 +43,7 @@ struct HomeWeekEventsSection: View {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text(L10n.thisWeek)
+                Text("thisWeek")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
@@ -98,11 +98,11 @@ struct HomeWeekEventsSection: View {
                 }
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                    Text(L10n.noEvents)
+                    Text("noEvents")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
-                    Text(" enjoyAPeacefulWeek")
+                    Text("enjoyAPeacefulWeek")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                 }

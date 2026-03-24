@@ -1,6 +1,6 @@
 // ============================================================================
 // NotificationViewModel.swift
-// FamilyHub
+//
 //
 // PURPOSE:
 //   Manages in-app notification state (read/unread, badge count) and handles
@@ -26,7 +26,7 @@
 //   - FirebaseFirestore      — notification document storage
 //   - FirestoreDecode        — off-main-thread Codable decoding
 //   - LocalNotificationService — app badge count management
-//   - L10n (LocalizationManager) — localized notification strings
+//   - AppStrings (LocalizationManager) — localized notification strings
 //
 // ============================================================================
 
@@ -75,7 +75,7 @@ final class NotificationViewModel {
     private static let pageSize = 100
     
     /// Logger for notification write failures (SUGGESTION 3)
-    private static let logger = Logger(subsystem: "com.familyhub", category: "Notifications")
+    private static let logger = Logger(subsystem: "com.", category: "Notifications")
     
     /// SUGGESTION 4: Deduplication cache - tracks recent notifications by hash
     /// Key: hash of (userId, type, relatedId, message prefix)
@@ -319,16 +319,16 @@ final class NotificationViewModel {
         // Notify assignee
         write(.init(
             userId: assigneeId, familyId: familyId, type: .taskAssigned,
-            title: L10n.taskAssignment,
-            message: L10n.assignedYouTask(assignerName, title),
+            title: "taskAssignment",
+            message: AppStrings.assignedYouTask(assignerName, title),
             relatedTaskId: taskId, isRead: false, createdAt: Date()
         ))
         
         // Notify assigner
         write(.init(
             userId: assignerId, familyId: familyId, type: .taskAssigned,
-            title: L10n.taskAssignment,
-            message: L10n.youAssignedTask(assigneeName, title),
+            title: "taskAssignment",
+            message: AppStrings.youAssignedTask(assigneeName, title),
             relatedTaskId: taskId, isRead: false, createdAt: Date()
         ))
     }
@@ -343,8 +343,8 @@ final class NotificationViewModel {
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .taskCompleted,
-            title: L10n.taskCompletedNotif,
-            message: L10n.taskCompletedNotifBody(performerName, title),
+            title: "taskCompletedNotification",
+            message: AppStrings.taskCompletedNotifBody(performerName, title),
             relatedTaskId: taskId, isRead: false, createdAt: Date()
         ))
     }
@@ -358,8 +358,8 @@ final class NotificationViewModel {
         
         write(.init(
             userId: assigneeId, familyId: familyId, type: .taskDeleted,
-            title: L10n.taskRemoved,
-            message: L10n.memberRemovedTask(deleterName, title),
+            title: "taskRemoved",
+            message: AppStrings.memberRemovedTask(deleterName, title),
             relatedTaskId: nil, isRead: false, createdAt: Date()
         ))
     }
@@ -373,8 +373,8 @@ final class NotificationViewModel {
         if let assigneeId, assigneeId != editorId {
             write(.init(
                 userId: assigneeId, familyId: familyId, type: .taskAssigned,
-                title: L10n.taskUpdatedNotif,
-                message: L10n.taskUpdatedNotifBody(title),
+                title: "taskUpdatedNotif",
+                message: AppStrings.taskUpdatedNotifBody(title),
                 relatedTaskId: taskId, isRead: false, createdAt: Date()
             ))
         }
@@ -382,8 +382,8 @@ final class NotificationViewModel {
         if let oldAssigneeId, oldAssigneeId != assigneeId, oldAssigneeId != editorId {
             write(.init(
                 userId: oldAssigneeId, familyId: familyId, type: .taskAssigned,
-                title: L10n.taskReassignedNotif,
-                message: L10n.taskReassignedNotifBody(title),
+                title: "taskReassignedNotificaation",
+                message: AppStrings.taskReassignedNotifBody(title),
                 relatedTaskId: taskId, isRead: false, createdAt: Date()
             ))
         }
@@ -399,8 +399,8 @@ final class NotificationViewModel {
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .proofSubmitted,
-            title: L10n.proofSubmitted,
-            message: "\(submitterName) \(L10n.submittedProofFor): \(title)",
+            title:"proofSubmitted",
+            message: "\("submitterName") \("submittedProofFor"): \(title)",
             relatedTaskId: taskId, isRead: false, createdAt: Date()
         ))
     }
@@ -414,12 +414,12 @@ final class NotificationViewModel {
         guard let assigneeId, assigneeId != verifierId else { return }
         
         let message = approved
-        ? "\(L10n.yourTask) '\(title)' \(L10n.wasApproved)!"
-        : "\(L10n.yourProofFor) '\(title)' \(L10n.wasNotAccepted)."
+        ? "\("yourTask") '\(title)' \("wasApproved")!"
+        : "\("yourProofFor") '\(title)' \("wasNotAccepted")."
         
         write(.init(
             userId: assigneeId, familyId: familyId, type: .proofVerified,
-            title: approved ? L10n.approved : L10n.rejected,
+            title: approved ? "approved" : "rejected",
             message: message,
             relatedTaskId: taskId, isRead: false, createdAt: Date()
         ))
@@ -436,8 +436,8 @@ final class NotificationViewModel {
         for pid in participantIds where pid != creatorId {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventCreated,
-                title: L10n.newEvent,
-                message: L10n.addedYouToEvent(creatorName, title, dateStr),
+                title: "newEvent",
+                message: AppStrings.addedYouToEvent(creatorName, title, dateStr),
                 relatedTaskId: nil, relatedEventId: eventId,
                 isRead: false, createdAt: Date()
             ))
@@ -445,8 +445,8 @@ final class NotificationViewModel {
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .eventCreated,
-            title: L10n.newEvent,
-            message: L10n.youCreatedEvent(title, dateStr),
+            title: "newEvent",
+            message: AppStrings.youCreatedEvent(title, dateStr),
             relatedTaskId: nil, relatedEventId: eventId,
             isRead: false, createdAt: Date()
         ))
@@ -462,8 +462,8 @@ final class NotificationViewModel {
         for pid in participantIds where pid != updatedBy {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventUpdated,  // FIXED: was .eventCreated
-                title: L10n.eventUpdatedNotif,
-                message: L10n.eventUpdatedNotifBody(title),
+                title: "eventUpdatedNotification",
+                message: AppStrings.eventUpdatedNotifBody(title),
                 relatedTaskId: nil, relatedEventId: eventId,
                 isRead: false, createdAt: Date()
             ))
@@ -480,8 +480,8 @@ final class NotificationViewModel {
         for pid in participantIds where pid != deletedBy {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventCanceled,  // FIXED: was .eventCreated
-                title: L10n.eventCanceledNotif,
-                message: L10n.eventCanceledNotifBody(title, deleterName),
+                title: "eventCanceledNotification",
+                message: AppStrings.eventCanceledNotifBody(title, deleterName),
                 relatedTaskId: nil, isRead: false, createdAt: Date()
             ))
         }
@@ -503,8 +503,8 @@ final class NotificationViewModel {
             userId: targetId,
             familyId: familyId,
             type: .rewardReceived,
-            title: L10n.payoutRequest,
-            message: L10n.requestedPayoutFrom(requesterName, Int(amount)),
+            title: "payoutRequest",
+            message: AppStrings.requestedPayoutFrom(requesterName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
             createdAt: Date()
@@ -522,8 +522,8 @@ final class NotificationViewModel {
             userId: requesterId,
             familyId: familyId,
             type: .rewardReceived,
-            title: L10n.payoutApproved,
-            message: L10n.payoutApprovedBody(payerName, Int(amount)),
+            title: "payoutApproved",
+            message: AppStrings.payoutApprovedBody(payerName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
             createdAt: Date()
@@ -541,8 +541,8 @@ final class NotificationViewModel {
             userId: requesterId,
             familyId: familyId,
             type: .rewardReceived,
-            title: L10n.payoutRejected,
-            message: L10n.payoutRejectedBody(rejecterName, Int(amount)),
+            title: "payoutRejected",
+            message: AppStrings.payoutRejectedBody(rejecterName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
             createdAt: Date()
@@ -562,8 +562,8 @@ final class NotificationViewModel {
             userId: userId,
             familyId: familyId,
             type: .rewardReceived,
-            title: L10n.rewardEarned,
-            message: L10n.rewardEarnedBody(Int(amount), taskTitle, assignerName),
+            title: "rewardEarned",
+            message: AppStrings.rewardEarnedBody(Int(amount), taskTitle, assignerName),
             relatedTaskId: taskId,
             isRead: false,
             createdAt: Date()
@@ -599,4 +599,3 @@ final class NotificationViewModel {
         }
     }
 }
-

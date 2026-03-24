@@ -1,6 +1,5 @@
-
 //  CalendarFilters.swift
-//  FamilyHub
+//
 //
 //  Filter components for calendar member filtering
 //
@@ -64,7 +63,7 @@ struct MemberFilterSheet: View {
                                 .foregroundStyle(.primary)
                                 .frame(width: 32)
                             
-                            Text(L10n.showAllMembers)
+                            Text("show_all_members")
                                 .foregroundStyle(.textPrimary)
                             
                             Spacer()
@@ -78,7 +77,7 @@ struct MemberFilterSheet: View {
                     .listRowBackground(Color.backgroundCard)
                 }
                 
-                Section(L10n.filterByMember) {
+                Section("filter_by_member") {
                     ForEach(familyMemberVM.familyMembers) { member in
                         Button {
                             toggleMember(member)
@@ -89,7 +88,7 @@ struct MemberFilterSheet: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(member.displayName)
                                         .foregroundStyle(.textPrimary)
-                                    Text(member.isAdult ? L10n.adult : L10n.member)
+                                    Text(LocalizedStringKey(member.resolvedPreset.localizationKey))
                                         .font(.caption)
                                         .foregroundStyle(.textSecondary)
                                 }
@@ -111,11 +110,11 @@ struct MemberFilterSheet: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.filterByMember)
+            .navigationTitle("filter_by_member")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }

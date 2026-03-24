@@ -1,9 +1,9 @@
 // ============================================================================
 // AuthViewModel.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
-//   Central authentication controller and session manager for FamilyHub.
+//   Central authentication controller and session manager for .
 //   Owns all Firebase Auth state, user profile hydration, and account lifecycle
 //   operations (sign-up, sign-in, OAuth, reauthentication, deletion).
 //
@@ -42,7 +42,7 @@ import GoogleSignIn
 import AuthenticationServices
 import os
 
-/// Manages authentication state and user session for the entire FamilyHub app.
+/// Manages authentication state and user session for the entire  app.
 ///
 /// This class is the authoritative source for whether a user is authenticated,
 /// who they are (`currentUser`), and whether they belong to a family.

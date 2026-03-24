@@ -1,6 +1,6 @@
 //
 //  RewardViewModel.swift
-//  FamilyHub
+//  
 //
 //  Manages reward transactions (ledger) and withdrawal requests.
 //  Handles: transaction history, manual rewards, withdrawal lifecycle.

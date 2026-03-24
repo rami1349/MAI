@@ -1,6 +1,6 @@
 //
 //  EditEventView.swift
-//  FamilyHub
+//
 //
 //  UNICORN REDESIGN - Matches AddEventView progressive disclosure pattern
 //  - Pre-filled with existing event data
@@ -89,12 +89,12 @@ struct EditEventView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
-                    Text(L10n.editEvent)
+                    Text("editEvent")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                 }
@@ -104,7 +104,7 @@ struct EditEventView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Text(L10n.save)
+                            Text("save")
                                 .font(DS.Typography.label())
                                 .fontWeight(.semibold)
                         }
@@ -115,7 +115,7 @@ struct EditEventView: View {
                 ToolbarItem(placement: .keyboard) {
                     HStack {
                         Spacer()
-                        Button(L10n.done) {
+                        Button("done") {
                             isTitleFocused = false
                             isNotesFocused = false
                         }
@@ -125,7 +125,7 @@ struct EditEventView: View {
             }
             .overlay {
                 if showSuccess {
-                    SuccessDismissOverlay(message: L10n.eventUpdated) {
+                    SuccessDismissOverlay(message: "event_updated") {
                         dismiss()
                     }
                 }
@@ -138,11 +138,11 @@ struct EditEventView: View {
     
     private var heroTitleSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-            Text(L10n.eventWhatHappening)
+            Text("what_happening")
                 .font(DS.Typography.caption())
                 .foregroundStyle(.textTertiary)
             
-            TextField(L10n.eventTitlePlaceholder, text: $title)
+            TextField("event_title_placeholder", text: $title)
                 .font(DS.Typography.displayMedium())
                 .foregroundStyle(.textPrimary)
                 .focused($isTitleFocused)
@@ -177,7 +177,7 @@ struct EditEventView: View {
                             .foregroundStyle(.textPrimary)
                         
                         if isAllDay {
-                            Text(L10n.allDay)
+                            Text("all_day")
                                 .font(DS.Typography.caption())
                                 .foregroundStyle(.textSecondary)
                         }
@@ -186,7 +186,7 @@ struct EditEventView: View {
                     Spacer()
                     
                     HStack(spacing: DS.Spacing.xs) {
-                        Text(L10n.change)
+                        Text("change")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.accentPrimary)
                         
@@ -226,7 +226,7 @@ struct EditEventView: View {
                         .foregroundStyle(.accentPrimary)
                         .frame(width: 24)
                     
-                    Text(L10n.allDay)
+                    Text("all_day")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textPrimary)
                 }
@@ -253,7 +253,7 @@ struct EditEventView: View {
                     .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
-                Text(L10n.starts)
+                Text("starts")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -282,7 +282,7 @@ struct EditEventView: View {
                     .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
-                Text(L10n.ends)
+                Text("ends")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -308,7 +308,7 @@ struct EditEventView: View {
                         .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.duration)
+                    Text("duration")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -356,7 +356,7 @@ struct EditEventView: View {
                         .foregroundStyle(showMoreOptions ? .accentPrimary : .textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.moreOptions)
+                    Text("more_options")
                         .font(DS.Typography.body())
                         .foregroundStyle(showMoreOptions ? .textPrimary : .textSecondary)
                     
@@ -398,12 +398,12 @@ struct EditEventView: View {
                         .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.notes)
+                    Text("notes")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
                 
-                TextField(L10n.addNotes, text: $notes, axis: .vertical)
+                TextField("add_notes", text: $notes, axis: .vertical)
                     .font(DS.Typography.body())
                     .lineLimit(2...4)
                     .focused($isNotesFocused)
@@ -420,7 +420,7 @@ struct EditEventView: View {
                     .foregroundStyle(.textTertiary)
                     .frame(width: 24)
                 
-                Text(L10n.color)
+                Text("color")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
                 
@@ -457,9 +457,9 @@ struct EditEventView: View {
         timeFormatter.dateFormat = "h:mm a"
         
         if calendar.isDateInToday(startDate) {
-            dateFormatter.dateFormat = "'\(L10n.today)'"
+            dateFormatter.dateFormat = "'\(AppStrings.localized("today"))'"
         } else if calendar.isDateInTomorrow(startDate) {
-            dateFormatter.dateFormat = "'\(L10n.tomorrow)'"
+            dateFormatter.dateFormat = "'\(AppStrings.localized("tomorrow"))'"
         } else {
             dateFormatter.dateFormat = "EEE, MMM d"
         }
@@ -486,16 +486,16 @@ struct EditEventView: View {
         
         if let days = components.day, days > 0 {
             if let hours = components.hour, hours > 0 {
-                return "\(days) \(days == 1 ? L10n.day : L10n.days), \(hours) \(L10n.hr)"
+                return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days")), \(hours) \(AppStrings.localized("hr"))"
             }
-            return "\(days) \(days == 1 ? L10n.day : L10n.days)"
+            return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days"))"
         } else if let hours = components.hour, hours > 0 {
             if let minutes = components.minute, minutes > 0 {
-                return "\(hours) \(L10n.hr) \(minutes) \(L10n.min)"
+                return "\(hours) \(AppStrings.localized("hr")) \(minutes) \(AppStrings.localized("min"))"
             }
-            return "\(hours) \(hours == 1 ? L10n.hour : L10n.hours)"
+            return "\(hours) \(hours == 1 ? AppStrings.localized("hour") : AppStrings.localized("hours"))"
         } else if let minutes = components.minute {
-            return "\(minutes) \(L10n.min)"
+            return "\(minutes) \(AppStrings.localized("min"))"
         }
         return ""
     }
@@ -556,7 +556,7 @@ private struct EditCollapsibleParticipantsRow: View {
                         .frame(width: 24)
                     
                     if selectedIds.isEmpty {
-                        Text(L10n.addParticipants)
+                        Text("add_participants")
                             .font(DS.Typography.body())
                             .foregroundStyle(.textTertiary)
                     } else {

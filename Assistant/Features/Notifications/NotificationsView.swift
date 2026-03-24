@@ -1,6 +1,6 @@
 //
 //  NotificationsView.swift
-//  FamilyHub
+//  
 //
 //  Notifications list with swipe-to-delete
 //
@@ -23,12 +23,12 @@ struct NotificationsView: View {
                     notificationsList
                 }
             }
-            .navigationTitle(L10n.notifications)
+            .navigationTitle("notifications")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     HStack(spacing: DS.Spacing.sm) {
-                        Button(L10n.done) { dismiss() }
+                        Button("done") { dismiss() }
                         
                     }
                 }
@@ -38,13 +38,13 @@ struct NotificationsView: View {
                             Button {
                                 Task { await notificationVM.markAllAsRead() }
                             } label: {
-                                Label(L10n.markAllRead, systemImage: "checkmark.circle")
+                                Label("markAllRead", systemImage: "checkmark.circle")
                             }
                             
                             Button(role: .destructive) {
                                 Task { await notificationVM.deleteAll() }
                             } label: {
-                                Label(L10n.deleteAll, systemImage: "trash")
+                                Label("deleteAll", systemImage: "trash")
                             }
                         } label: {
                             Image(systemName: "ellipsis.circle")
@@ -58,8 +58,8 @@ struct NotificationsView: View {
     private var emptyState: some View {
         EmptyStateView(
             icon: "bell.slash",
-            title: L10n.noNotifications,
-            message: L10n.noNotificationsMessage
+            title: "noNotifications",
+            message: "noNotificationsMessage"
         )
     }
     

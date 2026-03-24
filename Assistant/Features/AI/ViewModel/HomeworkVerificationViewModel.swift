@@ -1,6 +1,6 @@
 // ============================================================================
 // HomeworkVerificationViewModel.swift
-// FamilyHub
+//
 //
 // ViewModel for AI Homework Verification
 //
@@ -137,7 +137,7 @@ final class HomeworkVerificationViewModel {
         
         // Convert image to base64 data URL
         guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
-            errorMessage = "L10n.failedToProcessImage"
+            errorMessage = "failedToProcessImage"
             isVerifying = false
             canRetry = false
             return
@@ -156,7 +156,7 @@ final class HomeworkVerificationViewModel {
                 return
             }
             
-            errorMessage = "L10n.imageTooLargePleaseUseASmallerImage"
+            errorMessage = "imageTooLargePleaseUseASmallerImage"
             isVerifying = false
             canRetry = false
             return
@@ -175,7 +175,7 @@ final class HomeworkVerificationViewModel {
     func retry() async {
         guard let taskId = lastVerifiedTaskId,
               let imageUrl = lastVerifiedImageUrl else {
-            errorMessage = "L10n.nothingToRetry"
+            errorMessage = "nothingToRetry"
             return
         }
         
@@ -194,15 +194,15 @@ final class HomeworkVerificationViewModel {
         var errorDescription: String? {
             switch self {
             case .invalidResponse:
-                return "L10n.invalidResponseFromServer"
+                return "invalid_response_from_server"
             case .serverError(let message):
                 return message
             case .imageProcessingFailed:
-                return "L10n.failedToProcessImage"
+                return "failed_to_process_image"
             case .retryable(let message, _):
                 return message
             case .circuitOpen(let retryAfter):
-                return L10n.aiServiceUnavailableRetry(retryAfter)
+                return AppStrings.aiServiceUnavailableRetry(retryAfter)
             }
         }
         
@@ -234,39 +234,39 @@ final class HomeworkVerificationViewModel {
             
             switch FunctionsErrorCode(rawValue: functionsError.code) {
             case .unauthenticated:
-                errorMessage = "L10n.pleaseSignInToVerifyHomework"
+                errorMessage = "pleaseSignInToVerifyHomework"
                 canRetry = false
                 
             case .invalidArgument:
-                errorMessage = "L10n.couldNotProcessImagePleaseTryAClearerPhoto"
+                errorMessage = "couldNotProcessImagePleaseTryAClearerPhoto"
                 canRetry = true
                 
             case .resourceExhausted:
-                errorMessage = "L10n.dailyVerificationLimitReachedTryAgainTomorro"
+                errorMessage = "dailyVerificationLimitReachedTryAgainTomorro"
                 canRetry = false
                 
             case .notFound:
-                errorMessage = L10n.taskNotFound
+                errorMessage = "taskNotFound"
                 canRetry = false
                 
             case .failedPrecondition:
-                errorMessage = "L10n.noProofImageFoundForThisTask"
+                errorMessage = "noProofImageFoundForThisTask"
                 canRetry = false
                 
             case .unavailable:
-                errorMessage = "L10n.aiServiceTemporarilyUnavailablePleaseTryAgai"
+                errorMessage = "aiServiceTemporarilyUnavailablePleaseTryAgai"
                 canRetry = true
                 
             case .deadlineExceeded:
-                errorMessage = "L10n.requestTimedOutPleaseTryAgain"
+                errorMessage = "requestTimedOutPleaseTryAgain"
                 canRetry = true
                 
             default:
-                errorMessage = "L10n.verificationFailedPleaseReviewManually"
+                errorMessage = "verificationFailedPleaseReviewManually"
                 canRetry = true
             }
         } else {
-            errorMessage = "L10n.unableToAnalyzePleaseReviewManually"
+            errorMessage = "unableToAnalyzePleaseReviewManually"
             canRetry = true
         }
     }

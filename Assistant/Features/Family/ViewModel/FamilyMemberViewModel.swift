@@ -1,6 +1,6 @@
 //
 //  FamilyMemberViewModel.swift
-//  FamilyHub
+//  
 //
 //  ViewModel for family and member management - uses Firestore directly
 //
@@ -340,6 +340,45 @@ final class FamilyMemberViewModel {
         await updateFamily(familyId: familyId, backgroundImageData: imageData)
     }
     
+    // MARK: - Capabilities
+    
+    /// Persist updated capabilities and preset to a member's Firestore document.
+    ///
+    /// Uses `merge: true` to update only capability fields without
+    /// overwriting the rest of the document.
+    func saveCapabilities(
+        _ capabilities: MemberCapabilities,
+        preset: CapabilityPreset,
+        for memberId: String
+    ) async {
+        do {
+            let capsData: [String: Any] = [
+                "canAssignTasks":   capabilities.canAssignTasks,
+                "canAssignTo":      capabilities.canAssignTo,
+                "canAttachRewards": capabilities.canAttachRewards,
+                "canApprovePayouts": capabilities.canApprovePayouts,
+                "canVerifyHomework": capabilities.canVerifyHomework,
+                "canManageFamily":  capabilities.canManageFamily,
+            ]
+
+            try await Firestore.firestore()
+                .collection("users")
+                .document(memberId)
+                .setData([
+                    "capabilities": capsData,
+                    "capabilityPreset": preset.rawValue,
+                ], merge: true)
+
+            // Update local array so UI reflects immediately
+            if let idx = familyMembers.firstIndex(where: { $0.id == memberId }) {
+                familyMembers[idx].capabilities = capabilities
+                familyMembers[idx].capabilityPreset = preset.rawValue
+                rebuildCaches()
+            }
+        } catch {
+            errorMessage = "Failed to update permissions: \(error.localizedDescription)"
+        }
+    }
     // MARK: - Private
     
     private func rebuildCaches() {
@@ -347,3 +386,4 @@ final class FamilyMemberViewModel {
         groupCache = taskGroups.reduce(into: [:]) { $0[$1.id ?? ""] = $1 }
     }
 }
+

@@ -1,6 +1,6 @@
 //
 //  ImagePreprocessor.swift
-//  FamilyHub
+//  
 //
 //  Vision Framework preprocessing for homework verification photos.
 //  Improves AI accuracy by 10-15% on poor quality images.

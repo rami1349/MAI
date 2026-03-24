@@ -141,7 +141,7 @@ struct MonthGridOverlay: View {
                     .fill(Color.textTertiary.opacity(0.3))
                     .frame(width: 40, height: 4)
                 
-                Text(L10n.tapToClose)
+                Text("tap_to_close")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textTertiary)
             }

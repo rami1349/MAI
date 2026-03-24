@@ -1,6 +1,6 @@
 // ============================================================================
 // CalendarViewModel.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Manages calendar events for the family — creation, editing, deletion, and

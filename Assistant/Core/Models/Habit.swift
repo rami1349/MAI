@@ -1,6 +1,6 @@
 //
 //  Habit.swift
-//  FamilyHub
+//  
 //
 //  Habit tracking models
 //

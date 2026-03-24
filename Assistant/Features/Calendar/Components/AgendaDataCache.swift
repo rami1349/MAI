@@ -1,5 +1,5 @@
 //  AgendaDataCache.swift
-//  FamilyHub
+//  
 //
 //  Lightweight per-day cache for calendar agenda items.
 //  Prevents repeated O(n) filtering on every SwiftUI body evaluation.

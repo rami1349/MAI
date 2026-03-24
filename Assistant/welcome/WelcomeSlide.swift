@@ -1,6 +1,6 @@
 //
 //  WelcomeSlidesView.swift
-//  FamilyHub
+//
 //
 //  Premium emotional onboarding - Phase 1
 //  Goal: Sell the outcome, not the features
@@ -18,8 +18,8 @@ struct WelcomeSlide: Identifiable {
     let icon: String
     let gradientColors: [Color]
     
-    var headline: String { LocalizationManager.shared.string(headlineKey) }
-    var subheadline: String { LocalizationManager.shared.string(subheadlineKey) }
+    var headline: String { AppStrings.localized(String.LocalizationValue(headlineKey)) }
+    var subheadline: String { AppStrings.localized(String.LocalizationValue(subheadlineKey)) }
 }
 
 // MARK: - Welcome Slides View
@@ -184,7 +184,7 @@ struct WelcomeSlidesView: View {
                         DS.Haptics.medium()
                         onGetStarted()
                     }) {
-                        Text(L10n.getStarted)
+                        Text("get_started")
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(slides[currentPage].gradientColors[0])
@@ -202,7 +202,7 @@ struct WelcomeSlidesView: View {
                         DS.Haptics.light()
                         onSignIn()
                     }) {
-                        Text(L10n.alreadyHaveAccount)
+                        Text("already_have_account")
                             .font(.subheadline)
                             .foregroundStyle(.textOnAccent.opacity(0.9))
                     }
@@ -212,7 +212,7 @@ struct WelcomeSlidesView: View {
             } else {
                 // Swipe hint
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.swipeToContinue)
+                    Text("swipe_to_continue")
                         .font(.subheadline)
                         .foregroundStyle(.textOnAccent.opacity(0.7))
                     

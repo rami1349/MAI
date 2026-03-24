@@ -1,6 +1,6 @@
 // ============================================================================
 // FamilyViewModel.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Thin coordinator that injects context (familyId, userId) into child ViewModel

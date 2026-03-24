@@ -17,8 +17,6 @@
 //   Tasks optionally track Pomodoro focus sessions. Aggregated stats
 //   (totalFocusedSeconds, lastFocusDate) live on the task document.
 //   Individual sessions live in a `focusSessions` subcollection.
-//
-//  UPDATED: Added TaskType, HomeworkSubject (AI-populated), AIVerification, implicit priority
 
 
 import Foundation
@@ -73,27 +71,27 @@ struct FamilyTask: Identifiable, Codable, Hashable {
     var totalFocusedSeconds: Int?
     var lastFocusDate: Date?
     
-    // MARK: - Task Type & AI Verification (NEW)
+    // MARK: - Task Type & AI Verification
     
     var taskType: TaskType?
-    var homeworkSubject: HomeworkSubject?  // AI-populated from image analysis
+    var homeworkSubject: HomeworkSubject?
     var aiVerification: AIVerification?
-    var aiVerificationStatus: String?  // "processing", "complete", "failed"
+    var aiVerificationStatus: String?
     
     // MARK: - Enums
     
     enum TaskStatus: String, Codable, CaseIterable {
-        case todo = "To-do"
-        case inProgress = "In Progress"
-        case pendingVerification = "Pending Verification"
+        case todo = "to_do"
+        case inProgress = "in_Progress"
+        case pendingVerification = "Pending_Verification"
         case completed = "Completed"
         
         var displayName: String {
             switch self {
-            case .todo: return L10n.todo
-            case .inProgress: return L10n.inProgress
-            case .pendingVerification: return L10n.pendingVerification
-            case .completed: return L10n.completed
+            case .todo: return "to_do"
+            case .inProgress: return "in_Progress"
+            case .pendingVerification: return "pending_Verification"
+            case .completed: return "completed"
             }
         }
         
@@ -126,10 +124,10 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         
         var displayName: String {
             switch self {
-            case .low: return L10n.low
-            case .medium: return L10n.medium
-            case .high: return L10n.high
-            case .urgent: return L10n.urgent
+            case .low: return "low"
+            case .medium: return "medium"
+            case .high: return "high"
+            case .urgent: return "urgent"
             }
         }
         
@@ -149,8 +147,8 @@ struct FamilyTask: Identifiable, Codable, Hashable {
     enum ProofType: String, Codable, CaseIterable {
         case photo = "Photo"
         case video = "Video"
-        case document = "Document"  // NEW: PDF and documents
-        case any = "Any"            // NEW: Any file type
+        case document = "Document"
+        case any = "Any"
         
         var displayName: String {
             switch self {
@@ -208,8 +206,8 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         
         var displayName: String {
             switch self {
-            case .chore: return L10n.taskTypeChore
-            case .homework: return L10n.taskTypeHomework
+            case .chore: return "taskTypeChore"
+            case .homework: return "taskTypeHomework"
             }
         }
         
@@ -230,11 +228,11 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         
         var displayName: String {
             switch self {
-            case .math: return L10n.subjectMath
-            case .language: return L10n.subjectLanguage
-            case .reading: return L10n.subjectReading
-            case .science: return L10n.subjectScience
-            case .other: return L10n.subjectOther
+            case .math: return "subjectMath"
+            case .language: return "subjectLanguage"
+            case .reading: return "subjectReading"
+            case .science: return "subjectScience"
+            case .other: return "subjectOther"
             }
         }
         
@@ -315,7 +313,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
             }
         }
     }
-
+    
     struct AIVerificationQuestion: Codable, Hashable {
         var questionNumber: String
         var questionText: String?
@@ -325,7 +323,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         var note: String?
         var confidence: Double?
     }
-
+    
     // Keep the old struct for backwards compatibility
     struct AIVerificationIssue: Codable, Hashable {
         var question: String
@@ -470,18 +468,18 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         let hours = dueDate.timeIntervalSince(Date()) / 3600
         
         if hours <= 0 {
-            return L10n.overdue
+            return "overdue"
         } else if hours < 1 {
             let minutes = Int(hours * 60)
-            return L10n.dueInMinutes(minutes)
+            return AppStrings.dueInMinutes(minutes)
         } else if hours < 24 {
             let h = Int(hours)
-            return L10n.dueInHours(h)
+            return AppStrings.dueInHours(h)
         } else if hours < 48 {
-            return L10n.dueTomorrow
+            return "due_Tomorrow"
         } else {
             let days = Int(hours / 24)
-            return L10n.dueInDays(days)
+            return AppStrings.dueInDays(days)
         }
     }
     
@@ -741,23 +739,3 @@ struct TaskGroup: Identifiable, Codable, Hashable {
         case familyId, name, icon, color, createdBy, createdAt
     }
 }
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — rewardPaid lacks write-atomicity:
-//   The balance increment (FieldValue.increment) and `rewardPaid = true` write
-//   happen in two separate Firestore operations. A crash between them creates
-//   a task with `rewardPaid = false` but an already-incremented balance.
-//   Wrap both in a Firestore transaction for atomicity.
-//
-// SUGGESTION 2 — TaskStatus raw values with spaces are fragile:
-//   "In Progress", "To-do" etc. work in Firestore but complicate switch statements
-//   and localization. Separate the stored raw value from the display name:
-//   add a `displayName: String` computed property.
-//
-// SUGGESTION 3 — RecurrenceRule.daysOfWeek not range-validated:
-//   Invalid values like `[8]` could be written by a buggy Cloud Function.
-//   Add a computed `var isValid: Bool` that validates the 0-6 range.
-//
-// SUGGESTION 4 — No Firestore composite index documentation:
-//   The query in TaskViewModel requires `familyId ASC + dueDate ASC`.
-//   This should be documented in the codebase (e.g., a firestore.indexes.json comment).

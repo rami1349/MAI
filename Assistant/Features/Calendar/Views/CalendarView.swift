@@ -173,7 +173,7 @@ struct CalendarView: View {
             // Today button
             if !selectedDay.isToday {
                 Button(action: jumpToToday) {
-                    Text(L10n.today)
+                    Text("today")
                         .font(DS.Typography.captionMedium())
                         .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
@@ -376,7 +376,7 @@ struct CalendarView: View {
                 Button {
                     jumpToToday()
                 } label: {
-                    Text(L10n.today)
+                    Text("today")
                         .font(DS.Typography.captionMedium())
                         .foregroundStyle(.accentPrimary)
                         .padding(.horizontal, DS.Spacing.md)
@@ -483,7 +483,7 @@ struct CalendarView: View {
             List {
                 Button(action: { selectedMemberIds.removeAll() }) {
                     HStack {
-                        Text(L10n.showAllMembers)
+                        Text("show_all_members")
                             .font(DS.Typography.body())
                             .foregroundStyle(.textPrimary)
                         Spacer()
@@ -512,11 +512,11 @@ struct CalendarView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .navigationTitle(L10n.filterByMember)
+            .navigationTitle("filter_by_member")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) { showMemberFilter = false }
+                    Button("done") { showMemberFilter = false }
                         .font(DS.Typography.label())
                 }
             }

@@ -1,6 +1,6 @@
 //
 //  HabitDot.swift
-//  FamilyHub
+//  
 //
 //  Circular habit completion indicator for week view
 //

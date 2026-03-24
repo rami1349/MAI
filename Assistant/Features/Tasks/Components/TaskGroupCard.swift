@@ -1,6 +1,6 @@
 //
 //  TaskGroupCard.swift
-//  FamilyHub
+//  
 //
 //  Task group card with progress indicator
 //
@@ -24,7 +24,7 @@ struct TaskGroupCard: View {
                     Text(group.name)
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
-                    Text("\(group.taskCount) \(L10n.tasks)")
+                    Text("\(group.taskCount) \("tasks")")
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                 }

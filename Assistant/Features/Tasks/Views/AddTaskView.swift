@@ -1,6 +1,6 @@
 //
 //  AddTaskView.swift
-//  FamilyHub
+//
 //
 
 
@@ -49,13 +49,14 @@ struct AddTaskView: View {
         authViewModel.currentUser?.id ?? ""
     }
     
-    private var isCurrentUserAdult: Bool {
-        authViewModel.currentUser?.isAdult == true
+    private var currentUserCapabilities: MemberCapabilities {
+        authViewModel.currentUser?.resolvedCapabilities
+            ?? CapabilityPreset.standard.capabilities()
     }
     
-    /// Only show incentives if assigning to someone OTHER than self
+    /// Only show incentives if user has canAttachRewards AND is assigning to others
     private var showIncentiveOptions: Bool {
-        guard isCurrentUserAdult else { return false }
+        guard currentUserCapabilities.canAttachRewards else { return false }
         return !selectedAssignees.isEmpty
     }
     
@@ -63,9 +64,15 @@ struct AddTaskView: View {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
-    /// Other family members (excluding current user)
-    private var otherMembers: [FamilyUser] {
-        familyMemberVM.familyMembers.filter { $0.id != currentUserId }
+    /// Members this user can assign tasks to (capability-filtered).
+    /// Empty when canAssignTasks is false → assignee section hidden.
+    private var assignableMembers: [FamilyUser] {
+        let caps = currentUserCapabilities
+        guard caps.canAssignTasks else { return [] }
+        return familyMemberVM.familyMembers.filter { member in
+            guard let memberId = member.id, memberId != currentUserId else { return false }
+            return caps.canAssign(to: memberId)
+        }
     }
     
     /// Final assignees: if none selected, assign to self
@@ -92,7 +99,7 @@ struct AddTaskView: View {
                         dueDateSection
                         
                         // Only show assignee section if there are other family members
-                        if !otherMembers.isEmpty {
+                        if !assignableMembers.isEmpty {
                             assigneeSection
                         }
                         
@@ -113,11 +120,11 @@ struct AddTaskView: View {
                     createButton
                 }
             }
-            .navigationTitle(L10n.addTask)
+            .navigationTitle("add_task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
@@ -173,7 +180,7 @@ struct AddTaskView: View {
     
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-            TextField(L10n.taskName, text: $title)
+            TextField("task_name", text: $title)
                 .font(DS.Typography.body())
                 .focused($isTitleFocused)
                 .padding(DS.Spacing.md)
@@ -194,7 +201,7 @@ struct AddTaskView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                    Text(L10n.aiWillIdentifySubject)
+                    Text("ai_will_identify_subject")
                         .font(DS.Typography.caption())
                 }
                 .foregroundStyle(.accentPrimary)
@@ -241,9 +248,9 @@ struct AddTaskView: View {
         let formatter = DateFormatter()
         
         if calendar.isDateInToday(dueDate) {
-            formatter.dateFormat = "'\(L10n.today),' h:mm a"
+            formatter.dateFormat = "'\("today"),' h:mm a"
         } else if calendar.isDateInTomorrow(dueDate) {
-            formatter.dateFormat = "'\(L10n.tomorrow),' h:mm a"
+            formatter.dateFormat = "'\("tomorrow"),' h:mm a"
         } else {
             formatter.dateFormat = "EEEE, MMM d, h:mm a"
         }
@@ -256,13 +263,13 @@ struct AddTaskView: View {
     private var assigneeSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             HStack {
-                Text(L10n.assignTo)
+                Text("assign_to")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 if selectedAssignees.isEmpty {
-                    Text(L10n.assignedToMe)
+                    Text("assigned_to_me")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                 }
@@ -270,7 +277,7 @@ struct AddTaskView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DS.Spacing.sm) {
-                    ForEach(otherMembers, id: \.id) { member in
+                    ForEach(assignableMembers, id: \.id) { member in
                         if let memberId = member.id {
                             AddTaskAssigneeChip(
                                 name: member.displayName,
@@ -306,13 +313,13 @@ struct AddTaskView: View {
     private var incentiveSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             HStack {
-                Text(L10n.incentives)
+                Text("incentives")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
                 
                 Spacer()
                 
-                Text(L10n.optional)
+                Text("optional")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textTertiary)
             }
@@ -323,7 +330,7 @@ struct AddTaskView: View {
                     .font(DS.Typography.heading())
                     .foregroundStyle(.accentGreen)
                 
-                Text(L10n.reward)
+                Text("reward")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -357,7 +364,7 @@ struct AddTaskView: View {
                     .font(DS.Typography.body())
                     .foregroundStyle(.accentTertiary)
                 
-                Text(L10n.requireProof)
+                Text("require_proof")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textPrimary)
                 
@@ -376,7 +383,7 @@ struct AddTaskView: View {
                 HStack(spacing: DS.Spacing.xxs) {
                     Image(systemName: "lightbulb")
                         .font(DS.Typography.bodySmall())
-                    Text(L10n.proofAutoEnabledHint)
+                    Text("proof_auto_enabled_hint")
                         .font(DS.Typography.caption())
                 }
                 .foregroundStyle(.textTertiary)
@@ -398,7 +405,7 @@ struct AddTaskView: View {
                         ProgressView()
                             .tint(Color.textOnAccent)
                     }
-                    Text(L10n.createTask)
+                    Text("create_task")
                         .font(DS.Typography.label())
                 }
                 .foregroundStyle(.textOnAccent)
@@ -429,7 +436,7 @@ struct AddTaskView: View {
                     .font(DS.Typography.displayLarge())
                     .foregroundStyle(.statusSuccess)
                 
-                Text(L10n.taskCreated)
+                Text("task_created")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
             }
@@ -595,16 +602,16 @@ private struct AddTaskDatePickerSheet: View {
                 // Quick date buttons
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: DS.Spacing.sm) {
-                        AddTaskQuickDateButton(title: L10n.today, date: todayEvening) {
+                        AddTaskQuickDateButton(title: "today", date: todayEvening) {
                             tempDate = todayEvening
                         }
-                        AddTaskQuickDateButton(title: L10n.tomorrow, date: tomorrowEvening) {
+                        AddTaskQuickDateButton(title: "tomorrow", date: tomorrowEvening) {
                             tempDate = tomorrowEvening
                         }
-                        AddTaskQuickDateButton(title: L10n.thisWeekend, date: thisWeekend) {
+                        AddTaskQuickDateButton(title: "this_weekend", date: thisWeekend) {
                             tempDate = thisWeekend
                         }
-                        AddTaskQuickDateButton(title: L10n.nextWeek, date: nextWeek) {
+                        AddTaskQuickDateButton(title: "next_week", date: nextWeek) {
                             tempDate = nextWeek
                         }
                     }
@@ -625,14 +632,14 @@ private struct AddTaskDatePickerSheet: View {
                 Spacer()
             }
             .padding(.top, DS.Spacing.md)
-            .navigationTitle(L10n.dueDate)
+            .navigationTitle("due_date")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) {
+                    Button("done") {
                         selectedDate = tempDate
                         dismiss()
                     }

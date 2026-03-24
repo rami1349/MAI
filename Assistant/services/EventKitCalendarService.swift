@@ -611,7 +611,7 @@ enum UpcomingEventsBuilder {
                 events.append(UpcomingEvent(
                     id: "firestore_event_\(event.id ?? UUID().uuidString)",
                     title: event.title,
-                    subtitle: event.isAllDay ? L10n.allDay : event.startDate.formattedTime,
+                    subtitle: event.isAllDay ? "allDay" : event.startDate.formattedTime,
                     date: event.startDate,
                     daysUntil: daysUntil,
                     icon: "calendar.badge.clock",

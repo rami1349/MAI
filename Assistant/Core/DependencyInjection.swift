@@ -1,6 +1,6 @@
 //
 //  DependencyInjection.swift
-//  FamilyHub
+//
 //
 //  Lightweight dependency injection for testability.
 //  This file contains everything needed - add it to your project.
@@ -28,14 +28,13 @@ protocol ThemeServiceProtocol: Observable {
     var colorScheme: ColorScheme? { get }
 }
 
-/// Protocol for LocalizationManager
-/// NOTE: Uses LanguageOption (not AppLanguage) to avoid conflict with AppLanguage class
+/// Protocol for AppLanguage (runtime language switching)
 @MainActor
 protocol LocalizationServiceProtocol: Observable {
-    var currentLanguage: String { get }
-    var selectedLanguage: LanguageOption { get }
-    func setLanguage(_ language: LanguageOption)
-    func string(_ key: String) -> String
+    var resolvedLanguageCode: String { get }
+    var selectedLanguage: LanguageCode { get }
+    var locale: Locale { get }
+    func setLanguage(_ language: LanguageCode)
 }
 
 /// Protocol for TourManager
@@ -85,7 +84,7 @@ protocol CalendarServiceProtocol: Observable {
 // Your singletons already implement these methods - this just declares conformance.
 
 extension ThemeManager: ThemeServiceProtocol {}
-extension LocalizationManager: LocalizationServiceProtocol {}
+extension AppLanguage: LocalizationServiceProtocol {}
 extension TourManager: TourServiceProtocol {}
 extension FocusTimerManager: FocusTimerServiceProtocol {}
 extension EventKitCalendarService: CalendarServiceProtocol {}
@@ -111,7 +110,7 @@ final class DependencyContainer {
     // Production container (uses singletons)
     static let live = DependencyContainer(
         theme: ThemeManager.shared,
-        localization: LocalizationManager.shared,
+        localization: AppLanguage.shared,
         tour: TourManager.shared,
         focusTimer: FocusTimerManager.shared,
         calendar: EventKitCalendarService.shared
@@ -167,7 +166,7 @@ extension View {
             .environment(\.deps, .live)
             // Also inject as EnvironmentObjects for backward compatibility
             .environment(ThemeManager.shared)
-            .environment(LocalizationManager.shared)
+            .environment(AppLanguage.shared)
             .environment(TourManager.shared)
     }
     

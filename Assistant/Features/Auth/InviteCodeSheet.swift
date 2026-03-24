@@ -25,9 +25,9 @@ struct InviteCodeSheet: View {
                 
                 VStack(spacing: DS.Spacing.sm) {
                     HStack(spacing: DS.Spacing.sm) {
-                        Text(L10n.inviteCode).font(.title2).fontWeight(.bold)
+                        Text("invite_code").font(.title2).fontWeight(.bold)
                     }
-                    Text(L10n.shareCodeMessage)
+                    Text("share_code_message")
                         .font(.subheadline).foregroundStyle(.textSecondary)
                 }
                 
@@ -44,7 +44,7 @@ struct InviteCodeSheet: View {
                 Button {
                     UIPasteboard.general.string = inviteCode
                 } label: {
-                    Label(L10n.copyCode, systemImage: "doc.on.doc")
+                    Label("copy_code", systemImage: "doc.on.doc")
                         .font(.headline).foregroundStyle(.textOnAccent)
                         .frame(maxWidth: .infinity).frame(height: DS.Control.large + 6)
                         .background(RoundedRectangle(cornerRadius: DS.Radius.xl).fill(Color.accentPrimary))
@@ -57,7 +57,7 @@ struct InviteCodeSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }

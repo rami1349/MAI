@@ -19,7 +19,7 @@
 import Foundation
 import FirebaseFirestore
 
-/// The root organizational unit for FamilyHub.
+/// The root organizational unit for .
 ///
 /// All domain data (tasks, events, habits, notifications) is scoped to a family
 /// via the `familyId` field on each child document.

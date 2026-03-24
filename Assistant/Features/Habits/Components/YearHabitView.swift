@@ -1,6 +1,6 @@
 //
 //  YearHabitView.swift
-//  FamilyHub
+//  
 //
 //  Year view - Horizontal bar chart showing 12 monthly completion rates
 //  Each habit card shows name and 12 monthly bars with intensity

@@ -1,6 +1,6 @@
 
 //  CalendarSearch.swift
-//  FamilyHub
+//  
 //
 //  Search functionality for calendar events and tasks
 //
@@ -119,7 +119,7 @@ struct CalendarSearchSheet: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.textSecondary)
                         
-                        TextField(L10n.filterEventsTasks, text: $searchText)
+                        TextField("filterEventsTasks", text: $searchText)
                             .focused($isSearchFocused)
                             .submitLabel(.search)
                         
@@ -148,7 +148,7 @@ struct CalendarSearchSheet: View {
                             .foregroundStyle(.textPrimary)
                         
                         if searchText.isEmpty && hasResults {
-                            Text(L10n.eventsAndTasksToday)
+                            Text("eventsAndTasksToday")
                                 .font(.caption2)
                                 .foregroundStyle(.textTertiary)
                         }
@@ -172,12 +172,12 @@ struct CalendarSearchSheet: View {
                             .font(DS.Typography.displayLarge())
                             .foregroundStyle(.textTertiary)
                         
-                        Text(searchText.isEmpty ? L10n.noEvents : L10n.noEventsFound)
+                        Text(searchText.isEmpty ? "no_Events" : "no_Events_Found")
                             .font(.headline)
                             .foregroundStyle(.textPrimary)
                         
                         if !searchText.isEmpty {
-                            Text(L10n.tryDifferentSearch)
+                            Text("try_Different_Search")
                                 .font(.subheadline)
                                 .foregroundStyle(.textSecondary)
                         }
@@ -210,7 +210,7 @@ struct CalendarSearchSheet: View {
                                             .foregroundStyle(.textSecondary)
                                         
                                         if calendar.isDateInToday(date) {
-                                            Text(L10n.today)
+                                            Text("today")
                                                 .font(.caption2)
                                                 .fontWeight(.medium)
                                                 .foregroundStyle(.primary)
@@ -232,11 +232,11 @@ struct CalendarSearchSheet: View {
                 }
             }
             .background(Color.backgroundPrimary)
-            .navigationTitle(L10n.search)
+            .navigationTitle("search")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
             }
         }
@@ -255,7 +255,7 @@ struct SearchEventRow: View {
     
     private var timeString: String {
         if event.isAllDay {
-            return L10n.allDay
+            return "allDay"
         }
         return event.startDate.formattedTime
     }

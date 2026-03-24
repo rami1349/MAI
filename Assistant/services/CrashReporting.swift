@@ -48,7 +48,7 @@ import os
 enum CrashReporting: Sendable {
     
     private static let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.familyhub",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.",
         category: "CrashReporting"
     )
     
@@ -135,7 +135,7 @@ enum CrashReporting: Sendable {
     /// Record a non-fatal with a custom message (when you don't have an Error object).
     static func record(message: String, context: String) {
         let error = NSError(
-            domain: "com.familyhub",
+            domain: "com.",
             code: -1,
             userInfo: [NSLocalizedDescriptionKey: message]
         )

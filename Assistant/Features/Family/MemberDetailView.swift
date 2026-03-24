@@ -11,7 +11,9 @@ import SwiftUI
 // MARK: - Member Detail View
 struct MemberDetailView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(AuthViewModel.self) var authViewModel
     @Environment(FamilyViewModel.self) var familyViewModel
+    @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(TaskViewModel.self) var taskVM
     @Environment(HabitViewModel.self) var habitVM
     let member: FamilyUser
@@ -51,9 +53,28 @@ struct MemberDetailView: View {
                 VStack(spacing: DS.Spacing.xl) {
                     profileHeader
                     
+                    // Permissions — only shown to users with canManageFamily,
+                    // and not for the user's own profile
+                    if authViewModel.currentUser?.resolvedCapabilities.canManageFamily == true,
+                       member.id != authViewModel.currentUser?.id {
+                        CapabilityPresetPicker(
+                            member: member,
+                            allMembers: familyMemberVM.familyMembers
+                        ) { newCaps, newPreset in
+                            guard let memberId = member.id else { return }
+                            Task {
+                                await familyMemberVM.saveCapabilities(
+                                    newCaps,
+                                    preset: newPreset,
+                                    for: memberId
+                                )
+                            }
+                        }
+                    }
+                    
                     VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                         HStack {
-                            Text(L10n.stats)
+                            Text("stats")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundStyle(.textSecondary)
@@ -85,7 +106,7 @@ struct MemberDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }
@@ -100,19 +121,14 @@ struct MemberDetailView: View {
                     .font(.headline)
                 
                 HStack(spacing: DS.Spacing.sm) {
-                    RoleBadge(role: member.role)
-                    if member.isAdult {
-                        Text(L10n.adult)
-                            .font(.caption)
-                            .foregroundStyle(.textSecondary)
-                    }
+                    CapabilityBadge(preset: member.resolvedPreset)
                 }
             }
             
             Spacer()
             
             VStack(alignment: .trailing, spacing: DS.Spacing.xs) {
-                Text(L10n.balance)
+                Text("balance")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                 Text(member.balance.currencyString)
@@ -145,7 +161,7 @@ struct MemberDetailView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.accentGreen)
-                Text(L10n.completed)
+                Text("completed")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -160,7 +176,7 @@ struct MemberDetailView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.accentPrimary)
-                Text(L10n.rate)
+                Text("rate")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -174,7 +190,7 @@ struct MemberDetailView: View {
     private func goalSection(goal: String) -> some View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-                Text(L10n.goalForYear(currentYear))
+                Text(AppStrings.goalForYear(currentYear))
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                 Text(goal)
@@ -194,7 +210,7 @@ struct MemberDetailView: View {
             HStack {
                 Image(systemName: "checklist")
                     .foregroundStyle(.accentPrimary)
-                Text( "activeTasks")
+                Text( "active_tasks")
                     .font(.headline)
             }
             

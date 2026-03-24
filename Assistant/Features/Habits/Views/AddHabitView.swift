@@ -30,14 +30,14 @@ struct AddHabitView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.newHabit)
+            .navigationTitle("newHabit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.create) {
+                    Button("create") {
                         createHabit()
                     }
                     .disabled(name.isEmpty || isLoading)
@@ -71,7 +71,7 @@ struct AddHabitView: View {
                 Text(name.isEmpty ? "Habit Name" : name)
                     .font(.headline)
                     .foregroundStyle(name.isEmpty ? .textTertiary : .textPrimary)
-                Text(L10n.trackDaily)
+                Text("trackDaily")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -94,7 +94,7 @@ struct AddHabitView: View {
     // MARK: - Name Section
     private var nameSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-            TextField(L10n.habitPlaceholder, text: $name)
+            TextField("habitPlaceholder", text: $name)
                 .padding(DS.Spacing.lg)
                 .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.backgroundCard))
         }
@@ -103,7 +103,7 @@ struct AddHabitView: View {
     // MARK: - Icon Section
     private var iconSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text(L10n.icon)
+            Text("icon")
                 .font(.caption)
                 .foregroundStyle(.textSecondary)
             
@@ -133,7 +133,7 @@ struct AddHabitView: View {
     // MARK: - Color Section
     private var colorSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text(L10n.color)
+            Text("color")
                 .font(.caption)
                 .foregroundStyle(.textSecondary)
             

@@ -1,6 +1,6 @@
 // ============================================================================
 // AccountDeletionService.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Handles the complete, multi-step deletion of a user account and ALL
@@ -69,7 +69,7 @@ struct AccountDeletionResult {
 
 // MARK: - Service
 
-/// Performs complete, ordered account and data deletion for a FamilyHub user.
+/// Performs complete, ordered account and data deletion for a  user.
 ///
 /// Implemented as a Swift `actor` to serialize concurrent deletion attempts.
 /// Accessed via the `shared` singleton.
@@ -288,7 +288,7 @@ actor AccountDeletionService {
     /// - Parameter userId: Firebase UID of the user whose created tasks to delete.
     private func deleteUserCreatedTasks(userId: String) async throws {
         let snapshot = try await db.collection(FirestoreCollections.tasks)
-            .whereField(FirestoreFields.createdBy, isEqualTo: userId) // ⚠️ Verify field name vs FamilyTask model
+            .whereField(FirestoreFields.createdBy, isEqualTo: userId)
             .getDocuments()
 
         for document in snapshot.documents {
@@ -345,41 +345,3 @@ actor AccountDeletionService {
         ])
     }
 }
-
-// MARK: - Improvements & Code Quality Notes
-//
-// CRITICAL BUG 1 — batchDeleteUserOwnedData recursive retry is incorrect:
-//   After committing a batch of 450 docs, the method re-queries ALL documents
-//   (the Firestore queries don't filter already-deleted documents until the
-//   batch write propagates). This can lead to infinite loops or missed deletions.
-//   Fix: Process documents in chunks of 450 within a single query result:
-//     let allDocs = [...habits...] + [...logs...] + [...notifications...]
-//     for chunk in allDocs.chunked(into: 450) {
-//         let batch = db.batch()
-//         chunk.forEach { batch.deleteDocument($0.reference) }
-//         try await batch.commit()
-//     }
-//
-// CRITICAL BUG 2 — deleteUserCreatedTasks uses "createdBy" not "assignedBy":
-//   FamilyTask stores the creator as `assignedBy`. The field "createdBy" likely
-//   returns zero results, meaning tasks created by deleted users are never cleaned up.
-//   Fix: Change to .whereField("assignedBy", isEqualTo: userId)
-//
-// SUGGESTION 3 — Multi-assignee unassign not implemented:
-//   batchUnassignUserTasks() only clears the v1 `assignedTo` field.
-//   It should also use FieldValue.arrayRemove to remove the user from the
-//   v2 `assignees` array: batch.updateData(["assignees": FieldValue.arrayRemove([userId])], ...)
-//
-// SUGGESTION 4 — Firebase Storage files are not deleted:
-//   Profile photos (avatarURL) and proof images (proofURLs) in Firebase Storage
-//   remain after account deletion. A Cloud Function delete trigger or a
-//   Storage cleanup step should be added here.
-//
-// SUGGESTION 5 — Reward data is not deleted:
-//   RewardTransactions and WithdrawalRequests for the deleted user remain in Firestore.
-//   Add batchDeleteUserRewardData() to complete data cleanup.
-//
-// SUGGESTION 6 — Family-last-member case not handled:
-//   If the deleted user is the only family member, the family document becomes an
-//   orphan in Firestore. Add logic to delete the family document if memberIds is
-//   empty after removal.

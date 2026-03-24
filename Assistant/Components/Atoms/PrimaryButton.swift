@@ -1,6 +1,6 @@
 //
 //  PrimaryButton.swift
-//  FamilyHub
+//  
 //
 //  Primary and secondary button components
 //  Primary button with accent glow elevation

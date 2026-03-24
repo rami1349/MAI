@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  FamilyHub
+//
 //
 //  Main content view with streamlined onboarding:
 //  Phase 1: Emotional slides (WelcomeSlidesView) - new users only
@@ -12,7 +12,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(AuthViewModel.self) var authViewModel
-    @Environment(LocalizationManager.self) var localization
+    @Environment(AppLanguage.self) var appLanguage
     @Environment(ThemeManager.self) var themeManager
     @Environment(TourManager.self) var tourManager
     
@@ -62,7 +62,7 @@ struct ContentView: View {
                     .transition(.opacity)
             }
         }
-        .id(localization.currentLanguage)
+        .id(appLanguage.resolvedLanguageCode)
         .animation(.easeInOut(duration: 0.3), value: authViewModel.isAuthenticated)
         .animation(.easeInOut(duration: 0.3), value: authViewModel.hasFamily)
         .animation(.easeInOut(duration: 0.3), value: hasSeenWelcomeSlides)
@@ -112,6 +112,6 @@ struct SplashView: View {
     ContentView()
         .environment(AuthViewModel())
         .environment(ThemeManager.shared)
-        .environment(LocalizationManager.shared)
+        .environment(AppLanguage.shared)
         .environment(TourManager.shared)
 }

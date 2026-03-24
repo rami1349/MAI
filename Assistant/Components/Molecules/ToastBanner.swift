@@ -1,5 +1,5 @@
 //  ToastBanner.swift
-//  FamilyHub
+//  
 //
 //  Reusable toast/snackbar component for transient feedback.
 //  Supports success, error, and info variants.

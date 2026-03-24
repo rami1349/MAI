@@ -103,16 +103,16 @@ struct EditTaskView: View {
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 } header: {
-                    Text(L10n.type)
+                    Text("type")
                 }
                 .listRowBackground(Color.backgroundCard)
                 
                 // MARK: - Basics
                 Section {
-                    TextField(L10n.taskTitle, text: $title)
+                    TextField("task_title", text: $title)
                         .focused($focusedField, equals: .title)
                     
-                    TextField(L10n.descriptionOptional, text: $description, axis: .vertical)
+                    TextField("description_optional", text: $description, axis: .vertical)
                         .lineLimit(2...5)
                         .focused($focusedField, equals: .description)
                 }
@@ -124,7 +124,7 @@ struct EditTaskView: View {
                         activeSheet = .assignee
                     } label: {
                         HStack {
-                            Label(L10n.assignedTo, systemImage: "person")
+                            Label("assigned_to", systemImage: "person")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             if let assignedTo, let member = familyMemberVM.getMember(by: assignedTo) {
@@ -134,7 +134,7 @@ struct EditTaskView: View {
                                         .foregroundStyle(.textSecondary)
                                 }
                             } else {
-                                Text(L10n.unassigned)
+                                Text("unassigned")
                                     .foregroundStyle(.textTertiary)
                             }
                             Image(systemName: "chevron.right")
@@ -147,7 +147,7 @@ struct EditTaskView: View {
                         activeSheet = .group
                     } label: {
                         HStack {
-                            Label(L10n.taskGroup, systemImage: "folder")
+                            Label("task_group", systemImage: "folder")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             if let groupId = selectedGroupId,
@@ -159,7 +159,7 @@ struct EditTaskView: View {
                                         .foregroundStyle(.textSecondary)
                                 }
                             } else {
-                                Text(L10n.noGroup)
+                                Text("no_group")
                                     .foregroundStyle(.textTertiary)
                             }
                             Image(systemName: "chevron.right")
@@ -177,14 +177,14 @@ struct EditTaskView: View {
                     Toggle("Scheduled Time", isOn: $hasScheduledTime)
                     
                     if hasScheduledTime {
-                        DatePicker(L10n.time, selection: $scheduledTime, displayedComponents: .hourAndMinute)
+                        DatePicker("time", selection: $scheduledTime, displayedComponents: .hourAndMinute)
                     }
                 }
                 .listRowBackground(Color.backgroundCard)
                 
                 // MARK: - Priority
                 Section {
-                    Picker(L10n.priority, selection: $priority) {
+                    Picker("priority", selection: $priority) {
                         ForEach(FamilyTask.TaskPriority.allCases, id: \.self) { p in
                             Text(p.rawValue).tag(p)
                         }
@@ -201,7 +201,7 @@ struct EditTaskView: View {
                             .font(DS.Typography.heading())
                             .foregroundStyle(.accentGreen)
                         
-                        Text(L10n.reward)
+                        Text("reward")
                             .foregroundStyle(.textPrimary)
                         
                         Spacer()
@@ -232,7 +232,7 @@ struct EditTaskView: View {
                             .font(DS.Typography.body())
                             .foregroundStyle(.accentTertiary)
                         
-                        Text(L10n.requireProof)
+                        Text("require_proof")
                             .foregroundStyle(.textPrimary)
                         
                         Spacer()
@@ -242,26 +242,26 @@ struct EditTaskView: View {
                             .tint(Color.accentPrimary)
                     }
                 } header: {
-                    Text(L10n.incentives)
+                    Text("incentives")
                 }
                 .listRowBackground(Color.backgroundCard)
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
             .animation(.spring(response: 0.3), value: taskType)
-            .navigationTitle(L10n.editTask)
+            .navigationTitle("edit_task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.save) { saveTask() }
+                    Button("save") { saveTask() }
                         .fontWeight(.semibold)
                         .disabled(!isValid || isLoading)
                 }
                 ToolbarItem(placement: .keyboard) {
-                    Button(L10n.done) { focusedField = nil }
+                    Button("done") { focusedField = nil }
                 }
             }
             .sheet(item: $activeSheet) { sheet in

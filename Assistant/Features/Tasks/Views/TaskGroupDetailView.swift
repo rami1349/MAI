@@ -1,6 +1,6 @@
 //
 //  TaskGroupDetailView.swift
-//  FamilyHub
+//
 //
 //  Detailed view for a task group
 //
@@ -51,8 +51,8 @@ struct TaskGroupDetailView: View {
                     if tasksInGroup.isEmpty {
                         EmptyStateView(
                             icon: "checklist",
-                            title: L10n.noTasksInGroup,
-                            message: L10n.addTasksToStart
+                            title: "no_Tasks_In_Group",
+                            message: "add_Tasks_To_Start"
                         )
                         .padding(.top, 40)
                     } else {
@@ -69,7 +69,7 @@ struct TaskGroupDetailView: View {
             ToolbarItem(placement: .destructiveAction) {
                 Menu {
                     Button(role: .destructive, action: { showDeleteConfirm = true }) {
-                        Label(L10n.deleteGroup, systemImage: "trash")
+                        Label("delete_Group", systemImage: "trash")
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -88,9 +88,9 @@ struct TaskGroupDetailView: View {
             // Clear when leaving the group
             familyViewModel.currentViewingGroupId = nil
         }
-        .alert(L10n.deleteTaskGroup, isPresented: $showDeleteConfirm) {
-            Button(L10n.cancel, role: .cancel) {}
-            Button(L10n.delete, role: .destructive) {
+        .alert("delete_TaskGroup", isPresented: $showDeleteConfirm) {
+            Button("cancel", role: .cancel) {}
+            Button("delete", role: .destructive) {
                 guard !isDeleting else { return }
                 isDeleting = true
                 Task {
@@ -101,9 +101,9 @@ struct TaskGroupDetailView: View {
             }
         } message: {
             if tasksInGroup.isEmpty {
-                Text(L10n.actionCannotBeUndone)
+                Text("action_cannot_ne_undone")
             } else {
-                Text(L10n.deleteGroupWarning(tasksInGroup.count))
+                Text(AppStrings.deleteGroupWarning(tasksInGroup.count))
             }
         }
         .toastBanner(item: $toast)
@@ -124,7 +124,7 @@ struct TaskGroupDetailView: View {
             
             if let creator = familyMemberVM.getMember(by: taskGroup.createdBy) {
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.createdBy)
+                    Text("created_by")
                         .font(.caption)
                         .foregroundStyle(.textSecondary)
                     Text(creator.displayName)
@@ -148,7 +148,7 @@ struct TaskGroupDetailView: View {
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundStyle(groupColor)
-                Text(L10n.totalTasks)
+                Text("total_tasks")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -162,7 +162,7 @@ struct TaskGroupDetailView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.statusCompleted)
                 
-                Text(L10n.completed)
+                Text("completed")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -176,7 +176,7 @@ struct TaskGroupDetailView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(.accentGreen)
                 
-                Text(L10n.progress)
+                Text("progress")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -190,7 +190,7 @@ struct TaskGroupDetailView: View {
     // MARK: - Tasks List Section
     private var tasksListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(L10n.tasks)
+            Text("tasks")
                 .font(.headline)
                 .foregroundStyle(.textPrimary)
             

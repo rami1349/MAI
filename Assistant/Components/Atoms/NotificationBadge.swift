@@ -1,6 +1,6 @@
 //
 //  NotificationBadge.swift
-//  FamilyHub
+//  
 //
 //  Bell icon with notification count badge
 //

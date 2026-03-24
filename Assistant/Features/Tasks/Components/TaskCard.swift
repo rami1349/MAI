@@ -1,6 +1,6 @@
 //
 //  TaskCard.swift
-//  FamilyHub
+//  
 //
 //  Reusable task card component with inline actions
 //  UPDATED: Priority left border visualization (4px)
@@ -65,7 +65,7 @@ struct TaskCard: View {
                             HStack(spacing: DS.Spacing.xxs) {
                                 Image(systemName: "exclamationmark.circle.fill")
                                     .font(DS.Typography.micro())
-                                Text(L10n.overdue)
+                                Text("overdue")
                                     .font(DS.Typography.micro())
                             }
                             .foregroundStyle(.statusError)
@@ -108,7 +108,7 @@ struct TaskCard: View {
                             HStack(spacing: DS.Spacing.xxs) {
                                 Image(systemName: "repeat")
                                     .font(DS.Typography.micro())
-                                Text(L10n.repeats)
+                                Text("repeats")
                                     .font(DS.Typography.micro())
                             }
                             .foregroundStyle(.accentTertiary)
@@ -166,7 +166,7 @@ struct TaskCard: View {
                     }
                     Image(systemName: "play.fill")
                         .font(DS.Typography.micro())
-                    Text(L10n.startTask)
+                    Text("startTask")
                         .font(DS.Typography.captionMedium())
                 }
                 .foregroundStyle(.textOnAccent)
@@ -187,7 +187,7 @@ struct TaskCard: View {
                     HStack(spacing: DS.Spacing.xxs) {
                         Image(systemName: "timer")
                             .font(DS.Typography.micro())
-                        Text(L10n.focus)
+                        Text("focus")
                             .font(DS.Typography.captionMedium())
                     }
                     .foregroundStyle(.textOnAccent)
@@ -210,7 +210,7 @@ struct TaskCard: View {
                             }
                             Image(systemName: "checkmark")
                                 .font(DS.Typography.micro())
-                            Text(L10n.complete)
+                            Text("complete")
                                 .font(DS.Typography.captionMedium())
                         }
                         .foregroundStyle(.textOnAccent)
@@ -229,7 +229,7 @@ struct TaskCard: View {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "clock.badge.checkmark")
                     .font(DS.Typography.bodySmall())
-                Text(L10n.awaitingVerification)
+                Text("awaitingVerification")
                     .font(DS.Typography.caption())
             }
             .foregroundStyle(.statusPending)
@@ -238,7 +238,7 @@ struct TaskCard: View {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(DS.Typography.bodySmall())
-                Text(L10n.completed)
+                Text("completed")
                     .font(DS.Typography.caption())
             }
             .foregroundStyle(.statusCompleted)
@@ -285,7 +285,7 @@ struct CompactTaskCard: View {
                     
                     // Due indicator or reward
                     if task.isOverdue {
-                        Text(L10n.overdue)
+                        Text("overdue")
                             .font(DS.Typography.micro())
                             .foregroundStyle(.statusError)
                     } else if task.hasReward, let amount = task.rewardAmount {

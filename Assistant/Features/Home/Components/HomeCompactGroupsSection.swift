@@ -29,7 +29,7 @@ struct HomeCompactGroupsSection: View {
                                 .fill(Color.accentPrimary.opacity(0.1))
                         )
                     
-                    Text(L10n.taskGroups)
+                    Text("task_Groups")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                     
@@ -73,9 +73,9 @@ struct HomeCompactGroupsSection: View {
         }
         .padding(.horizontal, DS.Spacing.screenH)
         .animation(.easeInOut(duration: 0.2), value: isExpanded)
-        .alert(L10n.deleteTaskGroup, isPresented: $showDeleteAlert) {
-            Button(L10n.cancel, role: .cancel) { groupToDelete = nil }
-            Button(L10n.delete, role: .destructive) {
+        .alert("delete_task_group", isPresented: $showDeleteAlert) {
+            Button("cancel", role: .cancel) { groupToDelete = nil }
+            Button("delete", role: .destructive) {
                 if let group = groupToDelete {
                     Task { await onDeleteGroup(group) }
                 }
@@ -83,7 +83,7 @@ struct HomeCompactGroupsSection: View {
             }
         } message: {
             if let group = groupToDelete {
-                Text(L10n.deleteGroupConfirm(group.name))
+                Text(AppStrings.deleteGroupConfirm(group.name))
             }
         }
     }
@@ -116,7 +116,7 @@ struct CompactGroupRow: View {
                         .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
-                    Text("\(group.taskCount) \(L10n.tasks)")
+                    Text("\(group.taskCount) \(AppStrings.localized("tasks"))")
                         .font(DS.Typography.micro())
                         .foregroundStyle(.textTertiary)
                 }

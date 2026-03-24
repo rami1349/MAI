@@ -40,7 +40,7 @@ final class FocusTimerManager {
 @ObservationIgnored     private let heavyImpactGenerator = UIImpactFeedbackGenerator(style: .heavy)
     
     // Notification identifiers
-    @ObservationIgnored private let timerNotificationID = "com.familyhub.focustimer.completion"
+    @ObservationIgnored private let timerNotificationID = "com..focustimer.completion"
     
     // MARK: - Computed Properties
     var progress: Double {
@@ -484,7 +484,7 @@ final class FocusTimerManager {
     }
     
     // MARK: - Persistence
-    @ObservationIgnored private let persistenceKey = "com.familyhub.focustimer.state"
+    @ObservationIgnored private let persistenceKey = "com..focustimer.state"
     
     private func persistState() {
         guard state == .running || state == .paused else { return }

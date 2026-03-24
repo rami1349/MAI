@@ -1,6 +1,6 @@
 //
 //  InfoRow.swift
-//  FamilyHub
+//  
 //
 //  Information row with icon, title and value
 //  Info row with card styling and refined typography

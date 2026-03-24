@@ -1,6 +1,6 @@
 //
 //  FamilyView.swift
-//  FamilyHub
+//
 //
 //  Family members and settings view
 //  Features: Banner image, activity heatmap, progress trend
@@ -43,7 +43,7 @@ struct FamilyView: View {
     
     var body: some View {
         contentView
-            .navigationTitle(L10n.family)
+            .navigationTitle("family")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -149,8 +149,10 @@ struct FamilyView: View {
                 
                 // Action Buttons
                 VStack(spacing: DS.Spacing.md) {
-                    ActionButton(title: L10n.inviteFamilyMember, icon: "person.badge.plus", color: Color.accentPrimary) {
-                        showInviteCode = true
+                    if authViewModel.currentUser?.resolvedCapabilities.canManageFamily == true {
+                        ActionButton(title: "invite_family_member", icon: "person.badge.plus", color: Color.accentPrimary) {
+                            showInviteCode = true
+                        }
                     }
                     
                     ActionButton(title: "Family Members", icon: "person.3.fill", color: Color.accentTertiary) {
@@ -286,7 +288,7 @@ struct FamilyView: View {
                         ProgressView()
                             .tint(.white)
                             .scaleEffect(1.2)
-                        Text(L10n.uploading)
+                        Text("uploading")
                             .font(.caption)
                             .foregroundStyle(.textOnAccent)
                     }
@@ -307,13 +309,13 @@ struct FamilyView: View {
             .overlay(
                 // Family Name and Members - Centered
                 VStack(spacing: DS.Spacing.xs) {
-                    Text(familyMemberVM.family?.name ?? L10n.family)
+                    Text(familyMemberVM.family?.name ?? AppStrings.localized("family"))
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundStyle(.textOnAccent)
                         .elevation3()
                     
-                    Text(L10n.xMembers(familyMemberVM.familyMembers.count))
+                    Text(AppStrings.xMembers(familyMemberVM.familyMembers.count))
                         .font(.subheadline)
                         .foregroundStyle(.textOnAccent.opacity(0.9))
                         .elevation3()
@@ -369,17 +371,14 @@ struct FamilyView: View {
                     Text(user.displayName).font(.headline)
                     
                     HStack(spacing: DS.Spacing.sm) {
-                        RoleBadge(role: user.role)
-                        if user.isAdult {
-                            Text(L10n.adult).font(.caption).foregroundStyle(.textSecondary)
-                        }
+                        CapabilityBadge(preset: user.resolvedPreset)
                     }
                 }
                 
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: DS.Spacing.xs) {
-                    Text(L10n.balance).font(.caption).foregroundStyle(.textSecondary)
+                    Text("balance").font(.caption).foregroundStyle(.textSecondary)
                     Text(user.balance.currencyString)
                         .font(.title3).fontWeight(.bold).foregroundStyle(.accentGreen)
                 }
@@ -393,7 +392,7 @@ struct FamilyView: View {
                         .foregroundStyle(.accentPrimary)
                     
                     VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-                        Text(L10n.goalForYear(currentYear))
+                        Text(AppStrings.goalForYear(currentYear))
                             .font(.caption)
                             .foregroundStyle(.textSecondary)
                         Text(goal)
@@ -466,8 +465,10 @@ struct FamilyView: View {
                 }
             }
             
-            ActionButton(title: L10n.inviteFamilyMember, icon: "person.badge.plus", color: Color.accentPrimary) {
-                showInviteCode = true
+            if authViewModel.currentUser?.resolvedCapabilities.canManageFamily == true {
+                ActionButton(title: AppStrings.localized("invite_family_member"), icon: "person.badge.plus", color: Color.accentPrimary) {
+                    showInviteCode = true
+                }
             }
             
             ActionButton(title: "Family Members", icon: "person.3.fill", color: Color.accentTertiary) {
@@ -701,7 +702,7 @@ struct MonthlyActivityHeatmap: View {
                         Image(systemName: "flame.fill")
                             .font(DS.Typography.bodySmall())
                             .foregroundStyle(.accentOrange)
-                        Text(L10n.thisYearCount(yearToDateCompleted))
+                        Text(AppStrings.thisYearCount(yearToDateCompleted))
                             .font(.caption)
                             .foregroundStyle(.textSecondary)
                     }
@@ -788,7 +789,7 @@ struct MonthlyActivityHeatmap: View {
             HStack {
                 // Legend
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.less)
+                    Text("less")
                         .font(DS.Typography.micro())
                         .foregroundStyle(.textTertiary)
                     
@@ -798,7 +799,7 @@ struct MonthlyActivityHeatmap: View {
                             .frame(width: DS.IconSize.xs, height: DS.IconSize.xs)
                     }
                     
-                    Text(L10n.moreLabel)
+                    Text("more")
                         .font(DS.Typography.micro())
                         .foregroundStyle(.textTertiary)
                 }
@@ -810,7 +811,7 @@ struct MonthlyActivityHeatmap: View {
                     Image(systemName: "checkmark.circle.fill")
                         .font(DS.Typography.micro())
                         .foregroundStyle(.accentGreen)
-                    Text(L10n.thisMonthCount(monthCompleted))
+                    Text(AppStrings.thisMonthCount(monthCompleted))
                         .font(DS.Typography.micro())
                         .foregroundStyle(.textSecondary)
                 }
@@ -852,6 +853,8 @@ struct StatItem: View {
     }
 }
 
+/// Deprecated: Use `CapabilityBadge` from CapabilityPresetPicker.swift instead.
+@available(*, deprecated, renamed: "CapabilityBadge")
 struct RoleBadge: View {
     let role: FamilyUser.UserRole
     

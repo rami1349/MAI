@@ -1,6 +1,6 @@
 //
 //  MonthHabitView.swift
-//  FamilyHub
+//  
 //
 //  Month view - Calendar grid cards for each habit
 //  Each card has: habit name + icon, calendar grid with squares, completion count

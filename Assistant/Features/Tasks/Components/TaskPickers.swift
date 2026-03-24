@@ -1,6 +1,6 @@
 //
 //  TaskPickers.swift
-//  FamilyHub
+//
 //
 //  Picker sheets for AddTaskView
 //  Updated with MultiMemberPicker for multi-assignee support
@@ -22,7 +22,7 @@ struct TaskGroupPicker: View {
                 Section {
                     Button(action: { selectedGroupId = nil; dismiss() }) {
                         HStack {
-                            Text(L10n.noGroup)
+                            Text("no_group")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             if selectedGroupId == nil {
@@ -34,7 +34,7 @@ struct TaskGroupPicker: View {
                     .listRowBackground(Color.backgroundCard)
                 }
                 
-                Section(L10n.taskGroups) {
+                Section("task_groups") {
                     let myGroups = familyMemberVM.taskGroups.filter {
                         $0.createdBy == familyViewModel.currentUserId
                     }
@@ -70,7 +70,7 @@ struct TaskGroupPicker: View {
                         HStack {
                             Image(systemName: "plus.circle.fill")
                                 .foregroundStyle(.accentPrimary)
-                            Text(L10n.createGroup)
+                            Text("create_group")
                                 .foregroundStyle(.accentPrimary)
                         }
                     }
@@ -79,11 +79,11 @@ struct TaskGroupPicker: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.selectGroup)
+            .navigationTitle("select_group")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
             }
             .sheet(isPresented: $showCreateGroup) {
@@ -118,7 +118,7 @@ struct MultiMemberPicker: View {
                             
                             Spacer()
                             
-                            Button("clearAll") {
+                            Button("clear_all") {
                                 withAnimation(.easeOut(duration: 0.2)) {
                                     selectedMemberIds.removeAll()
                                 }
@@ -130,7 +130,7 @@ struct MultiMemberPicker: View {
                     .listRowBackground(Color.backgroundCard)
                 }
                 
-                Section(L10n.familyMembers) {
+                Section("family_members") {
                     ForEach(familyMemberVM.familyMembers) { member in
                         MultiMemberPickerRow(
                             member: member,
@@ -151,16 +151,16 @@ struct MultiMemberPicker: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.assignTo)
+            .navigationTitle("assign_to")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) {
+                    Button("cancel") {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.done) {
+                    Button("done") {
                         onDismiss?()
                         dismiss()
                     }
@@ -215,7 +215,7 @@ private struct MultiMemberPickerRow: View {
                     Text(member.displayName)
                         .font(DS.Typography.label())
                         .foregroundStyle(.textPrimary)
-                    Text(member.isAdult ? L10n.adult : L10n.member)
+                    Text(LocalizedStringKey(member.resolvedPreset.localizationKey))
                         .font(.caption)
                         .foregroundStyle(.textSecondary)
                 }
@@ -242,7 +242,7 @@ struct MemberPicker: View {
                 Section {
                     Button(action: { selectedMemberId = nil; dismiss() }) {
                         HStack {
-                            Text(L10n.unassigned)
+                            Text("unassigned")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             if selectedMemberId == nil {
@@ -254,7 +254,7 @@ struct MemberPicker: View {
                     .listRowBackground(Color.backgroundCard)
                 }
                 
-                Section(L10n.familyMembers) {
+                Section("family_members") {
                     ForEach(familyMemberVM.familyMembers) { member in
                         Button(action: { selectedMemberId = member.id; dismiss() }) {
                             HStack(spacing: DS.Spacing.md) {
@@ -263,7 +263,7 @@ struct MemberPicker: View {
                                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                                     Text(member.displayName)
                                         .foregroundStyle(.textPrimary)
-                                    Text(member.isAdult ? L10n.adult : L10n.member)
+                                    Text(LocalizedStringKey(member.resolvedPreset.localizationKey))
                                         .font(.caption)
                                         .foregroundStyle(.textSecondary)
                                 }
@@ -282,11 +282,11 @@ struct MemberPicker: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.assignTo)
+            .navigationTitle("assign_to")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
             }
         }
@@ -321,13 +321,13 @@ struct CreateTaskGroupView: View {
                     }
                     
                     // Name
-                    TextField(L10n.groupName, text: $name)
+                    TextField("group_name", text: $name)
                         .padding(DS.Spacing.lg)
                         .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.backgroundCard))
                     
                     // Icons
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
-                        Text(L10n.icon)
+                        Text("icon")
                             .font(.headline)
                             .foregroundStyle(.textPrimary)
                         
@@ -353,7 +353,7 @@ struct CreateTaskGroupView: View {
                     
                     // Colors
                     VStack(alignment: .leading, spacing: DS.Spacing.md) {
-                        Text(L10n.color)
+                        Text("color")
                             .font(.headline)
                             .foregroundStyle(.textPrimary)
                         
@@ -380,14 +380,14 @@ struct CreateTaskGroupView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.newTaskGroup)
+            .navigationTitle("new_task_group")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.create)  {
+                    Button("create")  {
                         createGroup()
                     }
                     .disabled(name.isEmpty || isLoading)

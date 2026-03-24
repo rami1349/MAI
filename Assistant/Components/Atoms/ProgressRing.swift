@@ -1,6 +1,6 @@
 //
 //  ProgressRing.swift
-//  FamilyHub
+//  
 //
 //  Circular progress indicator
 //

@@ -1,6 +1,6 @@
 //
 //  WeekHabitView.swift
-//  FamilyHub
+//  
 //
 //  Week view - Clean horizontal rows with circular dots
 //  Each habit shows icon + name, then 7 day dots

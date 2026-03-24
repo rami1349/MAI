@@ -1,6 +1,6 @@
 //
 //  AvatarView.swift
-//  FamilyHub
+//  
 //
 //  User avatar with initials fallback and various sizes
 //

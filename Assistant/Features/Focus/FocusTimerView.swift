@@ -1,6 +1,6 @@
 //
 //  FocusTimerView.swift
-//  FamilyHub
+//  
 //
 //  Full-screen Pomodoro timer with animated progress ring
 //
@@ -50,7 +50,7 @@ struct FocusTimerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) {
+                    Button("close") {
                         handleClose()
                     }
                 }
@@ -83,7 +83,7 @@ struct FocusTimerView: View {
             
             // Header
             VStack(spacing: DS.Spacing.sm) {
-                Text(L10n.focusTimer)
+                Text("focusTimer")
                     .font(DS.Typography.displayMedium())
                     .foregroundStyle(.textPrimary)
                 
@@ -150,7 +150,7 @@ struct FocusTimerView: View {
             Button(action: startFocusSession) {
                 HStack(spacing: DS.Spacing.md) {
                     Image(systemName: "play.fill")
-                    Text(L10n.startFocus)
+                    Text("startFocus")
                 }
                 .font(DS.Typography.heading())
                 .foregroundStyle(.textOnAccent)
@@ -378,7 +378,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "cup.and.saucer.fill")
-                            Text(L10n.shortBreak)
+                            Text("shortBreak")
                         }
                         .font(.headline)
                         .foregroundStyle(.accentPrimary)
@@ -396,7 +396,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "figure.walk")
-                            Text(L10n.longBreak)
+                            Text("longBreak")
                         }
                         .font(.headline)
                         .foregroundStyle(.textSecondary)
@@ -424,7 +424,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "arrow.up.doc.fill")
-                            Text(L10n.submitProof)
+                            Text("submitProof")
                         }
                         .font(.headline)
                         .foregroundStyle(.textOnAccent)
@@ -447,7 +447,7 @@ struct FocusTimerView: View {
                                     .scaleEffect(0.8)
                             }
                             Image(systemName: "checkmark.circle.fill")
-                            Text(L10n.completeTask)
+                            Text("completeTask")
                         }
                         .font(.headline)
                         .foregroundStyle(.textOnAccent)
@@ -465,7 +465,7 @@ struct FocusTimerView: View {
                 Button(action: {
                     saveSessionAndClose()
                 }) {
-                    Text(L10n.continueLater)
+                    Text("continueLater")
                         .font(.subheadline)
                         .foregroundStyle(.textSecondary)
                 }

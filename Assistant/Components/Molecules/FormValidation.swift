@@ -1,6 +1,6 @@
 
 //  FormValidation.swift
-//  FamilyHub
+//  
 //
 //  Reusable inline validation components for form fields.
 //  Used by AuthenticationView but generic enough for any form.
@@ -121,9 +121,9 @@ struct PasswordStrengthBar: View {
     private var label: String {
         switch strength {
         case .empty, .tooShort: return ""
-        case .weak:   return L10n.passwordWeak
-        case .fair:   return L10n.passwordFair
-        case .strong: return L10n.passwordStrong
+        case .weak:   return "passwordWeak"
+        case .fair:   return "passwordFair"
+        case .strong: return "passwordStrong"
         }
     }
     

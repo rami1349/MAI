@@ -59,16 +59,11 @@ struct TaskDetailView: View {
     
     var canVerifyProof: Bool {
         guard let task = task,
-              let currentUserId = authViewModel.currentUser?.id else { return false }
-        
-        if task.assignedBy == currentUserId { return true }
-        
-        if let currentUser = authViewModel.currentUser {
-            if currentUser.role == .admin || currentUser.role == .adult {
-                return true
-            }
-        }
-        return false
+              let currentUser = authViewModel.currentUser else { return false }
+        // Task creator can always verify their own assignments
+        if task.assignedBy == currentUser.id { return true }
+        // Otherwise check canVerifyHomework capability
+        return currentUser.resolvedCapabilities.canVerifyHomework
     }
     
     // Check if this is a homework task with AI verification
@@ -129,27 +124,27 @@ struct TaskDetailView: View {
                         Image(systemName: "exclamationmark.triangle")
                             .font(.largeTitle)
                             .foregroundStyle(.textSecondary)
-                        Text(L10n.taskNotFound)
+                        Text("task_not_found")
                             .font(.headline)
                             .foregroundStyle(.textSecondary)
                     }
                 }
             }
-            .navigationTitle(L10n.taskDetails)
+            .navigationTitle("task_details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) { dismiss() }
+                    Button("close") { dismiss() }
                 }
                 ToolbarItem(placement: .destructiveAction) {
                     Menu {
                         if task?.assignedBy == authViewModel.currentUser?.id {
                             Button(action: { showEditTask = true }) {
-                                Label(L10n.editTask, systemImage: "pencil")
+                                Label("edit_task", systemImage: "pencil")
                             }
                         }
                         Button(role: .destructive, action: { showDeleteConfirm = true }) {
-                            Label(L10n.deleteTask, systemImage: "trash")
+                            Label("delete_task", systemImage: "trash")
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
@@ -174,13 +169,13 @@ struct TaskDetailView: View {
                         .presentationBackground(Color.backgroundPrimary)
                 }
             }
-            .alert(L10n.deleteTaskConfirm, isPresented: $showDeleteConfirm) {
-                Button(L10n.cancel, role: .cancel) {}
-                Button(L10n.delete, role: .destructive) {
+            .alert("delete_task_confirm", isPresented: $showDeleteConfirm) {
+                Button("cancel", role: .cancel) {}
+                Button("delete", role: .destructive) {
                     deleteTask()
                 }
             } message: {
-                Text(L10n.actionCannotBeUndone)
+                Text("action_cannot_be_undone")
             }
             .toastBanner(item: $toast)
             .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
@@ -252,7 +247,7 @@ struct TaskDetailView: View {
     private func infoSection(task: FamilyTask) -> some View {
         VStack(spacing: DS.Spacing.md) {
             if let assignee = assignee {
-                infoRow(icon: "person.fill", label: L10n.assignedTo) {
+                infoRow(icon: "person.fill", label: "assigned_to") {
                     HStack(spacing: DS.Spacing.xs) {
                         AvatarView(user: assignee, size: 24)
                         Text(assignee.displayName)
@@ -261,20 +256,20 @@ struct TaskDetailView: View {
                 }
             }
             
-            infoRow(icon: "calendar", label: L10n.dueDate) {
+            infoRow(icon: "calendar", label: "due_date") {
                 Text(task.dueDate.formattedDate)
                     .foregroundStyle(task.isOverdue ? .red : .textPrimary)
             }
             
             if let scheduledTime = task.scheduledTime {
-                infoRow(icon: "clock.fill", label: L10n.scheduledTime) {
+                infoRow(icon: "clock.fill", label: "scheduled_time") {
                     Text(scheduledTime.formatted(date: .omitted, time: .shortened))
                         .foregroundStyle(.textPrimary)
                 }
             }
             
             if let group = taskGroup {
-                infoRow(icon: "folder.fill", label: L10n.groupName) {
+                infoRow(icon: "folder.fill", label: "group_name") {
                     HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: group.icon)
                             .foregroundStyle(Color(hex: group.color))
@@ -285,7 +280,7 @@ struct TaskDetailView: View {
             }
             
             if task.hasReward, let amount = task.rewardAmount {
-                infoRow(icon: "dollarsign.circle.fill", label: L10n.reward) {
+                infoRow(icon: "dollarsign.circle.fill", label: "reward") {
                     Text(amount.currencyString)
                         .foregroundStyle(.accentGreen)
                         .fontWeight(.semibold)
@@ -323,7 +318,7 @@ struct TaskDetailView: View {
             HStack {
                 Image(systemName: "doc.text.image")
                     .foregroundStyle(.accentPrimary)
-                Text(L10n.submittedProof)
+                Text("submitted_proof")
                     .font(.headline)
                 Spacer()
                 proofStatusBadge(task: task)
@@ -348,7 +343,7 @@ struct TaskDetailView: View {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "checkmark.seal.fill")
                         .foregroundStyle(.accentGreen)
-                    Text(L10n.verifiedOnDate(verifiedAt.formattedDate))
+                    Text(AppStrings.verifiedOnDate(verifiedAt.formattedDate))
                         .font(.caption)
                         .foregroundStyle(.textSecondary)
                 }
@@ -371,7 +366,7 @@ struct TaskDetailView: View {
             case .pendingVerification:
                 HStack(spacing: 4) {
                     Image(systemName: "clock.fill")
-                    Text(L10n.pending)
+                    Text("pending")
                 }
                 .font(.caption)
                 .fontWeight(.medium)
@@ -383,7 +378,7 @@ struct TaskDetailView: View {
             case .completed:
                 HStack(spacing: 4) {
                     Image(systemName: "checkmark.seal.fill")
-                    Text(L10n.verified)
+                    Text("verified")
                 }
                 .font(.caption)
                 .fontWeight(.medium)
@@ -465,7 +460,7 @@ struct TaskDetailView: View {
                             .scaledToFit()
                             .frame(width: DS.IconSize.md, height: DS.IconSize.md)
                             .font(.caption)
-                        Text(L10n.maiAnalysis)
+                        Text("mai_analysis")
                             .font(.caption)
                             .fontWeight(.medium)
                     }
@@ -535,7 +530,7 @@ struct TaskDetailView: View {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "info.circle")
                     .font(.caption2)
-                Text(L10n.maiMayMakeMistakesParentHasFinalSay)
+                Text("mai_may_make_mistakes_parent_has_final_say")
                     .font(.caption2)
             }
             .foregroundStyle(.textTertiary)
@@ -624,7 +619,7 @@ struct TaskDetailView: View {
         return VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             // Show wrong/uncertain answers first (these are what parents care about)
             if !wrong.isEmpty {
-                Text(L10n.needsAttention)
+                Text("needs_attention")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.statusError)
@@ -661,12 +656,12 @@ struct TaskDetailView: View {
             VStack(alignment: .leading, spacing: 2) {
                 // Question number + text
                 if let text = q.questionText, !text.isEmpty {
-                    Text(L10n.questionNumberWithText(q.questionNumber, text))
+                    Text(AppStrings.questionNumberWithText(q.questionNumber, text))
                         .font(.caption)
                         .foregroundStyle(.textPrimary)
                         .lineLimit(2)
                 } else {
-                    Text(L10n.questionNumberLabel(q.questionNumber))
+                    Text(AppStrings.questionNumberLabel(q.questionNumber))
                         .font(.caption)
                         .foregroundStyle(.textPrimary)
                 }
@@ -674,10 +669,10 @@ struct TaskDetailView: View {
                 // Student answer vs expected
                 if let student = q.studentAnswer, !student.isEmpty {
                     HStack(spacing: 4) {
-                        Text(L10n.answer)
+                        Text("answer")
                             .font(.caption2)
                             .foregroundStyle(.textTertiary)
-                        Text(student)
+                        Text("student")
                             .font(.caption2)
                             .fontWeight(.medium)
                             .foregroundStyle(isCorrect ? .accentGreen : .red)
@@ -686,13 +681,9 @@ struct TaskDetailView: View {
                 
                 if !isCorrect, let expected = q.expectedAnswer, !expected.isEmpty {
                     HStack(spacing: 4) {
-                        Text(L10n.expected)
+                        Text("expected")
                             .font(.caption2)
                             .foregroundStyle(.textTertiary)
-                        Text(expected)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(.accentGreen)
                     }
                 }
                 
@@ -733,13 +724,13 @@ struct TaskDetailView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: DS.IconSize.md, height: DS.IconSize.md)
-                    Text(L10n.maiAnalysis)
+                    Text("mai_analysis")
                         .fontWeight(.medium)
                 }
                 .font(.caption)
                 .foregroundStyle(.accentPrimary)
                 
-                Text(L10n.checkingHomework)
+                Text("checking_homework")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
             }
@@ -760,7 +751,7 @@ struct TaskDetailView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.statusWarning)
             VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.maiCouldntAnalyzePleaseReviewManually)
+                Text("mai_couldnt_analyze_please_review_manually")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundStyle(.statusWarning)
@@ -790,7 +781,7 @@ struct TaskDetailView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "eye.fill")
                         .foregroundStyle(.textSecondary)
-                    Text(L10n.reviewThePhotoAndDecideIfTheChoreIsDone)
+                    Text("review_the_photo_and_decide_if_the_chore_is_done")
                         .font(.caption)
                         .foregroundStyle(.textSecondary)
                 }
@@ -808,7 +799,7 @@ struct TaskDetailView: View {
                         } else {
                             Image(systemName: "arrow.uturn.backward.circle.fill")
                         }
-                        Text(L10n.needsRedo)
+                        Text("needs_redo")
                     }
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -829,7 +820,7 @@ struct TaskDetailView: View {
                         } else {
                             Image(systemName: "checkmark.circle.fill")
                         }
-                        Text(L10n.approve)
+                        Text("approve")
                     }
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -913,7 +904,7 @@ struct TaskDetailView: View {
                 switch task.status {
                 case .todo:
                     PrimaryButton(
-                        title: L10n.startTask,
+                        title: "start_task",
                         isLoading: actionInFlight
                     ) {
                         startTask(task)
@@ -925,9 +916,9 @@ struct TaskDetailView: View {
                             Image(systemName: "timer")
                                 .font(.title3)
                             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                                Text(L10n.startFocus)
+                                Text("start_focus")
                                     .font(.headline)
-                                Text(L10n.pomodoroForTask)
+                                Text("pomodoro_for_task")
                                     .font(.caption)
                                     .opacity(0.8)
                             }
@@ -950,14 +941,14 @@ struct TaskDetailView: View {
                     
                     if task.requiresProof {
                         PrimaryButton(
-                            title: L10n.submitProof,
+                            title: "submit_proof",
                             isDisabled: actionInFlight
                         ) {
                             showProofCapture = true
                         }
                     } else {
                         PrimaryButton(
-                            title: L10n.markComplete,
+                            title: "mark_complete",
                             isLoading: actionInFlight
                         ) {
                             completeTask(task)
@@ -968,7 +959,7 @@ struct TaskDetailView: View {
                     if canVerifyProof {
                         statusMessage("Review the submitted proof above", color: Color.statusPending)
                     } else {
-                        statusMessage(L10n.waitingForVerification, color: Color.statusPending)
+                        statusMessage("waiting_for_verification", color: Color.statusPending)
                     }
                     
                 case .completed:
@@ -986,7 +977,7 @@ struct TaskDetailView: View {
         Task {
             await familyViewModel.updateTaskStatus(task, to: .inProgress)
             actionInFlight = false
-            toast = .success(L10n.taskStarted)
+            toast = .success("task_started")
             DS.Haptics.success()
         }
     }
@@ -1061,7 +1052,7 @@ struct TaskDetailView: View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.statusCompleted)
-            Text(L10n.taskCompleted)
+            Text("task_completed")
                 .fontWeight(.semibold)
         }
         .font(.subheadline)

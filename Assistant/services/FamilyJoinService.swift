@@ -112,7 +112,7 @@ enum FamilyJoinError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidInviteCode:
-            return L10n.invalidInviteCode
+            return "invalidInviteCode"
         }
     }
 }

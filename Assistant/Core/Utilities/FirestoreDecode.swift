@@ -1,6 +1,6 @@
 // ============================================================================
 // FirestoreDecode.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Performance utility for decoding Firestore query results off the main thread.

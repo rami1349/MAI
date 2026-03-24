@@ -212,7 +212,7 @@ struct DebouncedNumberField: View {
         var body: some View {
             VStack(spacing: 20) {
                 // Single line
-                DebouncedTextField(L10n.taskTitle, text: $text)
+                DebouncedTextField(AppStrings.localized("task_title"), text: $text)
                     .padding()
                     .background(Color.gray.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: DS.Radius.sm))
@@ -233,7 +233,7 @@ struct DebouncedNumberField: View {
                     .font(.caption)
                 
                 // Multi-line
-                DebouncedTextEditor(text: $multiline, placeholder: L10n.description)
+                DebouncedTextEditor(text: $multiline, placeholder: AppStrings.localized("description"))
                     .frame(height: 100)
                     .padding()
                     .background(Color.blue.opacity(0.1))

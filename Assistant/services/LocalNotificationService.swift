@@ -1,9 +1,9 @@
 // ============================================================================
 // LocalNotificationService.swift
-// FamilyHub
+//
 //
 // PURPOSE:
-//   Manages all notification delivery in FamilyHub — both local push notifications
+//   Manages all notification delivery in  — both local push notifications
 //   scheduled by the device and FCM token management for server-sent push notifications.
 //
 // TWO NOTIFICATION PATHWAYS:
@@ -49,7 +49,7 @@ import FirebaseMessaging
 import UserNotifications
 
 /// Singleton service managing FCM tokens, local notification scheduling,
-/// and tap-to-deep-link routing for FamilyHub.
+/// and tap-to-deep-link routing for .
 ///
 /// Conforms to:
 /// - `UNUserNotificationCenterDelegate`: handles foreground display and tap routing.
@@ -277,8 +277,8 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
                 if let triggerDate = calendar.date(from: tomorrowComponents), triggerDate > now {
                     let content = UNMutableNotificationContent()
-                    content.title    = L10n.taskDueTomorrow
-                    content.body     = L10n.taskDueTomorrowBody(task.title)
+                    content.title    = "task_Due_Tomorrow"
+                    content.body     = AppStrings.taskDueTomorrowBody(task.title)
                     content.sound    = .default
                     content.userInfo = ["type": "taskDueTomorrow", "taskId": taskId]
 
@@ -287,7 +287,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
                     )
                     UNUserNotificationCenter.current().add(
                         UNNotificationRequest(
-                            identifier: "duetomorrow_\(taskId)",
+                            identifier: "due_tomorrow_\(taskId)",
                             content: content,
                             trigger: trigger
                         )
@@ -299,8 +299,8 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
             if let reminderDate = calendar.date(byAdding: .hour, value: -1, to: dueDate),
                reminderDate > now {
                 let content = UNMutableNotificationContent()
-                content.title    = L10n.taskDueSoon
-                content.body     = L10n.taskDueSoonBody(task.title)
+                content.title    = "task_Due_Soon"
+                content.body     = AppStrings.taskDueSoonBody(task.title)
                 content.sound    = .default
                 content.userInfo = ["type": "taskDue", "taskId": taskId]
 
@@ -345,7 +345,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
         // Remove existing event reminders before re-scheduling
         let reminderIds = events.compactMap { event -> [String]? in
             guard let id = event.id else { return nil }
-            return ["eventtomorrow_\(id)", "eventsoon_\(id)"]
+            return ["event_tomorrow_\(id)", "event_soon_\(id)"]
         }.flatMap { $0 }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: reminderIds)
 
@@ -366,14 +366,14 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
                 if let triggerDate = calendar.date(from: tomorrowComponents), triggerDate > now {
                     let content = UNMutableNotificationContent()
-                    content.title    = L10n.eventTomorrow
-                    content.body     = L10n.eventTomorrowBody(event.title)
+                    content.title    = "event_Tomorrow"
+                    content.body     = AppStrings.eventTomorrowBody(event.title)
                     content.sound    = .default
-                    content.userInfo = ["type": "eventTomorrow", "eventId": eventId]
+                    content.userInfo = ["type": "event_Tomorrow", "eventId": eventId]
 
                     UNUserNotificationCenter.current().add(
                         UNNotificationRequest(
-                            identifier: "eventtomorrow_\(eventId)",
+                            identifier: "event_tomorrow_\(eventId)",
                             content: content,
                             trigger: UNCalendarNotificationTrigger(
                                 dateMatching: tomorrowComponents, repeats: false
@@ -387,8 +387,8 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
             if let reminderDate = calendar.date(byAdding: .hour, value: -1, to: event.startDate),
                reminderDate > now {
                 let content = UNMutableNotificationContent()
-                content.title    = L10n.eventStartingSoon
-                content.body     = L10n.eventStartingSoonBody(event.title)
+                content.title    = "event_Starting_Soon"
+                content.body     = AppStrings.eventStartingSoonBody(event.title)
                 content.sound    = .default
                 content.userInfo = ["type": "eventSoon", "eventId": eventId]
 
@@ -397,7 +397,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
                 )
                 UNUserNotificationCenter.current().add(
                     UNNotificationRequest(
-                        identifier: "eventsoon_\(eventId)",
+                        identifier: "event_soon_\(eventId)",
                         content: content,
                         trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
                     )
@@ -413,7 +413,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// - Parameter eventId: Firestore document ID of the event.
     func cancelEventReminders(eventId: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: ["eventtomorrow_\(eventId)", "eventsoon_\(eventId)"]
+            withIdentifiers: ["event_tomorrow_\(eventId)", "event_soon_\(eventId)"]
         )
     }
 
@@ -440,21 +440,21 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
         switch newStatus {
         case .inProgress:
-            content.title = L10n.taskStarted
-            content.body  = L10n.taskStartedBody(performerName, task.title)
+            content.title = "task_Started"
+            content.body  = AppStrings.taskStartedBody(performerName, task.title)
         case .pendingVerification:
-            content.title = L10n.proofSubmitted
-            content.body  = L10n.proofSubmittedBody(performerName, task.title)
+            content.title = "proof_Submitted"
+            content.body  = AppStrings.proofSubmittedBody(performerName, task.title)
         case .completed:
-            content.title = L10n.taskCompleted
-            content.body  = L10n.taskCompletedBody(performerName, task.title)
+            content.title = "task_Completed"
+            content.body  = AppStrings.taskCompletedBody(performerName, task.title)
         case .todo:
             return // No notification for status regression to todo
         }
 
         content.sound    = .default
         content.userInfo = [
-            "type": "taskStatus",
+            "type": "task_Status",
             "taskId": task.id ?? "",
             "status": newStatus.rawValue
         ]

@@ -1,6 +1,6 @@
 //
 //  HabitTrackerView.swift
-//  FamilyHub
+//  
 //
 //  Adaptive habit tracker with iPad grid layout.
 //  - iPhone: Vertical list of habits
@@ -47,9 +47,9 @@ struct HabitTrackerView: View {
         
         var displayName: String {
             switch self {
-            case .week: return L10n.timeScopeWeek
-            case .month: return L10n.timeScopeMonth
-            case .year: return L10n.timeScopeYear
+            case .week: return "timeScopeWeek"
+            case .month: return "timeScopeMonth"
+            case .year: return "timeScopeYear"
             }
         }
     }
@@ -71,9 +71,9 @@ struct HabitTrackerView: View {
                 Spacer()
                 EmptyStateView(
                     icon: "repeat.circle",
-                    title: L10n.noHabitsYet,
-                    message: L10n.noHabitsMessage,
-                    buttonTitle: L10n.addHabit,
+                    title: "noHabitsYet",
+                    message: "noHabitsMessage",
+                    buttonTitle: "addHabit",
                     buttonAction: { showAddHabit = true }
                 )
                 Spacer()
@@ -93,15 +93,15 @@ struct HabitTrackerView: View {
             }
             Task { await loadLogsForCurrentPeriodIfNeeded() }
         }
-        .alert(L10n.deleteHabit, isPresented: $showDeleteConfirm) {
-            Button(L10n.cancel, role: .cancel) { }
-            Button(L10n.delete, role: .destructive) {
+        .alert("deleteHabit", isPresented: $showDeleteConfirm) {
+            Button("cancel", role: .cancel) { }
+            Button("delete", role: .destructive) {
                 if let habit = habitToDelete {
                     Task { await habitVM.deleteHabit(habit) }
                 }
             }
         } message: {
-            Text(L10n.deleteHabitConfirmation)
+            Text("deleteHabitConfirmation")
         }
     }
     
@@ -385,7 +385,7 @@ struct HabitTrackerView: View {
                         .foregroundStyle(.textPrimary)
                         .lineLimit(1)
                     
-                    Text(L10n.daily)
+                    Text("daily")
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                 }
@@ -451,7 +451,7 @@ struct HabitTrackerView: View {
                 Spacer()
                 
                 if completedThisWeek == weekDates.count {
-                    Label(L10n.perfect, systemImage: "star.fill")
+                    Label("perfect", systemImage: "star.fill")
                         .font(.caption)
                         .foregroundStyle(.accentYellow)
                 }
@@ -486,7 +486,7 @@ struct HabitTrackerView: View {
             habitToDelete = habit
             showDeleteConfirm = true
         } label: {
-            Label(L10n.deleteHabit, systemImage: "trash")
+            Label("deleteHabit", systemImage: "trash")
         }
     }
     

@@ -1,6 +1,6 @@
 // ============================================================================
 // HabitViewModel.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Manages habit definitions and daily completion logs for a single user.

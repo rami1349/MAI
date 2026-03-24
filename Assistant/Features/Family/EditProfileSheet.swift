@@ -49,7 +49,7 @@ struct EditProfileSheet: View {
                             }
                             
                             PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                                Text(L10n.changePhoto)
+                                Text("changePhoto")
                                     .font(.subheadline)
                                     .foregroundStyle(.accentPrimary)
                             }
@@ -60,14 +60,14 @@ struct EditProfileSheet: View {
                 }
                 
                 // Basic Info Section
-                Section(L10n.basicInfo) {
-                    TextField(L10n.displayName, text: $displayName)
+                Section("basicInfo") {
+                    TextField("displayName", text: $displayName)
                     
                     Button {
                         showDatePicker.toggle()
                     } label: {
                         HStack {
-                            Text(L10n.dateOfBirth)
+                            Text("dateOfBirth")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             Text(dateOfBirth.formattedDate)
@@ -95,7 +95,7 @@ struct EditProfileSheet: View {
                             .overlay(
                                 Group {
                                     if goal.isEmpty {
-                                        Text(L10n.yearlyGoalPlaceholder)
+                                        Text("yearlyGoalPlaceholder")
                                             .foregroundStyle(.textTertiary)
                                             .padding(.top, DS.Spacing.sm)
                                             .padding(.leading, DS.Spacing.xs)
@@ -106,13 +106,13 @@ struct EditProfileSheet: View {
                             )
                     }
                 } header: {
-                    Text(L10n.yearlyGoal)
+                    Text("yearlyGoal")
                 } footer: {
-                    Text(L10n.yearlyGoalDescription)
+                    Text("yearlyGoalDescription")
                 }
                 
                 // Goal Suggestions
-                Section(L10n.goalIdeas) {
+                Section("goalIdeas") {
                     GoalSuggestionButton(text: "Exercise regularly and stay healthy") {
                         goal = "Exercise regularly and stay healthy"
                     }
@@ -127,14 +127,14 @@ struct EditProfileSheet: View {
                     }
                 }
             }
-            .navigationTitle(L10n.editProfile)
+            .navigationTitle("editProfile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.cancel) { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L10n.save) {
+                    Button("save") {
                         saveProfile()
                     }
                     .disabled(isLoading || displayName.isEmpty)

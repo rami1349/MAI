@@ -248,7 +248,7 @@ enum AnalyticsEvent: Sendable {
 enum Analytics: Sendable {
     
     private static let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.familyhub",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.",
         category: "Analytics"
     )
     

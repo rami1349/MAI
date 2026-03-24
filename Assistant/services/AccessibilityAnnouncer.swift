@@ -90,21 +90,32 @@ struct TabBarAccessibility {
     static func tasks(index: Int, total: Int) -> TabBarAccessibility {
         TabBarAccessibility(
             label: "Tasks",
-            hint: "Double tap to view your tasks and habits",
+            hint: "Double tap to manage your tasks",
             tabIndex: index,
             totalTabs: total
         )
     }
     
-    static func family(index: Int, total: Int) -> TabBarAccessibility {
+    static func mai(index: Int, total: Int) -> TabBarAccessibility {
         TabBarAccessibility(
-            label: "Family",
-            hint: "Double tap to view family members and settings",
+            label: "MAI",
+            hint: "Double tap to open MAI assistant",
             tabIndex: index,
             totalTabs: total
         )
     }
     
+    static func me(index: Int, total: Int) -> TabBarAccessibility {
+        TabBarAccessibility(
+            label: "Me",
+            hint: "Double tap to view your profile, wallet, and settings",
+            tabIndex: index,
+            totalTabs: total
+        )
+    }
+    
+    /// Deprecated: FAB removed in v2. Kept for backward compat.
+    @available(*, deprecated, message: "FAB removed in v2 navigation")
     static func addButton() -> TabBarAccessibility {
         TabBarAccessibility(
             label: "Add new item",

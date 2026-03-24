@@ -12,7 +12,7 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(AuthViewModel.self) var authViewModel
-    @Environment(LocalizationManager.self) var localization
+    @Environment(AppLanguage.self) var appLanguage
     @Environment(ThemeManager.self) var themeManager
     @State private var showLogoutAlert = false
     @State private var showLanguagePicker = false
@@ -27,16 +27,16 @@ struct SettingsView: View {
             settingsContent
                 .scrollContentBackground(.hidden)
                 .background(AdaptiveBackgroundView())
-                .navigationTitle(L10n.settings)
+                .navigationTitle("settings")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(L10n.done) { dismiss() }
+                        Button("done") { dismiss() }
                     }
                 }
-                .alert(L10n.signOutConfirm, isPresented: $showLogoutAlert) {
-                    Button(L10n.cancel, role: .cancel) {}
-                    Button(L10n.signOut, role: .destructive) {
+                .alert("sign_out_confirm", isPresented: $showLogoutAlert) {
+                    Button("cancel", role: .cancel) {}
+                    Button("sign_out", role: .destructive) {
                         authViewModel.signOut()
                         dismiss()
                     }
@@ -54,11 +54,11 @@ struct SettingsView: View {
                 }
                 .scrollContentBackground(.hidden)
                 .background(AdaptiveBackgroundView())
-                .navigationTitle(L10n.chooseTheme)
+                .navigationTitle("choose_theme")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(L10n.done) { showThemePicker = false }
+                        Button("done") { showThemePicker = false }
                     }
                 }
             }
@@ -82,25 +82,25 @@ struct SettingsView: View {
     
     private var settingsContent: some View {
         List {
-            Section(L10n.account) {
+            Section("account") {
                 if let user = authViewModel.currentUser {
                     HStack {
-                        Text(L10n.email)
+                        Text("email")
                         Spacer()
                         Text(user.email).foregroundStyle(.textSecondary)
                     }
                     .listRowBackground(Color.themeCardBackground)
                     HStack {
-                        Text(L10n.role)
+                        Text("role")
                         Spacer()
-                        Text(user.role.rawValue.capitalized).foregroundStyle(.textSecondary)
+                        Text(user.resolvedPreset.displayName).foregroundStyle(.textSecondary)
                     }
                     .listRowBackground(Color.themeCardBackground)
                 }
             }
             
             // MARK: - Subscription
-            Section(L10n.subscription) {
+            Section("subscription") {
                 Button {
                     if store.tier.isPremium {
                         // Already premium — show manage info
@@ -112,7 +112,7 @@ struct SettingsView: View {
                         Image(systemName: store.tier.isPremium ? "crown.fill" : "sparkles")
                             .foregroundStyle(store.tier.isPremium ? .yellow : .accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text(L10n.plan)
+                        Text("plan")
                             .foregroundStyle(.textPrimary)
                         Spacer()
                         Text(store.tier.displayName)
@@ -132,7 +132,7 @@ struct SettingsView: View {
                     Image(systemName: "bolt.fill")
                         .foregroundStyle(.statusWarning)
                         .frame(width: DS.IconContainer.sm)
-                    Text(L10n.aiCredits)
+                    Text("ai_credits")
                         .foregroundStyle(.textPrimary)
                     Spacer()
                     Text("\(store.aiCredits)")
@@ -152,7 +152,7 @@ struct SettingsView: View {
                             Image(systemName: "gear")
                                 .foregroundStyle(.accentPrimary)
                                 .frame(width: DS.IconContainer.sm)
-                            Text(L10n.manageSubscription)
+                            Text("manage_subscription")
                                 .foregroundStyle(.accentPrimary)
                         }
                     }
@@ -166,20 +166,20 @@ struct SettingsView: View {
                         Image(systemName: "arrow.clockwise")
                             .foregroundStyle(.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text(L10n.restorePurchases)
+                        Text("restore_purchases")
                             .foregroundStyle(.accentPrimary)
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
             }
             
-            Section(L10n.appearance) {
+            Section("appearance") {
                 Button(action: { showAppearancePicker = true }) {
                     HStack {
                         Image(systemName: themeManager.appearanceMode.icon)
                             .foregroundStyle(.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text(L10n.appearance)
+                        Text("appearance")
                             .foregroundStyle(.textPrimary)
                         Spacer()
                         Text(themeManager.appearanceMode.displayName)
@@ -196,7 +196,7 @@ struct SettingsView: View {
                         Image(systemName: "paintpalette.fill")
                             .foregroundStyle(.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text(L10n.themeColor)
+                        Text("theme_color")
                             .foregroundStyle(.textPrimary)
                         Spacer()
                         
@@ -217,18 +217,18 @@ struct SettingsView: View {
                 .listRowBackground(Color.themeCardBackground)
             }
             
-            Section(L10n.appSection) {
+            Section("app_section") {
                 Button(action: { showLanguagePicker = true }) {
                     HStack {
                         Image(systemName: "globe")
                             .foregroundStyle(.accentPrimary)
                             .frame(width: DS.IconContainer.sm)
-                        Text(L10n.language)
+                        Text("language")
                             .foregroundStyle(.textPrimary)
                         Spacer()
-                        Text(localization.selectedLanguage == .system
-                             ? "System (\(localization.currentLanguageShortName))"
-                             : localization.currentLanguageShortName)
+                        Text(appLanguage.selectedLanguage == .system
+                             ? "System (\(LanguageCode(rawValue: appLanguage.resolvedLanguageCode)?.displayName ?? "English"))"
+                             : appLanguage.selectedLanguage.displayName)
                             .foregroundStyle(.textSecondary)
                         Image(systemName: "chevron.right")
                             .font(.caption)
@@ -241,7 +241,7 @@ struct SettingsView: View {
                     Image(systemName: "info.circle")
                         .foregroundStyle(.accentPrimary)
                         .frame(width: DS.IconContainer.sm)
-                    Text(L10n.version)
+                    Text("version")
                     Spacer()
                     Text("1.0.0").foregroundStyle(.textSecondary)
                 }
@@ -254,7 +254,7 @@ struct SettingsView: View {
                 }) {
                     HStack {
                         Spacer()
-                        Text(L10n.signOut)
+                        Text("sign_out")
                         Spacer()
                     }
                 }
@@ -267,15 +267,10 @@ struct SettingsView: View {
                 }) {
                     HStack {
                         Image(systemName: "trash.fill")
-                        Text(L10n.deleteAccount)
+                        Text("delete_account")
                     }
                 }
                 .listRowBackground(Color.themeCardBackground)
-            } header: {
-                Text(L10n.dangerZone)
-            } footer: {
-                Text(L10n.dangerZoneDescription)
-                    .font(.caption)
             }
         }
     }
@@ -332,11 +327,11 @@ struct AppearancePickerView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.appearance)
+            .navigationTitle("appearance")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }
@@ -443,15 +438,15 @@ struct ThemeCard: View {
 // MARK: - Language Picker View
 struct LanguagePickerView: View {
     @Environment(\.dismiss) var dismiss
-    @Environment(LocalizationManager.self) var localization
+    @Environment(AppLanguage.self) var appLanguage
     
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    ForEach(LanguageOption.allCases) { language in
+                    ForEach(LanguageCode.allCases) { language in
                         Button(action: {
-                            localization.setLanguage(language)
+                            appLanguage.setLanguage(language)
                             dismiss()
                         }) {
                             HStack {
@@ -460,7 +455,7 @@ struct LanguagePickerView: View {
                                 
                                 Spacer()
                                 
-                                if localization.selectedLanguage == language {
+                                if appLanguage.selectedLanguage == language {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(.accentPrimary)
                                         .fontWeight(.semibold)
@@ -469,20 +464,15 @@ struct LanguagePickerView: View {
                         }
                         .listRowBackground(Color.themeCardBackground)
                     }
-                }//intead of footer, use a help inline incone to show this text
-                footer: {
-                    Text(L10n.languageDescription)
-                        .font(.caption)
-                        .foregroundStyle(.textSecondary)
                 }
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.language)
+            .navigationTitle("language")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(L10n.done) { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }

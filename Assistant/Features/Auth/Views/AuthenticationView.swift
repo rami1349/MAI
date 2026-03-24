@@ -1,6 +1,6 @@
 //
 //  AuthenticationView.swift
-//  FamilyHub
+//  
 //
 //  LUXURY CALM REDESIGN
 //  - Elegant, minimal authentication flow
@@ -89,7 +89,7 @@ struct SocialLoginButtonsView: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                     
-                    Text(L10n.continueWithGoogle)
+                    Text("continueWithGoogle")
                         .font(DS.Typography.label())
                 }
                 .foregroundStyle(.textPrimary)
@@ -223,7 +223,7 @@ struct OrDivider: View {
                 .fill(Color.textTertiary.opacity(0.2))
                 .frame(height: 0.5)
             
-            Text(L10n.orDivider)
+            Text("or")
                 .font(DS.Typography.caption())
                 .foregroundStyle(.textTertiary)
             
@@ -337,9 +337,9 @@ struct SignInView: View {
         if emailHasError { return .idle }
         
         if FormValidator.isEmailPlausible(email) {
-            return .valid(L10n.validEmail)
+            return .valid("validEmail")
         } else {
-            return .invalid(L10n.invalidEmailFormat)
+            return .invalid("invalidEmailFormat")
         }
     }
     
@@ -355,11 +355,11 @@ struct SignInView: View {
                         .scaledToFit()
                         .frame(width: 140, height: 140)
                     
-                    Text(L10n.appTitle)
+                    Text("appTitle")
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.textPrimary)
                     
-                    Text(L10n.manageFamily)
+                    Text("manageFamily")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
@@ -377,7 +377,7 @@ struct SignInView: View {
                     // Email
                     VStack(spacing: DS.Spacing.xs) {
                         CustomTextField(
-                            placeholder: L10n.email,
+                            placeholder: "email",
                             text: $email,
                             icon: "envelope",
                             submitLabel: .next,
@@ -394,7 +394,7 @@ struct SignInView: View {
                     
                     // Password
                     CustomTextField(
-                        placeholder: L10n.password,
+                        placeholder: "password",
                         text: $password,
                         isSecure: true,
                         icon: "lock",
@@ -412,7 +412,7 @@ struct SignInView: View {
                             focusedField = nil
                             Task { await authViewModel.resetPassword(email: email) }
                         }) {
-                            Text(L10n.forgotPassword)
+                            Text("forgotPassword")
                                 .font(DS.Typography.captionMedium())
                                 .foregroundStyle(.accentPrimary)
                         }
@@ -430,7 +430,7 @@ struct SignInView: View {
                 
                 // Sign In Button
                 AuthButton(
-                    title: L10n.signIn,
+                    title: "signIn",
                     isLoading: authViewModel.isLoading,
                     isDisabled: email.isEmpty || password.isEmpty,
                     action: signIn
@@ -439,7 +439,7 @@ struct SignInView: View {
                 
                 // Sign Up Link
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.dontHaveAccount)
+                    Text("dontHaveAccount")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -447,7 +447,7 @@ struct SignInView: View {
                         focusedField = nil
                         Task { @MainActor in switchToSignUp() }
                     }) {
-                        Text(L10n.signUp)
+                        Text("signUp")
                             .font(DS.Typography.label())
                             .foregroundStyle(.accentPrimary)
                     }
@@ -537,9 +537,9 @@ struct SignUpView: View {
         if emailHasError { return .idle }
         
         if FormValidator.isEmailPlausible(email) {
-            return .valid(L10n.validEmail)
+            return .valid("validEmail")
         } else {
-            return .invalid(L10n.invalidEmailFormat)
+            return .invalid("invalidEmailFormat")
         }
     }
     
@@ -551,9 +551,9 @@ struct SignUpView: View {
         case .empty:
             return .idle
         case .tooShort:
-            return .invalid("\(password.count)/6 " + L10n.charactersMinimum)
+            return .invalid("\(password.count)/6 " + "charactersMinimum")
         case .weak, .fair, .strong:
-            return .valid("\(password.count) " + L10n.characters)
+            return .valid("\(password.count) " + "characters")
         }
     }
     
@@ -561,9 +561,9 @@ struct SignUpView: View {
         guard !confirmPassword.isEmpty else { return .idle }
         
         if password == confirmPassword {
-            return .valid(L10n.passwordMatch)
+            return .valid("passwordMatch")
         } else {
-            return .invalid(L10n.passwordDontMatch)
+            return .invalid("passwordDontMatch")
         }
     }
     
@@ -579,11 +579,11 @@ struct SignUpView: View {
                         .scaledToFit()
                         .frame(width: 100, height: 100)
                     
-                    Text(L10n.createAccount)
+                    Text("createAccount")
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.textPrimary)
                     
-                    Text(L10n.joinFamily)
+                    Text("joinFamily")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
@@ -600,7 +600,7 @@ struct SignUpView: View {
                 VStack(spacing: DS.Spacing.md) {
                     // Display Name
                     CustomTextField(
-                        placeholder: L10n.displayName,
+                        placeholder: "displayName",
                         text: $displayName,
                         icon: "person",
                         submitLabel: .next,
@@ -612,7 +612,7 @@ struct SignUpView: View {
                     // Email
                     VStack(spacing: DS.Spacing.xs) {
                         CustomTextField(
-                            placeholder: L10n.email,
+                            placeholder: "email",
                             text: $email,
                             icon: "envelope",
                             submitLabel: .next,
@@ -663,7 +663,7 @@ struct SignUpView: View {
                     // Password
                     VStack(spacing: DS.Spacing.xs) {
                         CustomTextField(
-                            placeholder: L10n.password,
+                            placeholder: "password",
                             text: $password,
                             isSecure: true,
                             icon: "lock",
@@ -688,7 +688,7 @@ struct SignUpView: View {
                     // Confirm Password
                     VStack(spacing: DS.Spacing.xs) {
                         CustomTextField(
-                            placeholder: L10n.confirmPassword,
+                            placeholder: "confirmPassword",
                             text: $confirmPassword,
                             isSecure: true,
                             icon: "lock.fill",
@@ -714,7 +714,7 @@ struct SignUpView: View {
                 
                 // Sign Up Button
                 AuthButton(
-                    title: L10n.createAccount,
+                    title: "createAccount",
                     isLoading: authViewModel.isLoading,
                     isDisabled: !isFormValid,
                     action: signUp
@@ -723,7 +723,7 @@ struct SignUpView: View {
                 
                 // Sign In Link
                 HStack(spacing: DS.Spacing.xs) {
-                    Text(L10n.alreadyHaveAccount)
+                    Text("alreadyHaveAccount")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -731,7 +731,7 @@ struct SignUpView: View {
                         focusedField = nil
                         Task { @MainActor in switchToSignIn() }
                     }) {
-                        Text(L10n.signIn)
+                        Text("signIn")
                             .font(DS.Typography.label())
                             .foregroundStyle(.accentPrimary)
                     }
@@ -747,7 +747,7 @@ struct SignUpView: View {
         .sheet(isPresented: $showDatePicker, onDismiss: {
             focusedField = .password
         }) {
-            DatePickerSheet(selectedDate: $dateOfBirth, title: L10n.dateOfBirth)
+            DatePickerSheet(selectedDate: $dateOfBirth, title: "dateOfBirth")
         }
         .onChange(of: focusedField) { oldValue, _ in
             if oldValue == .email && !email.isEmpty {

@@ -26,7 +26,7 @@ struct QuickHabitsWidget: View {
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.accentOrange)
                 
-                Text(L10n.todaysHabits)
+                Text("todays_Habits")
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundStyle(.textPrimary)
@@ -116,11 +116,11 @@ struct QuickHabitsWidget: View {
             Image(systemName: "plus.circle.dashed")
                 .font(.title)
                 .foregroundStyle(.textTertiary)
-            Text(L10n.noHabitsShort)
+            Text("no_habits_short")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(.textPrimary)
-            Text(L10n.addHabitsToTrack)
+            Text("add_habits_to_track")
                 .font(.caption)
                 .foregroundStyle(.textTertiary)
         }

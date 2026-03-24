@@ -30,7 +30,7 @@ struct PaywallView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle(L10n.upgradeToPremium)
+            .navigationTitle("upgradeToPremium")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -69,15 +69,10 @@ struct PaywallView: View {
             }
             .padding(.top, DS.Spacing.lg)
             
-            Text(L10n.unlockTheFullMaiExperience)
+            Text("unlockTheFullMaiExperience")
                 .font(DS.Typography.heading())
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.textPrimary)
-            
-            Text(L10n.moreMessagesSmarterAiAndUnlimitedPotentialF)
-                .font(DS.Typography.bodySmall())
-                .foregroundStyle(.textSecondary)
-                .multilineTextAlignment(.center)
         }
     }
     
@@ -95,7 +90,7 @@ struct PaywallView: View {
                 } label: {
                     VStack(spacing: DS.Spacing.sm) {
                         if isYearly {
-                            Text(L10n.save33)
+                            Text("save")
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.textOnAccent)
                                 .padding(.horizontal, 8)
@@ -147,7 +142,7 @@ struct PaywallView: View {
     
     private var featuresSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text(L10n.whatYouGet)
+            Text("whatYouGet")
                 .font(DS.Typography.body())
                 .fontWeight(.semibold)
                 .foregroundStyle(.textPrimary)
@@ -211,7 +206,7 @@ struct PaywallView: View {
                 if store.isPurchasing {
                     ProgressView().tint(.white)
                 } else {
-                    Text(L10n.subscribe)
+                    Text("subscribe")
                         .fontWeight(.bold)
                     if let plan = selectedPlan {
                         Text("· \(plan.displayPrice)")
@@ -232,13 +227,13 @@ struct PaywallView: View {
     
     private var footerSection: some View {
         VStack(spacing: DS.Spacing.md) {
-            Button(L10n.restorePurchases) {
+            Button("restorePurchases") {
                 Task { await store.restorePurchases() }
             }
             .font(DS.Typography.bodySmall())
             .foregroundStyle(.accentPrimary)
             
-            Text(L10n.paymentWillBeChargedToYourAppleIdAccountS)
+            Text("paymentWillBeChargedToYourAppleIdAccountS")
                 .font(DS.Typography.micro())
                 .foregroundStyle(.textTertiary)
                 .multilineTextAlignment(.center)

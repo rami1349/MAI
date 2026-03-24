@@ -1,6 +1,6 @@
 //
 //  HomeHeaderSection.swift
-//  FamilyHub
+//  
 //
 
 
@@ -26,7 +26,7 @@ struct HomePendingVerificationSection: View {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text(L10n.awaitingVerification)
+                Text("awaitingVerification")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 Circle()
@@ -68,11 +68,11 @@ struct CalendarPermissionPrompt: View {
             
             // Text
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                Text(L10n.calendarAccess)
+                Text("calendarAccess")
                     .font(DS.Typography.label())
                     .foregroundStyle(.textPrimary)
                 
-                Text(L10n.enableCalendarMessage)
+                Text("enableCalendarMessage")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }
@@ -141,7 +141,7 @@ struct PendingVerificationCard: View {
                             .font(DS.Typography.label())
                             .foregroundStyle(.textPrimary)
                         
-                        Text(L10n.submittedProof)
+                        Text("submittedProof")
                             .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                     }
@@ -168,7 +168,7 @@ struct PendingVerificationCard: View {
                         Image(systemName: task.proofType == .video ? "play.circle.fill" : "doc.fill")
                             .font(DS.Typography.body())
                         
-                        Text(L10n.viewProof)
+                        Text("viewProof")
                             .font(DS.Typography.captionMedium())
                         
                         // Show count if multiple proofs
@@ -205,7 +205,7 @@ struct PendingVerificationCard: View {
                                 .scaleEffect(0.6)
                                 .tint(Color.statusError)
                         }
-                        Text(L10n.reject)
+                        Text("reject")
                             .font(DS.Typography.captionMedium())
                     }
                     .foregroundStyle(.statusError)
@@ -239,7 +239,7 @@ struct PendingVerificationCard: View {
                                 .scaleEffect(0.6)
                                 .tint(.white)
                         }
-                        Text(L10n.approveLabel)
+                        Text("approveLabel")
                             .font(DS.Typography.captionMedium())
                     }
                     .foregroundStyle(.textOnAccent)
@@ -287,7 +287,7 @@ struct ProofViewerSheet: View {
                     .ignoresSafeArea()
                 
                 if isVideo {
-                    Text(L10n.videoPlayer)
+                    Text("videoPlayer")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -302,11 +302,11 @@ struct ProofViewerSheet: View {
                     }
                 }
             }
-            .navigationTitle(L10n.proofLabel)
+            .navigationTitle("proofLabel")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) { dismiss() }
+                    Button("close") { dismiss() }
                         .font(DS.Typography.body())
                 }
             }

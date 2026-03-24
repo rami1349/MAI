@@ -1,6 +1,6 @@
 //
 //  StatusBadge.swift
-//  FamilyHub
+//  
 //
 //  Task status badge component
 //  Status badge with refined typography
@@ -27,10 +27,10 @@ struct StatusBadge: View {
     
     private var statusText: String {
         switch status {
-        case .todo: return L10n.todo
-        case .inProgress: return L10n.inProgress
-        case .pendingVerification: return L10n.pendingVerification
-        case .completed: return L10n.completed
+        case .todo: return "todo"
+        case .inProgress: return "inProgress"
+        case .pendingVerification: return "pendingVerification"
+        case .completed: return "completed"
         }
     }
 }

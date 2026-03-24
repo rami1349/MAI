@@ -1,6 +1,6 @@
 // ============================================================================
 // FeatureFlagService.swift
-// FamilyHub
+// 
 //
 // SA-3: Feature flag system for Series-A operational readiness.
 //
@@ -131,7 +131,7 @@ final class FeatureFlagService {
     // MARK: - Private
     
     @ObservationIgnored private let remoteConfig = RemoteConfig.remoteConfig()
-    @ObservationIgnored private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.familyhub", category: "FeatureFlags")
+    @ObservationIgnored private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.", category: "FeatureFlags")
     
     // MARK: - Init
     

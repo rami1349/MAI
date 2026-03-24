@@ -1,6 +1,6 @@
 
 //  CalendarCards.swift
-//  FamilyHub
+//  
 //
 //  Card components for displaying events and tasks in calendar views
 //
@@ -130,7 +130,7 @@ struct EventCard: View {
             endFormatter.dateFormat = "MMM d"
             return "\(startFormatter.string(from: event.startDate)) - \(endFormatter.string(from: event.endDate))"
         } else if event.isAllDay {
-            return L10n.allDay
+            return "allDay"
         } else {
             return "\(event.startDate.formattedTime) - \(event.endDate.formattedTime)"
         }

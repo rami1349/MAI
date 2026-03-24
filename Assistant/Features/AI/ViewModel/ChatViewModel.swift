@@ -63,16 +63,16 @@ enum PendingActionType: String, Codable {
     
     var title: String {
         switch self {
-        case .createTask:   return L10n.createTask
-        case .completeTask: return L10n.completeTask
-        case .updateStatus: return L10n.updateStatus
-        case .createEvent:  return L10n.createEvent
-        case .assignTask:   return L10n.reassignTask
-        case .updateTask:   return L10n.updateTask
-        case .deleteTask:   return L10n.deleteTask
-        case .verifyTask:   return L10n.verifyHomework
-        case .approveVerification: return L10n.approve
-        case .rejectVerification:  return L10n.reject
+        case .createTask:   return "create_task"
+        case .completeTask: return "complete_task"
+        case .updateStatus: return "update_status"
+        case .createEvent:  return "create_event"
+        case .assignTask:   return "reassign_task"
+        case .updateTask:   return "update_task"
+        case .deleteTask:   return "delete_task"
+        case .verifyTask:   return "verify_homework"
+        case .approveVerification: return "approve"
+        case .rejectVerification:  return "reject"
         }
     }
 }
@@ -307,7 +307,7 @@ final class ChatViewModel {
             if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
                 let remaining = Int(unavailableUntil.timeIntervalSinceNow)
                 addErrorMessage(
-                    L10n.aiUnavailableRetrySeconds(remaining),
+                    AppStrings.aiUnavailableRetrySeconds(remaining),
                     canRetry: true,
                     retryAfter: remaining
                 )
@@ -408,22 +408,22 @@ final class ChatViewModel {
             if let streamError = error as? StreamingChatService.StreamError {
                 switch streamError {
                 case .notAuthenticated:
-                    errorText = L10n.pleaseSignInToChat
+                    errorText = "pleaseSignInToChat"
                     canRetry = false
                 case .connectionFailed:
-                    errorText = L10n.connectionFailedPleaseTryAgain
+                    errorText = "connectionFailedPleaseTryAgain"
                     canRetry = true
                 case .serverError(let message):
                     errorText = message
                     canRetry = true
                 case .timeout:
-                    errorText = L10n.requestTimedOutPleaseTryAgain
+                    errorText = "requestTimedOutPleaseTryAgain"
                     canRetry = true
                 case .cancelled:
                     return // Don't show error for cancellation
                 }
             } else {
-                errorText = L10n.somethingWentWrongPleaseTryAgain
+                errorText = "somethingWentWrongPleaseTryAgain"
                 canRetry = true
             }
             
@@ -495,7 +495,7 @@ final class ChatViewModel {
         if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
             let remaining = Int(unavailableUntil.timeIntervalSinceNow)
             addErrorMessage(
-                L10n.maiUnavailableRetrySeconds(remaining),
+                AppStrings.maiUnavailableRetrySeconds(remaining),
                 canRetry: true,
                 retryAfter: remaining
             )
@@ -595,7 +595,7 @@ final class ChatViewModel {
     }
     
     private func handleSendError(_ error: Error) -> Bool {
-        var errorText = L10n.somethingWentWrongPleaseTryAgain
+        var errorText = "something_went_wrong_please_try_again"
         var canRetry = true
         var retryAfter: Int? = nil
         
@@ -634,27 +634,27 @@ final class ChatViewModel {
                 }
                 
                 if json["code"] as? String == "CIRCUIT_OPEN" {
-                    let after = json["retryAfter"] as? Int ?? 300
+                    let after = json["retry _fter"] as? Int ?? 300
                     isAIUnavailable = true
                     aiUnavailableUntil = Date().addingTimeInterval(TimeInterval(after))
-                    errorText = L10n.aiAssistantIsTemporarilyUnavailable
+                    errorText = "ai_assistant_is_temporarily_unavailable"
                     retryAfter = after
                 }
             }
             
             switch FunctionsErrorCode(rawValue: functionsError.code) {
             case .unauthenticated:
-                errorText = L10n.pleaseSignInToChat
+                errorText = "please_sign_in_to_chat"
                 canRetry = false
             case .resourceExhausted:
-                errorText = L10n.messageLimitReached
+                errorText = "message_limit_reached"
                 canRetry = true
                 retryAfter = 60
             case .unavailable:
-                errorText = L10n.serviceTemporarilyUnavailable
+                errorText = "service_temporarily_unavailable"
                 canRetry = true
             case .deadlineExceeded:
-                errorText = L10n.requestTimedOut
+                errorText = "request_timed_out"
                 canRetry = true
             default:
                 break
@@ -685,7 +685,7 @@ final class ChatViewModel {
     private func addRateLimitMessage() {
         let rateLimitMessage = ChatMessage(
             role: "assistant",
-            content: L10n.youveUsedAllYourMessagesForTodayTryAgainT,
+            content: "youveUsedAllYourMessagesForTodayTryAgainT",
             isRateLimit: true
         )
         messages.append(rateLimitMessage)
@@ -773,7 +773,7 @@ final class ChatViewModel {
         
         let cancelMessage = ChatMessage(
             role: "assistant",
-            content: L10n.actionCancelledLetMeKnowIfYoudLikeToTryS
+            content: "actionCanceled"
         )
         messages.append(cancelMessage)
         persistHistory()

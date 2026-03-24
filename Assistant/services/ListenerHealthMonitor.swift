@@ -1,6 +1,6 @@
 
 //  ListenerHealthMonitor.swift
-//  FamilyHub
+//  
 //
 //  Debug-only monitoring for Firestore listener health
 //  Tracks: active listeners, fire rates, update vs skip ratios

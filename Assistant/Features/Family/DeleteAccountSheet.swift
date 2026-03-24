@@ -1,6 +1,6 @@
 //
 //  DeleteAccountSheet.swift
-//  FamilyHub
+//
 //
 //  Sheet for confirming account deletion with reauthentication support
 //
@@ -33,19 +33,19 @@ struct DeleteAccountSheet: View {
                     .padding(.top, DS.Spacing.xl)
                 
                 // Title
-                Text(L10n.deleteAccount)
+                Text("deleteAccount")
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.textPrimary)
                 
                 // Warning message
                 VStack(spacing: DS.Spacing.md) {
-                    Text(L10n.deleteAccountPermanent)
+                    Text("deleteAccountPermanent")
                         .font(.subheadline)
                         .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                     
-                    Text(L10n.deleteAccountRemoves)
+                    Text("deleteAccountRemoves")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
@@ -60,7 +60,7 @@ struct DeleteAccountSheet: View {
                     }
                     .padding(.horizontal)
                     
-                    Text(L10n.tasksUnassignedNote)
+                    Text("tasksUnassignedNote")
                         .font(.caption)
                         .foregroundStyle(.textTertiary)
                         .italic()
@@ -84,7 +84,7 @@ struct DeleteAccountSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(L10n.cancel) {
+                    Button("cancel") {
                         dismiss()
                     }
                     .disabled(step == .deleting)
@@ -106,11 +106,11 @@ struct DeleteAccountSheet: View {
     
     private var confirmationStep: some View {
         VStack(spacing: DS.Spacing.lg) {
-            Text(L10n.typeToConfirm(requiredConfirmation))
+            Text(AppStrings.typeToConfirm(requiredConfirmation))
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
             
-            TextField(L10n.typeDeletePlaceholder, text: $confirmText)
+            TextField("type_delete_placeholder", text: $confirmText)
                 .textFieldStyle(.roundedBorder)
                 .autocapitalization(.allCharacters)
                 .padding(.horizontal)
@@ -133,7 +133,7 @@ struct DeleteAccountSheet: View {
                     }
                 }
             }) {
-                Text(L10n.deleteMyAccount)
+                Text("deleteMyAccount")
                     .fontWeight(.semibold)
                     .foregroundStyle(.textOnAccent)
                     .frame(maxWidth: .infinity)
@@ -150,7 +150,7 @@ struct DeleteAccountSheet: View {
     
     private var reauthenticationStep: some View {
         VStack(spacing: DS.Spacing.lg) {
-            Text(L10n.reenterPassword)
+            Text("reenterPassword")
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
             
@@ -181,7 +181,7 @@ struct DeleteAccountSheet: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     }
-                    Text(L10n.confirmAndDelete)
+                    Text("confirmAndDelete")
                         .fontWeight(.semibold)
                 }
                 .foregroundStyle(.textOnAccent)
@@ -195,7 +195,7 @@ struct DeleteAccountSheet: View {
             .disabled(password.count < 6 || authViewModel.isLoading)
             .padding(.horizontal)
             
-            Button(L10n.goBack) {
+            Button("goBack") {
                 step = .confirm
                 password = ""
                 authViewModel.errorMessage = nil
@@ -212,7 +212,7 @@ struct DeleteAccountSheet: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.5)
             
-            Text(L10n.deletingAccount)
+            Text("deletingAccount")
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
         }

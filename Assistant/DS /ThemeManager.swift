@@ -1,6 +1,6 @@
 //
 //  Theme.swift
-//  FamilyHub
+//  
 //
 //  REWRITTEN: Simplified 4-color palette system
 //  Each theme has: Primary, Accent, Surface, Card

@@ -1,6 +1,6 @@
 //
 //  EventDetailView.swift
-//  FamilyHub
+//
 //
 //  UNICORN REDESIGN - Clean, focused event details
 //  - Hero color header with event title
@@ -39,16 +39,16 @@ struct EventDetailView: View {
         
         if let days = components.day, days > 0 {
             if let hours = components.hour, hours > 0 {
-                return "\(days) \(days == 1 ? L10n.day : L10n.days), \(hours) \(hours == 1 ? L10n.hour : L10n.hours)"
+                return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days")), \(hours) \(hours == 1 ? AppStrings.localized("hour") : AppStrings.localized("hours"))"
             }
-            return "\(days) \(days == 1 ? L10n.day : L10n.days)"
+            return "\(days) \(days == 1 ? AppStrings.localized("day") : AppStrings.localized("days"))"
         } else if let hours = components.hour, hours > 0 {
             if let minutes = components.minute, minutes > 0 {
-                return "\(hours) \(L10n.hr) \(minutes) \(L10n.min)"
+                return "\(hours) \(AppStrings.localized("hr")) \(minutes) \(AppStrings.localized("min"))"
             }
-            return "\(hours) \(hours == 1 ? L10n.hour : L10n.hours)"
+            return "\(hours) \(hours == 1 ? AppStrings.localized("hour") : AppStrings.localized("hours"))"
         } else if let minutes = components.minute {
-            return "\(minutes) \(L10n.minutes)"
+            return "\(minutes) \(AppStrings.localized("minutes"))"
         }
         return ""
     }
@@ -80,7 +80,6 @@ struct EventDetailView: View {
                         if !event.participants.isEmpty {
                             participantsCard
                         }
-                        
                         // Actions
                         actionsCard
                         
@@ -94,23 +93,23 @@ struct EventDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) { dismiss() }
+                    Button("close") { dismiss() }
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
-                    Text(L10n.eventDetails)
+                    Text("event_details")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                 }
             }
-            .alert(L10n.deleteEventConfirm, isPresented: $showDeleteConfirmation) {
-                Button(L10n.cancel, role: .cancel) { }
-                Button(L10n.delete, role: .destructive) {
+            .alert("delete_event_confirm", isPresented: $showDeleteConfirmation) {
+                Button("cancel", role: .cancel) { }
+                Button("delete", role: .destructive) {
                     deleteEvent()
                 }
             } message: {
-                Text(L10n.actionCannotBeUndone)
+                Text("action_cannot_be_undone")
             }
             .sheet(isPresented: $showEditEvent) {
                 EditEventView(event: event)
@@ -163,18 +162,18 @@ struct EventDetailView: View {
         
         if calendar.isDateInToday(event.startDate) {
             if event.isAllDay {
-                return L10n.todayAllDay
+                return "todayAllDay"
             }
             let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
-            return "\(L10n.today), \(timeFormatter.string(from: event.startDate))"
+            return "\(AppStrings.localized("today")), \(timeFormatter.string(from: event.startDate))"
         } else if calendar.isDateInTomorrow(event.startDate) {
             if event.isAllDay {
-                return L10n.tomorrowAllDay
+                return AppStrings.localized("tomorrow_all_day")
             }
             let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
-            return "\(L10n.tomorrow), \(timeFormatter.string(from: event.startDate))"
+            return "\(AppStrings.localized("tomorrow")), \(timeFormatter.string(from: event.startDate))"
         } else {
             dateFormatter.dateFormat = "EEE, MMM d"
             if event.isAllDay {
@@ -208,7 +207,7 @@ struct EventDetailView: View {
                         .foregroundStyle(.textTertiary)
                         .frame(width: 24)
                     
-                    Text(L10n.duration)
+                    Text("duration")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -245,7 +244,7 @@ struct EventDetailView: View {
                     .foregroundStyle(.textPrimary)
                 
                 if event.isAllDay {
-                    Text(L10n.allDay)
+                    Text("allDay")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 } else {
@@ -270,7 +269,7 @@ struct EventDetailView: View {
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                    Text(L10n.starts)
+                    Text("starts")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                     
@@ -309,7 +308,7 @@ struct EventDetailView: View {
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                    Text(L10n.ends)
+                    Text("ends")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                     
@@ -341,7 +340,7 @@ struct EventDetailView: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                Text(L10n.notes)
+                Text("notes")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
                 
@@ -373,7 +372,7 @@ struct EventDetailView: View {
                     .foregroundStyle(.accentPrimary)
                     .frame(width: 24)
                 
-                Text(L10n.participants)
+                Text("participants")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
                 
@@ -429,7 +428,7 @@ struct EventDetailView: View {
                 HStack(spacing: DS.Spacing.sm) {
                     Image(systemName: "pencil")
                         .font(DS.Typography.body())
-                    Text(L10n.edit)
+                    Text("edit")
                         .font(DS.Typography.label())
                 }
                 .foregroundStyle(.accentPrimary)
@@ -453,7 +452,7 @@ struct EventDetailView: View {
                         Image(systemName: "trash")
                             .font(DS.Typography.body())
                     }
-                    Text(L10n.delete)
+                    Text("delete")
                         .font(DS.Typography.label())
                 }
                 .foregroundStyle(.statusError)
@@ -475,11 +474,11 @@ struct EventDetailView: View {
         let formatter = DateFormatter()
         
         if calendar.isDateInToday(date) {
-            return L10n.today
+            return "today"
         } else if calendar.isDateInTomorrow(date) {
-            return L10n.tomorrow
+            return "tomorrow"
         } else if calendar.isDateInYesterday(date) {
-            return L10n.yesterday
+            return "yesterday"
         } else {
             formatter.dateFormat = "EEEE, MMMM d"
             return formatter.string(from: date)

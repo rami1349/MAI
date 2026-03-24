@@ -1,6 +1,6 @@
 //
 //  FeatureTour.swift
-//  FamilyHub
+//
 //
 //  Lightweight first-time feature tour.
 //  Replaces: FeatureTourManager, CoachMarkOverlay, OnboardingChecklist, FirstSuccessTour
@@ -16,75 +16,52 @@ import SwiftUI
 
 // MARK: - Tour Step
 
+/// v2 Feature Tour: 3 steps (down from 8 in v1).
+/// Research shows >70% drop-off on tours with more than 4 stops.
+///
+/// Step 1: Core loop (task creation)
+/// Step 2: Differentiator (MAI)
+/// Step 3: Growth mechanic (family invite)
 enum TourStep: Int, CaseIterable, Identifiable {
-    // Home inline CTAs
-    case addTask = 0
-    case addHabit
-    case addEvent
-    // Tab bar
-    case tabHome
-    case tabCalendar
-    case tabChat
-    case tabTasks
-    case tabFamily
+    case createTask = 0
+    case askMAI
+    case inviteFamily
     
     var id: Int { rawValue }
     
     /// The tourTarget ID this step points to
     var targetId: String {
         switch self {
-        case .addTask:    return "home.addTask"
-        case .addHabit:   return "home.addHabit"
-        case .addEvent:   return "home.addEvent"
-        case .tabHome:    return "tabbar.home"
-        case .tabCalendar: return "tabbar.calendar"
-        case .tabChat:    return "tabbar.chat"
-        case .tabTasks:   return "tabbar.tasks"
-        case .tabFamily:  return "tabbar.family"
+        case .createTask:   return "home.addTask"
+        case .askMAI:       return "tabbar.mai"
+        case .inviteFamily: return "me.myFamily"
         }
     }
     
     var title: String {
         switch self {
-        case .addTask:    return "Create Tasks"
-        case .addHabit:   return "Track Habits"
-        case .addEvent:   return "Add Events"
-        case .tabHome:    return "Home"
-        case .tabCalendar: return "Calendar"
-        case .tabChat:    return "Samy"
-        case .tabTasks:   return "Tasks & Habits"
-        case .tabFamily:  return "Family"
+        case .createTask:   return "Create a Task"
+        case .askMAI:       return "Meet MAI"
+        case .inviteFamily: return "Invite Family"
         }
     }
     
     var message: String {
         switch self {
-        case .addTask:
-            return "Create your first task to organize your family's to-dos and chores."
-        case .addHabit:
-            return "Build daily habits like reading or exercise and track your streaks."
-        case .addEvent:
-            return "Add birthdays, appointments, and family events to your schedule."
-        case .tabHome:
-            return "Your dashboard — see tasks, habits, and upcoming events at a glance."
-        case .tabCalendar:
-            return "View your family's schedule in a monthly or weekly calendar."
-        case .tabChat:
-            return "Ask Samy for help with tasks, homework, or family planning."
-        case .tabTasks:
-            return "Manage all your tasks and track daily habits in one place."
-        case .tabFamily:
-            return "See family members, invite others, and manage your household."
+        case .createTask:
+            return "Start here — create a task for yourself or assign one to a family member."
+        case .askMAI:
+            return "Need help? Ask MAI to create tasks, check homework, or plan your week — just type what you need."
+        case .inviteFamily:
+            return "Invite your family to start collaborating. Share the code and everyone's connected."
         }
     }
     
-    /// Tooltip goes above for tab bar items, below for home CTAs
     var tooltipPosition: TooltipPlacement {
         switch self {
-        case .addTask, .addHabit, .addEvent:
-            return .below
-        case .tabHome, .tabCalendar, .tabChat, .tabTasks, .tabFamily:
-            return .above
+        case .createTask:   return .below
+        case .askMAI:       return .above
+        case .inviteFamily: return .below
         }
     }
     
@@ -107,7 +84,7 @@ final class TourManager {
     
     // MARK: - Persistence
     
-    @ObservationIgnored private let hasCompletedKey = "featureTour_completed_v3"
+    @ObservationIgnored private let hasCompletedKey = "featureTour_completed_v4"
     
     var hasCompletedTour: Bool {
         UserDefaults.standard.bool(forKey: hasCompletedKey)
@@ -124,7 +101,7 @@ final class TourManager {
         Task { @MainActor [weak self] in
             try? await Task.sleep(for: .seconds(0.8))
             guard let self, !self.hasCompletedTour else { return }
-            self.currentStep = .addTask
+            self.currentStep = .createTask
             withAnimation(.easeOut(duration: 0.3)) {
                 self.isActive = true
             }
@@ -344,7 +321,7 @@ struct TourTooltip: View {
                     
                     // Skip
                     Button(action: tourManager.skip) {
-                        Text(L10n.skip)
+                        Text("skip")
                             .font(DS.Typography.label())
                             .foregroundStyle(.textTertiary)
                     }

@@ -8,7 +8,7 @@
 
 //
 //  TaskType.swift
-//  FamilyHub
+//  
 //
 //  Task categorization for different verification flows
 //  - Chore: Manual parent approval
@@ -25,8 +25,8 @@ enum TaskType: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .chore: return L10n.taskTypeChore
-        case .homework: return L10n.taskTypeHomework
+        case .chore: return "task_type_chore"
+        case .homework: return "task_type_homework"
         }
     }
     
@@ -49,11 +49,11 @@ enum HomeworkSubject: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .math: return L10n.subjectMath
-        case .language: return L10n.subjectLanguage
-        case .reading: return L10n.subjectReading
-        case .science: return L10n.subjectScience
-        case .other: return L10n.subjectOther
+        case .math: return "subject_math"
+        case .language: return "subject_language"
+        case .reading: return "subject_reading"
+        case .science: return "subject_science"
+        case .other: return "subject_other"
         }
     }
     
@@ -74,8 +74,8 @@ enum ProofType: String, Codable, CaseIterable {
     
     var displayName: String {
         switch self {
-        case .photo: return L10n.photoLabel
-        case .video: return L10n.videoLabel
+        case .photo: return "photo"
+        case .video: return "video"
         }
     }
     

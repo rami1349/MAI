@@ -1,6 +1,6 @@
 
 //  TaskChips.swift
-//  FamilyHub
+//  
 //
 //  Shared selectable chip components for task creation and editing.
 //  Place in: Components/Chips/TaskChips.swift

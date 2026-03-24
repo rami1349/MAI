@@ -1,6 +1,6 @@
 //
 //  SwipeToDeleteModifier.swift
-//  FamilyHub
+//  
 //
 //  Generic swipe-to-delete modifier that can be applied to any view
 //  Replaces 4 duplicate implementations (SwipeableTaskCard, SwipeableNotificationCard,
@@ -157,7 +157,7 @@ extension View {
     func swipeToDelete(action: @escaping () -> Void) -> some View {
         swipeable(trailing: SwipeAction(
             icon: "trash.fill",
-            title: L10n.delete,
+            title: "delete",
             color: Color.accentRed,
             action: action
         ))
@@ -172,13 +172,13 @@ extension View {
         swipeable(
             leading: canComplete ? SwipeAction(
                 icon: "checkmark.circle.fill",
-                title: L10n.done,
+                title: "done",
                 color: Color.accentGreen,
                 action: onComplete
             ) : nil,
             trailing: SwipeAction(
                 icon: "trash.fill",
-                title: L10n.delete,
+                title: "delete",
                 color: Color.accentRed,
                 action: onDelete
             )
@@ -190,14 +190,14 @@ extension View {
 #Preview {
     VStack(spacing: 16) {
         // Delete only
-        Text(L10n.swipeDeleteHint)
+        Text("swipeDeleteHint")
             .frame(maxWidth: .infinity)
             .padding()
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
             .swipeToDelete { print("Deleted") }
         
         // Complete and delete
-        Text(L10n.swipeCompleteDeleteHint)
+        Text("swipeCompleteDeleteHint")
             .frame(maxWidth: .infinity)
             .padding()
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))

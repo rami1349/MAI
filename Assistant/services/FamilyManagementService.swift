@@ -1,6 +1,6 @@
 // ============================================================================
 // FamilyManagementService.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Handles family creation, family joining, user balance management, and
@@ -29,12 +29,6 @@
 // INVITE CODE FORMAT:
 //   6 characters: uppercase A–Z and 0–9. ~2.18 billion combinations.
 //   Generated randomly via `generateInviteCode()` with uniqueness verification.
-//
-// ATOMICITY:
-//   All multi-document writes use Firestore WriteBatch for atomic commits.
-//   Balance updates use FieldValue.increment() for concurrent safety.
-//
-// ============================================================================
 
 import Foundation
 import FirebaseFirestore
@@ -187,7 +181,7 @@ actor FamilyManagementService {
         do {
             // Query for a family with this invite code (limited to 1 for efficiency)
             let snapshot = try await db.collection("families")
-                .whereField("inviteCode", isEqualTo: inviteCode.uppercased())
+                .whereField("invite_code", isEqualTo: inviteCode.uppercased())
                 .limit(to: 1)
                 .getDocuments()
             
@@ -195,7 +189,7 @@ actor FamilyManagementService {
                   let familyId = familyDoc.documentID as String? else {
                 // No family found with this code → invalid code
                 return JoinFamilyResult(success: false, familyId: nil, updatedUser: nil,
-                                        error: L10n.invalidInviteCode)
+                                        error: "invalid_invite_code")
             }
             
             // Check if user is already a member

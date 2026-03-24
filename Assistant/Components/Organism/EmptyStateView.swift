@@ -1,6 +1,6 @@
 //
 //  EmptyStateView.swift
-//  FamilyHub
+//
 //
 //  Context-aware empty state component with illustrations and animations
 //
@@ -22,7 +22,7 @@ enum EmptyStateContext {
     case notifications
     case calendar
     case search
-    case family
+    case me
     case rewards
     case taskGroup
     case generic(icon: String)
@@ -39,8 +39,8 @@ enum EmptyStateContext {
             return .calendar
         case .search:
             return .search
-        case .family:
-            return .family
+        case .me:
+            return .me
         case .rewards:
             return .rewards
         case .taskGroup:
@@ -62,7 +62,7 @@ enum EmptyStateContext {
             return Color.accentRed
         case .search:
             return Color.accentSecondary
-        case .family:
+        case .me:
             return Color.accentTertiary
         case .rewards:
             return Color.accentGreen
@@ -80,7 +80,7 @@ enum EmptyStateIllustration {
     case notifications
     case calendar
     case search
-    case family
+    case me
     case rewards
     case taskGroup
     case custom(icon: String)
@@ -192,7 +192,7 @@ struct EmptyStateView: View {
             CalendarIllustration(accentColor: context.accentColor, isAnimating: isAnimating)
         case .search:
             SearchIllustration(accentColor: context.accentColor, isAnimating: isAnimating)
-        case .family:
+        case .me:
             FamilyIllustration(accentColor: context.accentColor, isAnimating: isAnimating)
         case .rewards:
             RewardsIllustration(accentColor: context.accentColor, isAnimating: isAnimating)
@@ -210,7 +210,7 @@ struct EmptyStateView: View {
         case .notifications: return "bell"
         case .calendar: return "plus"
         case .search: return "magnifyingglass"
-        case .family: return "person.badge.plus"
+        case .me: return "person.badge.plus"
         case .rewards: return "gift"
         case .generic: return "plus"
         }

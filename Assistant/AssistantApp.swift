@@ -1,6 +1,6 @@
 //
 //  AssistantApp.swift
-//  FamilyHub
+//
 //
 //  App entry point with Firebase configuration and environment setup
 //  Uses DependencyInjection.swift for singleton management.
@@ -58,8 +58,10 @@ struct AssistantApp: App {
                 .environment(familyViewModel.rewardVM)
                 // Store: @Observable injected via .environment()
                 .environment(store)
-                // DI: Injects ThemeManager, LocalizationManager, TourManager + DependencyContainer
+                // DI: Injects ThemeManager, AppLanguage, TourManager + DependencyContainer
                 .withLiveDependencies()
+                // Locale: Drives all Text("key") resolution via Localizable.xcstrings
+                .environment(\.locale, AppLanguage.shared.locale)
                 .preferredColorScheme(themeManager.colorScheme)
                 .onAppear {
                     Task {

@@ -1,6 +1,6 @@
 // ============================================================================
 // TaskViewModel.swift
-// FamilyHub
+// 
 //
 // PURPOSE:
 //   Manages the full lifecycle of family tasks — creation, status transitions,

@@ -1,122 +1,125 @@
-//  MainTabiPhoneContent.swift
-//  Assistant
+// ============================================================================
+// MainTabiPhoneContent.swift
 //
-//  Created by Ramiro  on 3/17/26.//
-// OWNS:
-//   @State showFABMenu — iPhone-only. Changes here do NOT re-evaluate
-//   the iPad sidebar, folder management, or any iPad-only state.
+// v2 IPHONE NAVIGATION
 //
-// RECEIVES (as Binding):
-//   selectedTab, tasksViewMode, showAddTask, showAddHabit, showAddEvent
-//   — shared state owned by MainTabView.
+// Tab bar: Home · Calendar · ✨ MAI ✨ · Tasks · Me
 //
-// PERFORMANCE:
-//   Toggling showFABMenu now only diffs this view's body (~250 lines),
-//   not the full 1,005-line MainTabView that included the entire iPad sidebar.
+// WHAT CHANGED (v1 → v2):
+//   - FAB (floating action button + radial menu): REMOVED entirely
+//   - Context "+" in nav bar: Home→AddTask, Calendar→AddEvent, Tasks→AddTask
+//   - Chat tab → MAI tab (center, raised button with sparkles icon)
+//   - Family tab → Me tab (personal hub)
+//   - TasksViewMode binding: REMOVED (Tasks tab is pure tasks)
+//
+// ARCHITECTURE:
+//   MAI uses full-screen overlay (same as v1 chat), triggered by center tab.
+//   Other 4 tabs are standard NavigationStack content.
 //
 // ============================================================================
 
 import SwiftUI
 
 struct MainTabiPhoneContent: View {
-    
-    // ── Shared state (owned by MainTabView, passed as bindings) ──
+
+    // ── Shared state (owned by MainTabView) ──
     @Binding var selectedTab: NavigationItem
     let resetTrigger: UUID
-    @Binding var tasksViewMode: TasksViewMode
     @Binding var showAddTask: Bool
-    @Binding var showAddHabit: Bool
     @Binding var showAddEvent: Bool
-    
-    // ── Environment (read from @Observable injection) ──
+    @Binding var showAddHabit: Bool
+
+    // ── Environment ──
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(FamilyViewModel.self) private var familyViewModel
     @Environment(FamilyMemberViewModel.self) private var familyMemberVM
     @Environment(TaskViewModel.self) private var taskVM
     @Environment(NotificationViewModel.self) private var notificationVM
-    
-    // ── iPhone-only state (isolated — changes don't propagate to iPad) ──
-    @State private var showFABMenu = false
-    
+
     // MARK: - Derived
-    
-    private var isChatActive: Bool {
-        selectedTab == .chat
-    }
-    
+
+    private var isMAIActive: Bool { selectedTab == .mai }
+
     // MARK: - Body
-    
+
     var body: some View {
         ZStack {
-            // LAYER 1: Main content with tab bar and FAB
+            // LAYER 1: Main content with tab bar
             mainTabContent
-                .opacity(isChatActive ? 0 : 1)
-            
-            // LAYER 2: Full-screen chat (overlays everything when active)
-            if isChatActive {
-                chatFullScreen
+                .opacity(isMAIActive ? 0 : 1)
+
+            // LAYER 2: Full-screen MAI (overlays when active)
+            if isMAIActive {
+                maiFullScreen
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: isChatActive)
-        .onChange(of: selectedTab) { _, _ in
-            if showFABMenu {
-                withAnimation(.easeOut(duration: 0.15)) {
-                    showFABMenu = false
-                }
-            }
-        }
+        .animation(.easeInOut(duration: 0.2), value: isMAIActive)
     }
-    
+
     // MARK: - Main Tab Content
-    
+
     private var mainTabContent: some View {
-        ZStack(alignment: .bottomTrailing) {
-            TabView(selection: $selectedTab) {
-                NavigationStack {
-                    HomeView(
-                        resetTrigger: resetTrigger,
-                        authVM: authViewModel,
-                        familyVM: familyViewModel,
-                        taskVM: taskVM,
-                        habitVM: familyViewModel.habitVM,
-                        notificationVM: notificationVM
-                    )
+        TabView(selection: $selectedTab) {
+            // ── Home ─────────────────────────────────────────
+            NavigationStack {
+                HomeView(
+                    resetTrigger: resetTrigger,
+                    authVM: authViewModel,
+                    familyVM: familyViewModel,
+                    taskVM: taskVM,
+                    habitVM: familyViewModel.habitVM,
+                    notificationVM: notificationVM
+                )
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        homeCreateMenu
+                    }
                 }
-                .tag(NavigationItem.home)
-                
-                NavigationStack {
-                    CalendarView()
-                }
-                .tag(NavigationItem.calendar)
-                
-                // Placeholder — actual chat is in overlay
-                Color.clear
-                    .tag(NavigationItem.chat)
-                
-                NavigationStack {
-                    TasksView(selectedMode: $tasksViewMode, showAddHabit: $showAddHabit)
-                }
-                .tag(NavigationItem.tasks)
-                
-                NavigationStack {
-                    FamilyView()
-                }
-                .tag(NavigationItem.family)
             }
-            .toolbar(.hidden, for: .tabBar)
-            .safeAreaInset(edge: .bottom) {
-                customTabBar
+            .tag(NavigationItem.home)
+
+            // ── Calendar ─────────────────────────────────────
+            NavigationStack {
+                CalendarView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            contextPlusButton { showAddEvent = true }
+                        }
+                    }
             }
-            
-            // FAB overlay
-            fabOverlay
+            .tag(NavigationItem.calendar)
+
+            // ── MAI (placeholder — actual UI is overlay) ─────
+            Color.clear
+                .tag(NavigationItem.mai)
+
+            // ── Tasks (pure execution — no habits toggle) ────
+            NavigationStack {
+                TasksView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            contextPlusButton { showAddTask = true }
+                        }
+                    }
+            }
+            .tag(NavigationItem.tasks)
+
+            // ── Me (personal hub — replaces Family) ──────────
+            NavigationStack {
+                MeView()
+            }
+            .tag(NavigationItem.me)
+        }
+        .toolbar(.hidden, for: .tabBar)
+        .safeAreaInset(edge: .bottom) {
+            customTabBar
         }
     }
-    
-    // MARK: - Chat Full Screen
-    
-    private var chatFullScreen: some View {
+
+    // MARK: - MAI Full Screen
+
+    private var maiFullScreen: some View {
         NavigationStack {
             AIChatView(onBack: {
                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -127,15 +130,50 @@ struct MainTabiPhoneContent: View {
         }
         .background(Color(.systemBackground))
     }
-    
+
+    // MARK: - Home "+" Menu (all 3 creation options)
+
+    private var homeCreateMenu: some View {
+        Menu {
+            Button(action: { showAddTask = true }) {
+                Label("add_task", systemImage: "checkmark.circle")
+            }
+            Button(action: { showAddEvent = true }) {
+                Label("add_event", systemImage: "calendar.badge.plus")
+            }
+            Button(action: { showAddHabit = true }) {
+                Label("add_habit", systemImage: "flame")
+            }
+        } label: {
+            Image(systemName: "plus")
+                .font(DS.Typography.body())
+                .foregroundStyle(.accentPrimary)
+        }
+    }
+
+    // MARK: - Context "+" Button
+
+    /// Nav bar "+" that opens the context-appropriate creation sheet.
+    /// Home + Tasks → AddTask, Calendar → AddEvent.
+    private func contextPlusButton(action: @escaping () -> Void) -> some View {
+        Button(action: {
+            DS.Haptics.light()
+            action()
+        }) {
+            Image(systemName: "plus")
+                .font(DS.Typography.body())
+                .foregroundStyle(.accentPrimary)
+        }
+    }
+
     // MARK: - Custom Tab Bar
-    
+
     private var customTabBar: some View {
         HStack(spacing: 0) {
             ForEach(NavigationItem.phoneTabs) { item in
-                if item == .chat {
-                    chatTabButton
-                        .tourTarget("tabbar.chat")
+                if item == .mai {
+                    maiTabButton
+                        .tourTarget("tabbar.mai")
                 } else {
                     TabBarButton(
                         item: item,
@@ -159,16 +197,16 @@ struct MainTabiPhoneContent: View {
                 .ignoresSafeArea(edges: .bottom)
         )
     }
-    
-    // MARK: - Chat Tab Button (Raised Center)
-    
-    private var chatTabButton: some View {
-        let isSelected = selectedTab == .chat
-        
+
+    // MARK: - MAI Tab Button (Raised Center)
+
+    private var maiTabButton: some View {
+        let isSelected = selectedTab == .mai
+
         return Button(action: {
             DS.Haptics.selection()
             withAnimation(.easeInOut(duration: 0.15)) {
-                selectedTab = .chat
+                selectedTab = .mai
             }
         }) {
             VStack(spacing: DS.Spacing.xxs) {
@@ -177,8 +215,8 @@ struct MainTabiPhoneContent: View {
                         .fill(
                             LinearGradient(
                                 colors: isSelected
-                                ? [Color.accentPrimary, .purple]
-                                : [Color.accentPrimary.opacity(0.8), Color.purple.opacity(0.6)],
+                                    ? [Color.accentPrimary, .purple]
+                                    : [Color.accentPrimary.opacity(0.8), Color.purple.opacity(0.6)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -189,16 +227,15 @@ struct MainTabiPhoneContent: View {
                             radius: isSelected ? 8 : 4,
                             y: isSelected ? 3 : 2
                         )
-                    
+
                     Image("samy")
                         .resizable()
                         .scaledToFit()
                         .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                        .foregroundStyle(.textOnAccent)
                 }
                 .offset(y: -8)
-                
-                Text(L10n.chat)
+
+                Text("mai")
                     .font(DS.Typography.micro())
                     .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
                     .offset(y: -8)
@@ -208,140 +245,53 @@ struct MainTabiPhoneContent: View {
         }
         .buttonStyle(.plain)
     }
-    
-    // MARK: - FAB Overlay
-    
-    private var fabOverlay: some View {
-        ZStack(alignment: .bottomTrailing) {
-            // Scrim
-            if showFABMenu {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-                            showFABMenu = false
-                        }
-                    }
-                    .transition(.opacity)
-            }
-            
-            VStack(alignment: .trailing, spacing: DS.Spacing.md) {
-                if showFABMenu {
-                    fabMenuItem(
-                        icon: "checkmark.circle.fill",
-                        label: L10n.newTask,
-                        color: Color.accentYellow,
-                        delay: 0.0
-                    ) {
-                        showFABMenu = false
-                        showAddTask = true
-                    }
-                    
-                    fabMenuItem(
-                        icon: "calendar.badge.plus",
-                        label: L10n.newEvent,
-                        color: Color.accentOrange,
-                        delay: 0.04
-                    ) {
-                        showFABMenu = false
-                        showAddEvent = true
-                    }
-                    
-                    fabMenuItem(
-                        icon: "flame.fill",
-                        label: L10n.newHabit,
-                        color: Color.accentGreen,
-                        delay: 0.08
-                    ) {
-                        showFABMenu = false
-                        showAddHabit = true
-                    }
-                }
-                
-                // Main FAB button
-                Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
-                        showFABMenu.toggle()
-                    }
-                }) {
-                    Image(systemName: showFABMenu ? "xmark" : "plus")
-                        .font(.system(size: DS.IconSize.lg, weight: .semibold)) // DT-exempt: icon sizing
-                        .foregroundStyle(.textOnAccent)
-                        .frame(width: DS.Control.fab, height: DS.Control.fab)
-                        .background(
-                            Circle()
-                                .fill(
-                                    showFABMenu
-                                    ? Color.textSecondary
-                                    : Color.accentPrimary
-                                )
-                                .shadow(color: Color.accentPrimary.opacity(showFABMenu ? 0 : 0.35), radius: DS.Spacing.sm, y: DS.Spacing.xs)
-                        )
-                        .rotationEffect(.degrees(showFABMenu ? 90 : 0))
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("fab_add_button")
-                .accessibilityLabel(L10n.addNewItem)
-            }
-            .padding(.trailing, DS.Spacing.lg)
-            .padding(.bottom, DS.Avatar.xl) // clear the tab bar
-        }
-        .animation(.spring(response: 0.3, dampingFraction: 0.75), value: showFABMenu)
-    }
-    
-    // MARK: - FAB Menu Item
-    
-    private func fabMenuItem(
-        icon: String,
-        label: String,
-        color: Color,
-        delay: Double,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: DS.Spacing.sm) {
-                Text(label)
-                    .font(DS.Typography.label())
-                    .foregroundStyle(.textPrimary)
-                    .padding(.horizontal, DS.Spacing.md)
-                    .padding(.vertical, DS.Spacing.sm)
-                    .background(
-                        Capsule()
-                            .fill(Color.themeCardBackground)
-                            .elevation2()
-                    )
-                
-                Image(systemName: icon)
-                    .font(DS.Typography.heading())
-                    .foregroundStyle(.textOnAccent)
-                    .frame(width: 44, height: 44)
-                    .background(
-                        Circle()
-                            .fill(color)
-                            .shadow(color: color.opacity(0.3), radius: 4, y: 2)
-                    )
-            }
-        }
-        .buttonStyle(.plain)
-        .transition(
-            .asymmetric(
-                insertion: .scale(scale: 0.5).combined(with: .opacity).animation(
-                    .spring(response: 0.3, dampingFraction: 0.7).delay(delay)
-                ),
-                removal: .scale(scale: 0.5).combined(with: .opacity).animation(
-                    .spring(response: 0.2, dampingFraction: 0.9)
-                )
-            )
-        )
-    }
-    
+
     // MARK: - Helpers
-    
+
     private func badgeCount(for item: NavigationItem) -> Int {
         switch item {
-        case .home: return notificationVM.unreadCount
-        case .tasks: return taskVM.pendingVerificationTasks.count
-        case .chat, .calendar, .family: return 0
+        case .home:  notificationVM.unreadCount
+        case .tasks: taskVM.pendingVerificationTasks.count
+        case .mai, .calendar, .me: 0
         }
+    }
+}
+
+// MARK: - Tab Bar Button
+
+struct TabBarButton: View {
+    let item: NavigationItem
+    let isSelected: Bool
+    let badge: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: {
+            DS.Haptics.selection()
+            action()
+        }) {
+            VStack(spacing: DS.Spacing.xxs) {
+                ZStack(alignment: .topTrailing) {
+                    Image(systemName: isSelected ? item.selectedIcon : item.icon)
+                        .font(DS.Typography.body())
+                        .fontWeight(isSelected ? .semibold : .regular)
+                        .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
+
+                    if badge > 0 {
+                        Circle()
+                            .fill(Color.red)
+                            .frame(width: 7, height: 7)
+                            .offset(x: 3, y: -2)
+                    }
+                }
+
+                Text(LocalizedStringKey(item.localizationKey))
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, DS.Spacing.xs)
+        }
+        .buttonStyle(.plain)
     }
 }

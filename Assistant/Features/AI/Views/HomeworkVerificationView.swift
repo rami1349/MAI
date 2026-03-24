@@ -1,6 +1,6 @@
 // ============================================================================
 // HomeworkVerificationView.swift
-// FamilyHub
+//
 //
 // SwiftUI View for AI Homework Verification
 //
@@ -40,11 +40,11 @@ struct HomeworkVerificationView: View {
                 }
                 .padding()
             }
-            .navigationTitle(L10n.homeworkCheck)
+            .navigationTitle("homeworkCheck")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(L10n.close) { dismiss() }
+                    Button("close") { dismiss() }
                 }
             }
         }
@@ -80,7 +80,7 @@ struct HomeworkVerificationView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 
-                Text(L10n.suggestionsOnlyYouDecide)
+                Text("suggestionsOnlyYouDecide")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -191,14 +191,14 @@ struct HomeworkVerificationView: View {
                 .font(.headline)
             
             VStack(spacing: 4) {
-                Text("CheckingAnswers")
-                Text(L10n.thisMayTakeAMoment)
+                Text("Checking_Answers")
+                Text("this_May_Take_A_Moment")
             }
             .font(.caption)
             .foregroundStyle(.secondary)
             
             // Reminder during loading
-            Text("rememberMaiSuggestionsMayBeInaccurate")
+            Text("remember_Mai_Suggestions_May_Be_Inaccurate")
                 .font(.caption2)
                 .foregroundStyle(.statusWarning)
                 .padding(.top, 8)
@@ -208,7 +208,7 @@ struct HomeworkVerificationView: View {
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("analyzingHomeworkPleaseWait")
+        .accessibilityLabel("analyzing_Homework_Please_Wait")
     }
     
     // MARK: - Results View
@@ -255,7 +255,7 @@ struct HomeworkVerificationView: View {
                     .font(.title2)
                     .foregroundStyle(.statusWarning)
                 
-                Text("L10n.lowConfidenceAnalysis")
+                Text("low_Confidence_Analysis")
                     .font(.headline)
                     .foregroundStyle(.statusWarning)
             }
@@ -265,7 +265,7 @@ struct HomeworkVerificationView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
-            Text("L10n.manualReviewStronglyRecommended")
+            Text("manual_Review_Strongly_Recommended")
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.statusWarning)
@@ -275,7 +275,7 @@ struct HomeworkVerificationView: View {
         .background(Color.orange.opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("warningLowConfidenceAnalysisManualReviewStro")
+        .accessibilityLabel("Manual_Review")
     }
     
     // MARK: - Recommendation Banner
@@ -327,7 +327,7 @@ struct HomeworkVerificationView: View {
     
     private func confidenceIndicator(_ confidence: Double) -> some View {
         VStack(alignment: .trailing, spacing: 2) {
-            Text("L10n.aiConfidence")
+            Text("ai_confidence")
                 .font(.caption2)
                 .foregroundStyle(.textOnAccent.opacity(0.7))
             
@@ -351,12 +351,12 @@ struct HomeworkVerificationView: View {
     private func analysisSummary(_ result: VerificationResult) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("L10n.analysis")
+                Text("analysis")
                     .font(.headline)
                 
                 Spacer()
                 
-                Text("L10n.maiEstimate")
+                Text("mai_estimate")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -412,7 +412,7 @@ struct HomeworkVerificationView: View {
     
     private func questionsBreakdown(_ result: VerificationResult) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("L10n.questionDetails")
+            Text("question_Details")
                 .font(.headline)
             
             ForEach(result.questions) { question in
@@ -427,7 +427,7 @@ struct HomeworkVerificationView: View {
     private func questionRow(_ question: VerificationQuestion) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(L10n.questionNumberShort(question.questionNumber))
+                Text(AppStrings.questionNumberShort(question.questionNumber))
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 
@@ -452,7 +452,7 @@ struct HomeworkVerificationView: View {
             }
             
             HStack {
-                Text(L10n.student)
+                Text("student")
                     .foregroundStyle(.secondary)
                 Text(question.studentAnswer)
                     .fontWeight(.medium)
@@ -461,7 +461,7 @@ struct HomeworkVerificationView: View {
             
             if question.assessment != .likelyCorrect, let expected = question.expectedAnswer {
                 HStack {
-                    Text(L10n.maiSuggests)
+                    Text("mai_suggests")
                         .foregroundStyle(.secondary)
                     Text(expected)
                         .foregroundStyle(.statusSuccess)
@@ -502,7 +502,7 @@ struct HomeworkVerificationView: View {
     
     private func areasCard(_ areas: [String]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(L10n.suggestedPracticeAreas, systemImage: "lightbulb.fill")
+            Label("suggested", systemImage: "lightbulb.fill")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(.statusWarning)
@@ -531,7 +531,7 @@ struct HomeworkVerificationView: View {
                 Image(systemName: "info.circle.fill")
                     .foregroundStyle(.statusInfo)
                 
-                Text(L10n.maiLimitations)
+                Text("mai_limitations")
                     .font(.caption)
                     .fontWeight(.semibold)
             }
@@ -550,7 +550,7 @@ struct HomeworkVerificationView: View {
     
     private func parentActionButtons(confidence: Double) -> some View {
         VStack(spacing: 12) {
-            Text(L10n.yourDecision)
+            Text("your_decision")
                 .font(.headline)
             
             // Low confidence reminder
@@ -558,7 +558,7 @@ struct HomeworkVerificationView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .foregroundStyle(.statusWarning)
-                    Text(L10n.lowAiConfidencePleaseReviewCarefully)
+                    Text("low_ai_confidence_please_review_carefully")
                         .font(.caption)
                         .foregroundStyle(.statusWarning)
                 }
@@ -569,7 +569,7 @@ struct HomeworkVerificationView: View {
                     onReject?()
                     dismiss()
                 } label: {
-                    Label(L10n.reject, systemImage: "xmark")
+                    Label("reject", systemImage: "xmark")
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -580,7 +580,7 @@ struct HomeworkVerificationView: View {
                     onApprove?()
                     dismiss()
                 } label: {
-                    Label(L10n.approve, systemImage: "checkmark")
+                    Label("approve", systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
                         .padding()
                 }
@@ -588,7 +588,7 @@ struct HomeworkVerificationView: View {
                 .tint(.green)
             }
             
-            Text(L10n.onlyYouCanApproveOrRejectAiCannotMakeThis)
+            Text("only_you_can_approve_or_reject")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -606,7 +606,7 @@ struct HomeworkVerificationView: View {
                 .font(DS.Typography.displayLarge())
                 .foregroundStyle(.statusWarning)
             
-            Text(L10n.couldNotAnalyze)
+            Text("could_not_analyze")
                 .font(.headline)
             
             Text(message)
@@ -614,19 +614,19 @@ struct HomeworkVerificationView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
-            Text(L10n.pleaseReviewTheHomeworkManually)
+            Text("please_review_the_homework_manually")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
             HStack(spacing: 12) {
                 if viewModel.canRetry {
-                    Button(L10n.tryAgain) {
+                    Button("try_again") {
                         Task { await viewModel.retry() }
                     }
                     .buttonStyle(.bordered)
                 }
                 
-                Button(L10n.reviewManually) {
+                Button("review_manually") {
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)

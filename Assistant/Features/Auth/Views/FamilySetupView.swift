@@ -1,6 +1,6 @@
 //
 //  FamilySetupView.swift
-//  FamilyHub
+//
 //
 //  Create or join family flow after registration - with inline help
 //
@@ -30,19 +30,18 @@ struct FamilySetupView: View {
                     
                     // Title
                     VStack(spacing: DS.Spacing.sm) {
-                        Text("\(L10n.hi) \(authViewModel.currentUser?.displayName ?? "")!")
+                        Text("\(AppStrings.localized("hi")) \(authViewModel.currentUser?.displayName ?? "")!")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundStyle(.textPrimary)
                         
-                        Text(L10n.letSetupFamily)
+                        Text("letSetupFamily")
                             .font(.subheadline)
                             .foregroundStyle(.textSecondary)
                     }
                     
                     // Toggle
                     modeToggle
-                    
                     // Form
                     formSection
                     
@@ -56,7 +55,7 @@ struct FamilySetupView: View {
                     
                     // Action Button
                     PrimaryButton(
-                        title: isCreating ? L10n.createFamily : L10n.joinFamily,
+                        title: isCreating ? "createFamily" :"joinFamily",
                         isLoading: authViewModel.isLoading,
                         isDisabled: isCreating ? familyName.isEmpty : inviteCode.count != 6
                     ) {
@@ -71,7 +70,7 @@ struct FamilySetupView: View {
                     .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                     
                     // Sign out option
-                    Button(L10n.signOut) {
+                    Button("signOut") {
                         authViewModel.signOut()
                     }
                     .font(.subheadline)
@@ -88,7 +87,7 @@ struct FamilySetupView: View {
     private var modeToggle: some View {
         HStack(spacing: 0) {
             Button(action: { isCreating = true }) {
-                Text(L10n.createFamily)
+                Text("createFamily")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(isCreating ? .textOnAccent : .textSecondary)
@@ -102,7 +101,7 @@ struct FamilySetupView: View {
             }
             
             Button(action: { isCreating = false }) {
-                Text(L10n.joinFamily)
+                Text("joinFamily")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(!isCreating ? .textOnAccent : .textSecondary)
@@ -130,13 +129,13 @@ struct FamilySetupView: View {
                 // Family name with help
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     CustomTextField(
-                        placeholder: L10n.familyName,
+                        placeholder: "familyName",
                         text: $familyName,
                         icon: "house"
                     )
                 }
                 
-                Text(L10n.createFamilyMessage)
+                Text("createFamilyMessage")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -144,14 +143,14 @@ struct FamilySetupView: View {
                 // Invite code with help
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     CustomTextField(
-                        placeholder: L10n.inviteCode,
+                        placeholder: "inviteCode",
                         text: $inviteCode,
                         icon: "ticket"
                     )
                     .textInputAutocapitalization(.characters)
                 }
                 
-                Text(L10n.enterInviteCode)
+                Text("enterInviteCode")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)

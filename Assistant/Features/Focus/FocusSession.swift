@@ -8,7 +8,7 @@
 
 //
 //  FocusSession.swift
-//  FamilyHub
+//  
 //
 //  Focus session model for Pomodoro tracking
 //
