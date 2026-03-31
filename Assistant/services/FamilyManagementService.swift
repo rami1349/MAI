@@ -1,6 +1,6 @@
 // ============================================================================
 // FamilyManagementService.swift
-// 
+//
 //
 // PURPOSE:
 //   Handles family creation, family joining, user balance management, and
@@ -181,7 +181,7 @@ actor FamilyManagementService {
         do {
             // Query for a family with this invite code (limited to 1 for efficiency)
             let snapshot = try await db.collection("families")
-                .whereField("invite_code", isEqualTo: inviteCode.uppercased())
+                .whereField("inviteCode", isEqualTo: inviteCode.uppercased())
                 .limit(to: 1)
                 .getDocuments()
             
@@ -228,6 +228,21 @@ actor FamilyManagementService {
             // Commit atomically
             try await batch.commit()
             
+            // Notify existing members that someone joined
+            // (onNotificationCreated trigger will send FCM push)
+            let existingMembers = familyDoc.data()["memberIds"] as? [String] ?? []
+            for memberId in existingMembers where memberId != userId {
+                try? await db.collection("notifications").addDocument(data: [
+                    "userId": memberId,
+                    "familyId": familyId,
+                    "type": "memberJoined",
+                    "title": String(localized: "member_joined"),
+                    "message": String(localized: "member_joined_body \(user.displayName)"),
+                    "isRead": false,
+                    "createdAt": FieldValue.serverTimestamp()
+                ] as [String: Any])
+            }
+            
             return JoinFamilyResult(
                 success: true,
                 familyId: familyId,
@@ -238,48 +253,6 @@ actor FamilyManagementService {
             return JoinFamilyResult(success: false, familyId: nil, updatedUser: nil,
                                     error: error.localizedDescription)
         }
-    }
-    
-    // MARK: - Update User Balance (via Cloud Function)
-    
-    /// Adjusts the user's reward wallet balance by a delta amount via Cloud Function.
-    ///
-    /// C-6 FIX: The `balance` field on user documents is now write-protected by
-    /// Firestore Security Rules. All balance mutations go through the
-    /// `updateUserBalance` Cloud Function, which validates permissions.
-    ///
-    /// - Parameters:
-    ///   - userId: Firebase UID of the user whose balance to update.
-    ///   - amount: Delta to apply. Positive = add funds, negative = deduct.
-    /// - Returns: `true` if the update succeeded, `false` on failure.
-    func updateUserBalance(userId: String, amount: Double) async -> Bool {
-        do {
-            let _ = try await functions.httpsCallable("updateUserBalance").call([
-                "userId": userId,
-                "amount": amount
-            ] as [String: Any])
-            return true
-        } catch {
-            Log.family.error("Failed to update balance: \(error.localizedDescription, privacy: .public)")
-            return false
-        }
-    }
-    
-    /// Legacy method signature for compatibility.
-    /// Extracts userId and delegates to the atomic version.
-    func updateUserBalance(user: FamilyUser, amount: Double) async -> FamilyUser? {
-        guard let userId = user.id else { return nil }
-        
-        let success = await updateUserBalance(userId: userId, amount: amount)
-        
-        if success {
-            // Return updated user with new balance
-            // Note: The actual balance is on the server; this is an optimistic estimate
-            var updatedUser = user
-            updatedUser.balance += amount
-            return updatedUser
-        }
-        return nil
     }
     
     // MARK: - Onboarding State

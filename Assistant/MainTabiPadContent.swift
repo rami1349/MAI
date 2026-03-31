@@ -1,19 +1,15 @@
 // ============================================================================
 // MainTabiPadContent.swift
 //
-// v2 IPAD NAVIGATION
+// v3 IPAD NAVIGATION — Centralized via NavigationRouter
 //
-// Sidebar: Home · Calendar · Tasks (3 items only)
-// Bottom:  Profile avatar → Me tab content
-// Float:   MAI button (bottom-right) → opens sheet
-//
-// WHAT CHANGED (v1 → v2):
-//   - Sidebar: 4 items → 3 (removed Family, chat handled by floating MAI)
-//   - Folders section: REMOVED from sidebar (moved to Tasks tab)
-//   - Quick-add dialog: REMOVED (replaced by context "+" in nav bar)
-//   - Settings gear: REMOVED (now inside Me tab scroll)
-//   - Me tab: accessible via sidebar bottom avatar or profile section
-//   - TasksViewMode: REMOVED (Tasks tab is pure tasks)
+// WHAT CHANGED (v2 → v3):
+//   - Binding<selectedTab> → router.selectedTab
+//   - 3 × Binding<showAdd*> → router.present(.addTask) etc
+//   - showAIChat, showCreateGroup @State → router handles via activeSheet
+//   - Single NavigationStack → NavigationStack(path: router.*Path) per tab
+//   - .navigationDestination(for:) registered per route type
+//   - resetTrigger removed
 //
 // ============================================================================
 
@@ -21,12 +17,8 @@ import SwiftUI
 
 struct MainTabiPadContent: View {
 
-    // ── Shared state (owned by MainTabView) ──
-    @Binding var selectedTab: NavigationItem
-    let resetTrigger: UUID
-    @Binding var showAddTask: Bool
-    @Binding var showAddEvent: Bool
-    @Binding var showAddHabit: Bool
+    // ── Router (owned by AssistantApp, injected via .environment) ──
+    @Environment(NavigationRouter.self) private var router
 
     // ── Environment ──
     @Environment(AuthViewModel.self) private var authViewModel
@@ -51,13 +43,13 @@ struct MainTabiPadContent: View {
     // MARK: - Body
 
     var body: some View {
+        @Bindable var router = router
+        
         ZStack(alignment: .leading) {
-            // Detail content area
-            NavigationStack {
-                detailContent
-            }
-            .padding(.leading, collapsedWidth)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // Detail content area — uses per-tab NavigationStack
+            detailNavigationContent
+                .padding(.leading, collapsedWidth)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             // Scrim when sidebar expanded
             if sidebarExpanded {
@@ -91,13 +83,100 @@ struct MainTabiPadContent: View {
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: sidebarExpanded)
         .tint(Color.accentPrimary)
-        // MAI sheet
+        // MAI sheet (iPad-specific: full sheet instead of tab overlay)
         .sheet(isPresented: $showAIChat) {
             NavigationStack {
                 AIChatView(isSheet: true)
                     .toolbar(.hidden, for: .navigationBar)
             }
             .presentationBackground(Color.themeSurfacePrimary)
+        }
+    }
+
+    // MARK: - Detail Navigation Content (per-tab NavigationStack)
+
+    @ViewBuilder
+    private var detailNavigationContent: some View {
+        @Bindable var router = router
+        
+        switch router.selectedTab {
+        case .home:
+            NavigationStack(path: $router.homePath) {
+                HomeView(
+                    authVM: authViewModel,
+                    familyVM: familyViewModel,
+                    taskVM: taskVM,
+                    habitVM: familyViewModel.habitVM,
+                    notificationVM: notificationVM
+                )
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        homeCreateMenu
+                    }
+                }
+                .navigationDestination(for: HomeRoute.self) { route in
+                    switch route {
+                    case .todayTasks:
+                        TodayTasksView()
+                    case .taskGroup(let id):
+                        if let group = familyMemberVM.getTaskGroup(by: id) {
+                            TaskGroupDetailView(taskGroup: group)
+                        }
+                    }
+                }
+            }
+        case .calendar:
+            NavigationStack(path: $router.calendarPath) {
+                CalendarView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            contextPlusButton { router.present(.addEvent) }
+                        }
+                    }
+                    .navigationDestination(for: CalendarRoute.self) { route in
+                        switch route {
+                        case .eventDetail(let id):
+                            if let event = familyViewModel.calendarVM.events.first(where: { $0.id == id }) {
+                                EventDetailView(event: event)
+                            }
+                        }
+                    }
+            }
+        case .tasks:
+            NavigationStack(path: $router.tasksPath) {
+                TasksView()
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            contextPlusButton { router.present(.addTask()) }
+                        }
+                    }
+                    .navigationDestination(for: TasksRoute.self) { route in
+                        switch route {
+                        case .taskGroupDetail(let id):
+                            if let group = familyMemberVM.getTaskGroup(by: id) {
+                                TaskGroupDetailView(taskGroup: group)
+                            }
+                        }
+                    }
+            }
+        case .mai:
+            NavigationStack {
+                AIChatView()
+            }
+        case .me:
+            NavigationStack(path: $router.mePath) {
+                MeView()
+                    .navigationDestination(for: MeRoute.self) { route in
+                        switch route {
+                        case .settings:
+                            SettingsView()
+                        case .memberDetail(let id):
+                            if let member = familyMemberVM.getMember(by: id) {
+                                MemberDetailView(member: member)
+                            }
+                        }
+                    }
+            }
         }
     }
 
@@ -142,17 +221,11 @@ struct MainTabiPadContent: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Toggle button
                 sidebarToggleButton
                 sidebarDivider
-
-                // Navigation items (Home, Calendar, Tasks)
                 sidebarNavigation
                 sidebarDivider
-
                 Spacer()
-
-                // Me (profile) at bottom
                 sidebarDivider
                 sidebarMeButton
                     .padding(.bottom, DS.Spacing.lg)
@@ -207,12 +280,16 @@ struct MainTabiPadContent: View {
     }
 
     private func sidebarNavItem(_ item: NavigationItem) -> some View {
-        let isSelected = selectedTab == item
+        let isSelected = router.selectedTab == item
         let badge = badgeCount(for: item)
 
         return Button(action: {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                selectedTab = item
+            if router.selectedTab == item {
+                router.popToRoot(tab: item)
+            } else {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    router.selectedTab = item
+                }
             }
         }) {
             HStack(spacing: DS.Spacing.sm) {
@@ -267,15 +344,18 @@ struct MainTabiPadContent: View {
     // MARK: - Sidebar Me Button (bottom)
 
     private var sidebarMeButton: some View {
-        let isSelected = selectedTab == .me
+        let isSelected = router.selectedTab == .me
 
         return Button(action: {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                selectedTab = .me
+            if router.selectedTab == .me {
+                router.popToRoot(tab: .me)
+            } else {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    router.selectedTab = .me
+                }
             }
         }) {
             HStack(spacing: DS.Spacing.sm) {
-                // Profile avatar or icon
                 if let user = authViewModel.currentUser {
                     AvatarView(user: user, size: 28)
                         .frame(width: 32)
@@ -328,58 +408,22 @@ struct MainTabiPadContent: View {
             .padding(.vertical, DS.Spacing.xs)
     }
 
-    // MARK: - Detail Content
-
-    @ViewBuilder
-    private var detailContent: some View {
-        switch selectedTab {
-        case .home:
-            HomeView(
-                resetTrigger: resetTrigger,
-                authVM: authViewModel,
-                familyVM: familyViewModel,
-                taskVM: taskVM,
-                habitVM: familyViewModel.habitVM,
-                notificationVM: notificationVM
-            )
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    homeCreateMenu
-                }
-            }
-        case .calendar:
-            CalendarView()
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        contextPlusButton { showAddEvent = true }
-                    }
-                }
-        case .tasks:
-            TasksView()
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        contextPlusButton { showAddTask = true }
-                    }
-                }
-        case .mai:
-            AIChatView()
-        case .me:
-            MeView()
-        }
-    }
-
-    // MARK: - Home "+" Menu (all 3 creation options)
+    // MARK: - Home "+" Menu
 
     private var homeCreateMenu: some View {
         Menu {
-            Button(action: { showAddTask = true }) {
+            Button(action: { router.present(.addTask()) }) {
                 Label("add_task", systemImage: "checkmark.circle")
             }
-            Button(action: { showAddEvent = true }) {
+            Button(action: { router.present(.addEvent) }) {
                 Label("add_event", systemImage: "calendar.badge.plus")
             }
-            Button(action: { showAddHabit = true }) {
+            Button(action: { router.present(.addHabit) }) {
                 Label("add_habit", systemImage: "flame")
+            }
+            Divider()
+            Button(action: { router.present(.createGroup) }) {
+                Label("new_group", systemImage: "folder.badge.plus")
             }
         } label: {
             Image(systemName: "plus")

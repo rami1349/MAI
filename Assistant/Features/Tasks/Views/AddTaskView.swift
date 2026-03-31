@@ -13,7 +13,7 @@ struct AddTaskView: View {
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(TaskViewModel.self) var taskVM
     
-    // Compatibility: Keep this parameter but ignore it in simplified flow
+    // Pre-selected group (when creating from inside a folder)
     var preSelectedGroupId: String? = nil
     
     // MARK: - Form State
@@ -93,7 +93,36 @@ struct AddTaskView: View {
                     .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: DS.Spacing.xl) {
+                    VStack(spacing: DS.Spacing.md) {
+                        // Show which folder this task goes into
+                        if let groupId = preSelectedGroupId,
+                           let group = familyMemberVM.getTaskGroup(by: groupId) {
+                            HStack(spacing: DS.Spacing.sm) {
+                                Image(systemName: group.icon)
+                                    .font(DS.Typography.body())
+                                    .foregroundStyle(Color(hex: group.color))
+                                
+                                Text(group.name)
+                                    .font(DS.Typography.label())
+                                    .foregroundStyle(.textPrimary)
+                                
+                                Spacer()
+                                
+                                Image(systemName: "folder.fill")
+                                    .font(DS.Typography.caption())
+                                    .foregroundStyle(.textTertiary)
+                            }
+                            .padding(DS.Spacing.md)
+                            .background(
+                                RoundedRectangle(cornerRadius: DS.Radius.md)
+                                    .fill(Color(hex: group.color).opacity(0.08))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: DS.Radius.md)
+                                    .stroke(Color(hex: group.color).opacity(0.2), lineWidth: 1)
+                            )
+                        }
+                        
                         taskTypeSection
                         titleSection
                         dueDateSection
@@ -108,7 +137,7 @@ struct AddTaskView: View {
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                         }
                         
-                        Spacer(minLength: 120)
+                        Spacer(minLength: 60)
                     }
                     .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                     .padding(.top, DS.Spacing.md)
@@ -120,13 +149,17 @@ struct AddTaskView: View {
                     createButton
                 }
             }
-            .navigationTitle("add_task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("cancel") { dismiss() }
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("add_task")
+                        .font(DS.Typography.subheading())
+                        .foregroundStyle(.textPrimary)
                 }
             }
             .sheet(isPresented: $showDatePicker) {
@@ -137,9 +170,12 @@ struct AddTaskView: View {
             }
             .overlay {
                 if showSuccess {
-                    taskCreatedOverlay
+                    SuccessDismissOverlay(message: "task_created") {
+                        dismiss()
+                    }
                 }
             }
+            .globalErrorBanner(errorMessage: $errorMessage)
         }
         .animation(.spring(response: 0.3), value: showIncentiveOptions)
         .animation(.spring(response: 0.3), value: taskType)
@@ -148,31 +184,33 @@ struct AddTaskView: View {
     // MARK: - Task Type Section
     
     private var taskTypeSection: some View {
-        HStack(spacing: DS.Spacing.md) {
+        HStack(spacing: DS.Spacing.sm) {
             ForEach(FamilyTask.TaskType.allCases, id: \.self) { type in
                 Button {
                     withAnimation { taskType = type }
                     DS.Haptics.light()
                 } label: {
-                    VStack(spacing: DS.Spacing.xs) {
+                    HStack(spacing: DS.Spacing.xs) {
                         Image(systemName: type.icon)
-                            .font(DS.Typography.displayMedium())
+                            .font(DS.Typography.body())
                         Text(type.displayName)
                             .font(DS.Typography.label())
                     }
                     .foregroundStyle(taskType == type ? .textOnAccent : .textPrimary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, DS.Spacing.lg)
+                    .padding(.horizontal, DS.Spacing.lg)
+                    .padding(.vertical, DS.Spacing.sm)
                     .background(
-                        RoundedRectangle(cornerRadius: DS.Radius.lg)
+                        Capsule()
                             .fill(taskType == type ? Color.accentPrimary : Color.themeCardBackground)
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: DS.Radius.lg)
+                        Capsule()
                             .stroke(taskType == type ? Color.clear : Color.themeCardBorder, lineWidth: 1)
                     )
                 }
             }
+            
+            Spacer()
         }
     }
     
@@ -424,37 +462,6 @@ struct AddTaskView: View {
         }
     }
     
-    // MARK: - Success Overlay
-    
-    private var taskCreatedOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea()
-            
-            VStack(spacing: DS.Spacing.md) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(DS.Typography.displayLarge())
-                    .foregroundStyle(.statusSuccess)
-                
-                Text("task_created")
-                    .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
-            }
-            .padding(DS.Spacing.xxl)
-            .background(
-                RoundedRectangle(cornerRadius: DS.Radius.xxl)
-                    .fill(Color.themeCardBackground)
-            )
-            .elevation3()
-        }
-        .onAppear {
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(1.0))
-                dismiss()
-            }
-        }
-    }
-    
     // MARK: - Create Task Action
     
     private func createTask() {
@@ -474,7 +481,7 @@ struct AddTaskView: View {
                 
                 let task = FamilyTask(
                     familyId: authViewModel.currentUser?.familyId ?? "",
-                    groupId: nil,
+                    groupId: preSelectedGroupId,
                     title: title.trimmingCharacters(in: .whitespacesAndNewlines),
                     description: nil,
                     assignedTo: finalAssignees.first,
@@ -484,7 +491,7 @@ struct AddTaskView: View {
                     scheduledTime: dueDate,
                     status: .todo,
                     priority: .medium,
-                    createdAt: Date(),
+                    createdAt: Date.now,
                     completedAt: nil,
                     hasReward: hasRewardFinal,
                     rewardAmount: hasRewardFinal ? Double(parsedReward) : nil,
@@ -505,7 +512,7 @@ struct AddTaskView: View {
                 
                 await MainActor.run {
                     isCreating = false
-                    showSuccess = true
+                    withAnimation { showSuccess = true }
                     DS.Haptics.success()
                 }
             } catch {
@@ -520,7 +527,7 @@ struct AddTaskView: View {
     
     private static func defaultDueDate() -> Date {
         let calendar = Calendar.current
-        var components = calendar.dateComponents([.year, .month, .day], from: Date())
+        var components = calendar.dateComponents([.year, .month, .day], from: Date.now)
         components.day = (components.day ?? 1) + 1
         components.hour = 17
         components.minute = 0
@@ -588,50 +595,26 @@ private struct AddTaskAssigneeChip: View {
     }
 }
 
-// MARK: - Date Picker Sheet
+// MARK: - Date Picker Sheet (Adaptive: two-column iPad, single-column iPhone)
 
 private struct AddTaskDatePickerSheet: View {
     @Binding var selectedDate: Date
     @Environment(\.dismiss) var dismiss
+    @Environment(\.horizontalSizeClass) var sizeClass
     
-    @State private var tempDate: Date = Date()
+    @State private var tempDate: Date = Date.now
+    
+    private var isRegular: Bool { sizeClass == .regular }
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: DS.Spacing.lg) {
-                // Quick date buttons
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: DS.Spacing.sm) {
-                        AddTaskQuickDateButton(title: "today", date: todayEvening) {
-                            tempDate = todayEvening
-                        }
-                        AddTaskQuickDateButton(title: "tomorrow", date: tomorrowEvening) {
-                            tempDate = tomorrowEvening
-                        }
-                        AddTaskQuickDateButton(title: "this_weekend", date: thisWeekend) {
-                            tempDate = thisWeekend
-                        }
-                        AddTaskQuickDateButton(title: "next_week", date: nextWeek) {
-                            tempDate = nextWeek
-                        }
-                    }
-                    .padding(.horizontal, DS.Spacing.screenH)
+            Group {
+                if isRegular {
+                    iPadLayout
+                } else {
+                    iPhoneLayout
                 }
-                
-                // Calendar - let it use natural height
-                DatePicker(
-                    "",
-                    selection: $tempDate,
-                    in: Date()...,
-                    displayedComponents: [.date, .hourAndMinute]
-                )
-                .datePickerStyle(.graphical)
-                .labelsHidden()
-                .padding(.horizontal, DS.Spacing.screenH)
-                
-                Spacer()
             }
-            .padding(.top, DS.Spacing.md)
             .navigationTitle("due_date")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -643,70 +626,73 @@ private struct AddTaskDatePickerSheet: View {
                         selectedDate = tempDate
                         dismiss()
                     }
-                    .fontWeight(.semibold)
+                    .font(DS.Typography.label())
                 }
             }
-            .onAppear {
-                tempDate = selectedDate
-            }
+            .onAppear { tempDate = selectedDate }
         }
     }
     
-    private var todayEvening: Date {
-        Calendar.current.date(bySettingHour: 18, minute: 0, second: 0, of: Date()) ?? Date()
-    }
+    // MARK: - iPad: Two-Column
     
-    private var tomorrowEvening: Date {
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date()
-        return Calendar.current.date(bySettingHour: 17, minute: 0, second: 0, of: tomorrow) ?? tomorrow
-    }
-    
-    private var thisWeekend: Date {
-        let calendar = Calendar.current
-        let weekday = calendar.component(.weekday, from: Date())
-        let daysUntilSaturday = (7 - weekday + 7) % 7
-        let saturday = calendar.date(byAdding: .day, value: daysUntilSaturday == 0 ? 7 : daysUntilSaturday, to: Date()) ?? Date()
-        return calendar.date(bySettingHour: 12, minute: 0, second: 0, of: saturday) ?? saturday
-    }
-    
-    private var nextWeek: Date {
-        let next = Calendar.current.date(byAdding: .weekOfYear, value: 1, to: Date()) ?? Date()
-        return Calendar.current.date(bySettingHour: 17, minute: 0, second: 0, of: next) ?? next
-    }
-}
-
-private struct AddTaskQuickDateButton: View {
-    let title: String
-    let date: Date
-    let onTap: () -> Void
-    
-    private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE, MMM d"
-        return formatter.string(from: date)
-    }
-    
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: DS.Spacing.xxs) {
-                Text(title)
-                    .font(DS.Typography.labelSmall())
-                    .foregroundStyle(.textPrimary)
-                Text(formattedDate)
-                    .font(DS.Typography.micro())
+    private var iPadLayout: some View {
+        HStack(alignment: .top, spacing: 0) {
+            // Left: Calendar
+            DatePicker(
+                "",
+                selection: $tempDate,
+                in: Date.now...,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+            .labelsHidden()
+            .padding(DS.Spacing.lg)
+            .frame(maxWidth: .infinity)
+            
+            // Divider
+            Divider()
+                .padding(.vertical, DS.Spacing.xl)
+            
+            // Right: Time picker
+            VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+                Text("time")
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
+                
+                DatePicker(
+                    "",
+                    selection: $tempDate,
+                    displayedComponents: .hourAndMinute
+                )
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .frame(maxHeight: 160)
+                
+                Spacer()
             }
-            .padding(.horizontal, DS.Spacing.md)
-            .padding(.vertical, DS.Spacing.sm)
-            .background(
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
-                    .fill(Color.themeCardBackground)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
-                    .stroke(Color.themeCardBorder, lineWidth: 1)
-            )
+            .padding(DS.Spacing.lg)
+            .frame(width: 200)
         }
+    }
+    
+    // MARK: - iPhone: Single Column (compact)
+    
+    private var iPhoneLayout: some View {
+        VStack(spacing: DS.Spacing.md) {
+            // Calendar + time
+            DatePicker(
+                "",
+                selection: $tempDate,
+                in: Date.now...,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .datePickerStyle(.graphical)
+            .labelsHidden()
+            .padding(.horizontal, DS.Spacing.screenH)
+            
+            Spacer(minLength: 0)
+        }
+        .padding(.top, DS.Spacing.sm)
     }
 }
 

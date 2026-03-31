@@ -56,14 +56,10 @@ struct ActionConfirmationSheet: View {
             
             Spacer()
             
-            Text("confirmAction")
+            Text("confirm_action")
                 .font(.headline)
             
             Spacer()
-            
-            // Invisible button for balance
-            Button("cancel") {}
-                .opacity(0)
         }
         .padding()
     }
@@ -172,7 +168,7 @@ struct ActionConfirmationSheet: View {
             Image(systemName: "info.circle.fill")
                 .foregroundStyle(.statusInfo)
             
-            Text("thisActionWillBePerformedAfterYouConfirm")
+            Text("this_action_will_be_performed_after_you_confirm")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

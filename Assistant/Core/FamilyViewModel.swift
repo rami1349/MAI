@@ -1,6 +1,6 @@
 // ============================================================================
 // FamilyViewModel.swift
-// 
+//
 //
 // PURPOSE:
 //   Thin coordinator that injects context (familyId, userId) into child ViewModel
@@ -257,9 +257,11 @@ final class FamilyViewModel {
         // Capture values BEFORE any async operations
         let assignees = task.allAssignees
         let taskTitle = task.title
+        let taskId = task.id ?? ""
         let deleterId = currentUserId
         let deleterName = memberName(currentUserId)
         
+        // 1. Notify assignees about deletion
         if let fid = currentFamilyId {
             for assigneeId in assignees {
                 await notificationVM.notifyTaskDeleted(
@@ -271,6 +273,21 @@ final class FamilyViewModel {
                 )
             }
         }
+        
+        // 2. Clean up current user's notifications about this task
+        //    (other users' stale notifications handled gracefully in UI)
+        if let uid = currentUserId, !taskId.isEmpty {
+            let db = Firestore.firestore()
+            let notifSnap = try? await db.collection("notifications")
+                .whereField("userId", isEqualTo: uid)
+                .whereField("relatedTaskId", isEqualTo: taskId)
+                .getDocuments()
+            for doc in notifSnap?.documents ?? [] {
+                try? await doc.reference.delete()
+            }
+        }
+        
+        // 3. Delete task + cascaded data (focusSessions, proofs, linked events)
         await taskVM.deleteTask(task)
     }
     
@@ -434,8 +451,8 @@ final class FamilyViewModel {
         fileType: String,
         fileName: String?
     ) async throws -> String {
-        guard let userId = currentUserId,
-              let familyId = currentFamilyId else {  // ← Add familyId
+        guard let _ = currentUserId,
+              let familyId = currentFamilyId else {
             throw NSError(domain: "FamilyViewModel", code: 1, userInfo: [NSLocalizedDescriptionKey: "No user logged in"])
         }
         
@@ -693,23 +710,3 @@ extension View {
     }
 }
 
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — loadFamilyData guard does not reset on family switch:
-//   If a user leaves one family and joins another, `currentFamilyId != familyId`
-//   will be true, but the old listeners are not explicitly removed before setting
-//   up new ones. Add an explicit `stopListeners()` step on family change.
-// SUGGESTION 3 — Magic duration 3600 (seconds):
-//   The 1-hour default event duration should be a named constant:
-//   `private static let defaultEventDuration: TimeInterval = 3600`
-//
-// SUGGESTION 4 — verifyProof double-records rewards:
-//   Rewards are paid in TaskViewModel.verifyProof() (balance update) AND recorded
-//   in RewardViewModel (ledger) from here. These must always stay in sync.
-//   Consider moving reward ledger recording into TaskViewModel to keep it atomic.
-//
-// SUGGESTION 5 — deleteTask notifications use task.allAssignees pre-deletion:
-//   `task.allAssignees` is read before deletion, which is correct — but if
-//   Firestore listeners fire during the async notification loop and remove the
-//   task from memory, the iteration could be stale. This is very unlikely but
-//   worth documenting as a known edge case.

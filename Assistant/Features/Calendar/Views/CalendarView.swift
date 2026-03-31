@@ -24,14 +24,15 @@ struct CalendarView: View {
     
     // MARK: - State
     
-    @State private var selectedDay = Date()
-    @State private var currentWeekStart = Date().startOfWeek
+    @State private var selectedDay = Date.now
+    @State private var currentWeekStart = Date.now.startOfWeek
     @State private var showMonthGrid = false
-    @State private var monthGridMonth = Date()
+    @State private var monthGridMonth = Date.now
     @State private var showMemberFilter = false
     @State private var selectedMemberIds: Set<String> = []
     @State private var selectedTask: FamilyTask? = nil
     @State private var selectedEvent: CalendarEvent? = nil
+    @State private var showAddEvent = false
     
     // MARK: - Cache
     
@@ -98,6 +99,10 @@ struct CalendarView: View {
         }
         .sheet(isPresented: $showMemberFilter) {
             memberFilterSheet
+        }
+        .sheet(isPresented: $showAddEvent) {
+            AddEventView()
+                .presentationBackground(Color.themeSurfacePrimary)
         }
     }
     
@@ -190,6 +195,19 @@ struct CalendarView: View {
                 Image(systemName: selectedMemberIds.isEmpty ? "person.2" : "person.2.fill")
                     .font(DS.Typography.body())
                     .foregroundStyle(selectedMemberIds.isEmpty ? .textSecondary : .accentPrimary)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        Circle()
+                            .fill(Color.themeCardBackground)
+                            .elevation1()
+                    )
+            }
+            
+            // Add event button
+            Button(action: { showAddEvent = true }) {
+                Image(systemName: "plus")
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
@@ -398,6 +416,17 @@ struct CalendarView: View {
                             .fill(Color.themeCardBackground)
                     )
             }
+            
+            Button(action: { showAddEvent = true }) {
+                Image(systemName: "plus")
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
+                    .frame(width: 40, height: 40)
+                    .background(
+                        Circle()
+                            .fill(Color.themeCardBackground)
+                    )
+            }
         }
         .padding(.horizontal, DS.Spacing.xl)
         .padding(.vertical, DS.Spacing.lg)
@@ -409,7 +438,7 @@ struct CalendarView: View {
         WeekStripView(
             weekDays: weekDays,
             selectedDay: selectedDay,
-            todayDate: Date(),
+            todayDate: Date.now,
             itemCounts: weekItemCounts,
             onSelectDay: { date in
                 withAnimation(.easeOut(duration: 0.15)) { selectedDay = date }
@@ -448,7 +477,7 @@ struct CalendarView: View {
                 MonthGridOverlay(
                     currentMonth: monthGridMonth,
                     selectedDay: selectedDay,
-                    todayDate: Date(),
+                    todayDate: Date.now,
                     itemCounts: cache.dayAgendas.mapValues { $0.totalCount },
                     onSelectDay: { date in
                         selectedDay = date
@@ -548,7 +577,7 @@ struct CalendarView: View {
     }
     
     private func jumpToToday() {
-        let today = Date()
+        let today = Date.now
         withAnimation(.easeOut(duration: 0.2)) {
             selectedDay = today
             currentWeekStart = today.startOfWeek

@@ -80,6 +80,7 @@ struct EventDetailView: View {
                         if !event.participants.isEmpty {
                             participantsCard
                         }
+                        
                         // Actions
                         actionsCard
                         
@@ -162,7 +163,7 @@ struct EventDetailView: View {
         
         if calendar.isDateInToday(event.startDate) {
             if event.isAllDay {
-                return "todayAllDay"
+                return "today_all_day"
             }
             let timeFormatter = DateFormatter()
             timeFormatter.dateFormat = "h:mm a"
@@ -244,7 +245,7 @@ struct EventDetailView: View {
                     .foregroundStyle(.textPrimary)
                 
                 if event.isAllDay {
-                    Text("allDay")
+                    Text("all_day")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 } else {
@@ -505,15 +506,15 @@ struct EventDetailView: View {
         familyId: "test",
         title: "Family Dinner",
         description: "Weekly family dinner at grandma's house. Don't forget to bring the dessert!",
-        startDate: Date(),
-        endDate: Date().addingTimeInterval(7200),
+        startDate: Date.now,
+        endDate: Date.now.addingTimeInterval(7200),
         isAllDay: false,
         color: "7C3AED",
         createdBy: "user1",
         participants: ["user1", "user2"],
         linkedTaskId: nil,
         eventType: nil,
-        createdAt: Date()
+        createdAt: Date.now
     ))
     .environment(familyVM)
     .environment(familyVM.familyMemberVM)

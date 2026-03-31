@@ -102,7 +102,7 @@ struct ChatMessage: Identifiable, Codable {
         role: String,
         content: String,
         pendingAction: PendingAction? = nil,
-        timestamp: Date = Date(),
+        timestamp: Date = Date.now,
         isRateLimit: Bool = false,
         isError: Bool = false,
         canRetry: Bool = false,
@@ -304,7 +304,7 @@ final class ChatViewModel {
             guard !trimmedText.isEmpty else { return }
             
             // Check circuit breaker
-            if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
+            if let unavailableUntil = aiUnavailableUntil, Date.now < unavailableUntil {
                 let remaining = Int(unavailableUntil.timeIntervalSinceNow)
                 addErrorMessage(
                     AppStrings.aiUnavailableRetrySeconds(remaining),
@@ -315,7 +315,7 @@ final class ChatViewModel {
             }
             
             // Reset circuit breaker if time passed
-            if let until = aiUnavailableUntil, Date() >= until {
+            if let until = aiUnavailableUntil, Date.now >= until {
                 isAIUnavailable = false
                 aiUnavailableUntil = nil
             }
@@ -408,22 +408,22 @@ final class ChatViewModel {
             if let streamError = error as? StreamingChatService.StreamError {
                 switch streamError {
                 case .notAuthenticated:
-                    errorText = "pleaseSignInToChat"
+                    errorText = String(localized: "please_sign_in_to_chat")
                     canRetry = false
                 case .connectionFailed:
-                    errorText = "connectionFailedPleaseTryAgain"
+                    errorText = String(localized: "connection_failed_please_try_again")
                     canRetry = true
                 case .serverError(let message):
                     errorText = message
                     canRetry = true
                 case .timeout:
-                    errorText = "requestTimedOutPleaseTryAgain"
+                    errorText = String(localized: "request_timed_out_please_try_again")
                     canRetry = true
                 case .cancelled:
                     return // Don't show error for cancellation
                 }
             } else {
-                errorText = "somethingWentWrongPleaseTryAgain"
+                errorText = String(localized: "something_went_wrong_please_try_again")
                 canRetry = true
             }
             
@@ -440,9 +440,7 @@ final class ChatViewModel {
         
         /// Cancel ongoing stream
         func cancelStreaming() {
-            Task { @MainActor in
-                await streamingService?.cancelStream()
-            }
+            streamingService?.cancelStream()
             isStreaming = false
             isLoading = false
             
@@ -492,7 +490,7 @@ final class ChatViewModel {
         guard !trimmedText.isEmpty else { return }
         
         // Check circuit breaker
-        if let unavailableUntil = aiUnavailableUntil, Date() < unavailableUntil {
+        if let unavailableUntil = aiUnavailableUntil, Date.now < unavailableUntil {
             let remaining = Int(unavailableUntil.timeIntervalSinceNow)
             addErrorMessage(
                 AppStrings.maiUnavailableRetrySeconds(remaining),
@@ -503,7 +501,7 @@ final class ChatViewModel {
         }
         
         // Reset circuit breaker if time has passed
-        if let until = aiUnavailableUntil, Date() >= until {
+        if let until = aiUnavailableUntil, Date.now >= until {
             isAIUnavailable = false
             aiUnavailableUntil = nil
         }
@@ -595,7 +593,7 @@ final class ChatViewModel {
     }
     
     private func handleSendError(_ error: Error) -> Bool {
-        var errorText = "something_went_wrong_please_try_again"
+        var errorText = String(localized: "something_went_wrong_please_try_again")
         var canRetry = true
         var retryAfter: Int? = nil
         
@@ -606,7 +604,7 @@ final class ChatViewModel {
                 retryAfter = after
                 if after >= 60 {
                     isAIUnavailable = true
-                    aiUnavailableUntil = Date().addingTimeInterval(TimeInterval(after))
+                    aiUnavailableUntil = Date.now.addingTimeInterval(TimeInterval(after))
                 }
                 return true
                 
@@ -634,27 +632,27 @@ final class ChatViewModel {
                 }
                 
                 if json["code"] as? String == "CIRCUIT_OPEN" {
-                    let after = json["retry _fter"] as? Int ?? 300
+                    let after = json["retryAfter"] as? Int ?? 300
                     isAIUnavailable = true
-                    aiUnavailableUntil = Date().addingTimeInterval(TimeInterval(after))
-                    errorText = "ai_assistant_is_temporarily_unavailable"
+                    aiUnavailableUntil = Date.now.addingTimeInterval(TimeInterval(after))
+                    errorText = String(localized: "ai_assistant_is_temporarily_unavailable")
                     retryAfter = after
                 }
             }
             
             switch FunctionsErrorCode(rawValue: functionsError.code) {
             case .unauthenticated:
-                errorText = "please_sign_in_to_chat"
+                errorText = String(localized: "please_sign_in_to_chat")
                 canRetry = false
             case .resourceExhausted:
-                errorText = "message_limit_reached"
+                errorText = String(localized: "message_limit_reached")
                 canRetry = true
                 retryAfter = 60
             case .unavailable:
-                errorText = "service_temporarily_unavailable"
+                errorText = String(localized: "service_temporarily_unavailable")
                 canRetry = true
             case .deadlineExceeded:
-                errorText = "request_timed_out"
+                errorText = String(localized: "request_timed_out")
                 canRetry = true
             default:
                 break
@@ -685,7 +683,7 @@ final class ChatViewModel {
     private func addRateLimitMessage() {
         let rateLimitMessage = ChatMessage(
             role: "assistant",
-            content: "youveUsedAllYourMessagesForTodayTryAgainT",
+            content: String(localized: "daily_limit_reached_message"),
             isRateLimit: true
         )
         messages.append(rateLimitMessage)
@@ -706,7 +704,7 @@ final class ChatViewModel {
                 "data": action.data.mapValues { $0.value }
             ]
             
-            let result = try await functions.httpsCallable("confirmAction").call(["action": actionDict])
+            let result = try await functions.httpsCallable("confirm_action").call(["action": actionDict])
             
             guard let data = result.data as? [String: Any] else {
                 throw ChatError.invalidResponse
@@ -738,7 +736,7 @@ final class ChatViewModel {
             }
             
         } catch {
-            confirmationResult = "❌ Failed: " + error.localizedDescription
+            confirmationResult = "❌ " + String(localized: "action_failed") + " " + error.localizedDescription
         }
         
         isConfirming = false
@@ -773,7 +771,7 @@ final class ChatViewModel {
         
         let cancelMessage = ChatMessage(
             role: "assistant",
-            content: "actionCanceled"
+            content: String(localized: "action_canceled")
         )
         messages.append(cancelMessage)
         persistHistory()

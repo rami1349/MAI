@@ -1,6 +1,5 @@
-// ============================================================================
 // TaskViewModel.swift
-// 
+//
 //
 // PURPOSE:
 //   Manages the full lifecycle of family tasks — creation, status transitions,
@@ -25,13 +24,7 @@
 // DATA FLOW:
 //   Firestore snapshot → FirestoreDecode (background) → setTasks() →
 //   allTasks, activeTasks, index caches, derived caches → Views
-//
-// KEY DEPENDENCIES:
-//   - FirebaseFirestore  — task persistence and real-time sync
-//   - FirebaseStorage    — proof image/video uploads
-//   - FirestoreDecode    — off-main-thread Codable decoding helper
-//   - SoundManager       — audio feedback on task events
-//
+
 
 import Foundation
 import Observation
@@ -644,19 +637,38 @@ final class TaskViewModel {
         setTasks(filteredTasks)
         
         do {
-            // Delete from Firestore
-            try await db.collection("tasks").document(id).delete()
+            // 1. Delete focusSessions subcollection (Firestore doesn't cascade)
+            let sessionsSnap = try await db.collection("tasks").document(id)
+                .collection("focusSessions").getDocuments()
+            for doc in sessionsSnap.documents {
+                try? await doc.reference.delete()
+            }
             
-            // Delete linked calendar event
-            // IMPORTANT: Include familyId in query to satisfy Firestore security rules
-            let snapshot = try await db.collection("events")
+            // 2. Delete proof files from Storage (covers both path patterns)
+            let storage = Storage.storage().reference()
+            for prefix in ["proofs/\(task.familyId)/\(id)", "proofs/\(id)"] {
+                do {
+                    let result = try await storage.child(prefix).listAll()
+                    for item in result.items {
+                        try? await item.delete()
+                    }
+                } catch {
+                    // Prefix doesn't exist — that's fine, proofs may use the other path
+                }
+            }
+            
+            // 3. Delete linked calendar events
+            let eventSnap = try await db.collection("events")
                 .whereField("familyId", isEqualTo: task.familyId)
                 .whereField("linkedTaskId", isEqualTo: id)
                 .getDocuments()
-            
-            for doc in snapshot.documents {
+            for doc in eventSnap.documents {
                 try await doc.reference.delete()
             }
+            
+            // 5. Delete the task document itself (last — so cascaded data is gone first)
+            try await db.collection("tasks").document(id).delete()
+            
         } catch {
             // ROLLBACK: Restore original tasks if delete fails
             setTasks(originalTasks)
@@ -995,29 +1007,3 @@ private struct TaskSnapshot {
 }
 
 
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — Magic number 200:
-//   The task limit `200` appears in both loadTasks() and setupListener().
-//   Extract to a private constant: `private static let taskQueryLimit = 200`
-//
-// SUGGESTION 2 — Magic number 30 (days):
-//   The 30-day lookback appears twice. Extract to:
-//   `private static let taskHistoryDays = -30`
-//
-// SUGGESTION 3 — RESOLVED: Reward payment is now transaction-safe.
-//   payRewardSafely() uses a Firestore transaction to check rewardPaid == false
-//   before paying. Double-tap is prevented and a rewardTransaction ledger entry
-//   is written atomically alongside the balance increment.
-//
-// SUGGESTION 4 — verifyProof authorization is client-side only:
-//   The `task.assignedBy == verifierId` check can be bypassed by a malicious client.
-//   This must also be enforced in Firestore security rules.
-//
-// SUGGESTION 5 — submitProof sequential uploads:
-//   Uploading proof images sequentially could be slow for 6 images. Consider
-//   `async let` or TaskGroup for concurrent uploads with aggregated progress.
-//
-// SUGGESTION 6 — setTasks deep check sorts on every call:
-//   The deep diff sorts both arrays on every Firestore event. For large task lists,
-//   consider a dictionary-based diff: `[id: FamilyTask]` comparison instead.

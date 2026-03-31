@@ -90,11 +90,11 @@ struct AgendaDayView: View {
             }
             
             VStack(spacing: DS.Spacing.xs) {
-                Text("noEvents")
+                Text("no_events")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
-                Text("thisDayIsClear")
+                Text("this_day_is_clear")
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textTertiary)
             }
@@ -201,7 +201,7 @@ struct AgendaDayView: View {
     private func expandButton(isExpanded: Bool, remaining: Int, toggle: @escaping () -> Void) -> some View {
         Button(action: toggle) {
             HStack(spacing: DS.Spacing.xs) {
-                Text(isExpanded ? "showLess" : "+ \(remaining) more")
+                Text(isExpanded ? "show_less" : "+ \(remaining) more")
                     .font(DS.Typography.captionMedium())
                 
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")

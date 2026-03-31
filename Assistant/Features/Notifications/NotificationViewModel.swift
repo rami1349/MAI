@@ -22,11 +22,6 @@
 //   - Proof submitted: notify creator only.
 //   - Proof verified: notify assignee(s) only.
 //   - Event created/updated/deleted: notify all participants except the actor.
-// KEY DEPENDENCIES:
-//   - FirebaseFirestore      — notification document storage
-//   - FirestoreDecode        — off-main-thread Codable decoding
-//   - LocalNotificationService — app badge count management
-//   - AppStrings (LocalizationManager) — localized notification strings
 //
 // ============================================================================
 
@@ -286,7 +281,7 @@ final class NotificationViewModel {
     /// Checks if a notification should be deduplicated (sent recently).
     private func shouldDeduplicate(key: String) -> Bool {
         // Clean up old entries first
-        let cutoff = Date().addingTimeInterval(-Self.deduplicationWindow * 2)
+        let cutoff = Date.now.addingTimeInterval(-Self.deduplicationWindow * 2)
         recentNotifications = recentNotifications.filter { $0.value > cutoff }
         
         // Check if we've sent this notification recently
@@ -301,7 +296,7 @@ final class NotificationViewModel {
     
     /// Records that a notification was sent for deduplication tracking.
     private func recordNotificationSent(key: String) {
-        recentNotifications[key] = Date()
+        recentNotifications[key] = Date.now
     }
     
     // =========================================================================
@@ -319,17 +314,17 @@ final class NotificationViewModel {
         // Notify assignee
         write(.init(
             userId: assigneeId, familyId: familyId, type: .taskAssigned,
-            title: "taskAssignment",
+            title: "task_assignment",
             message: AppStrings.assignedYouTask(assignerName, title),
-            relatedTaskId: taskId, isRead: false, createdAt: Date()
+            relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
         
         // Notify assigner
         write(.init(
             userId: assignerId, familyId: familyId, type: .taskAssigned,
-            title: "taskAssignment",
+            title: "task_assignment",
             message: AppStrings.youAssignedTask(assigneeName, title),
-            relatedTaskId: taskId, isRead: false, createdAt: Date()
+            relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
     }
     
@@ -345,7 +340,7 @@ final class NotificationViewModel {
             userId: creatorId, familyId: familyId, type: .taskCompleted,
             title: "taskCompletedNotification",
             message: AppStrings.taskCompletedNotifBody(performerName, title),
-            relatedTaskId: taskId, isRead: false, createdAt: Date()
+            relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
     }
     
@@ -358,9 +353,9 @@ final class NotificationViewModel {
         
         write(.init(
             userId: assigneeId, familyId: familyId, type: .taskDeleted,
-            title: "taskRemoved",
+            title: "task_removed",
             message: AppStrings.memberRemovedTask(deleterName, title),
-            relatedTaskId: nil, isRead: false, createdAt: Date()
+            relatedTaskId: nil, isRead: false, createdAt: Date.now
         ))
     }
     
@@ -373,9 +368,9 @@ final class NotificationViewModel {
         if let assigneeId, assigneeId != editorId {
             write(.init(
                 userId: assigneeId, familyId: familyId, type: .taskAssigned,
-                title: "taskUpdatedNotif",
+                title: "task_updated_notif",
                 message: AppStrings.taskUpdatedNotifBody(title),
-                relatedTaskId: taskId, isRead: false, createdAt: Date()
+                relatedTaskId: taskId, isRead: false, createdAt: Date.now
             ))
         }
         
@@ -384,7 +379,7 @@ final class NotificationViewModel {
                 userId: oldAssigneeId, familyId: familyId, type: .taskAssigned,
                 title: "taskReassignedNotificaation",
                 message: AppStrings.taskReassignedNotifBody(title),
-                relatedTaskId: taskId, isRead: false, createdAt: Date()
+                relatedTaskId: taskId, isRead: false, createdAt: Date.now
             ))
         }
     }
@@ -399,9 +394,9 @@ final class NotificationViewModel {
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .proofSubmitted,
-            title:"proofSubmitted",
-            message: "\("submitterName") \("submittedProofFor"): \(title)",
-            relatedTaskId: taskId, isRead: false, createdAt: Date()
+            title:"proof_submitted",
+            message: "\("submitterName") \("submitted_proof_for"): \(title)",
+            relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
     }
     
@@ -414,14 +409,14 @@ final class NotificationViewModel {
         guard let assigneeId, assigneeId != verifierId else { return }
         
         let message = approved
-        ? "\("yourTask") '\(title)' \("wasApproved")!"
-        : "\("yourProofFor") '\(title)' \("wasNotAccepted")."
+        ? "\("your_task") '\(title)' \("was_approved")!"
+        : "\("your_proof_for") '\(title)' \("was_not_accepted")."
         
         write(.init(
             userId: assigneeId, familyId: familyId, type: .proofVerified,
             title: approved ? "approved" : "rejected",
             message: message,
-            relatedTaskId: taskId, isRead: false, createdAt: Date()
+            relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
     }
     
@@ -436,19 +431,19 @@ final class NotificationViewModel {
         for pid in participantIds where pid != creatorId {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventCreated,
-                title: "newEvent",
+                title: "new_event",
                 message: AppStrings.addedYouToEvent(creatorName, title, dateStr),
                 relatedTaskId: nil, relatedEventId: eventId,
-                isRead: false, createdAt: Date()
+                isRead: false, createdAt: Date.now
             ))
         }
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .eventCreated,
-            title: "newEvent",
+            title: "new_event",
             message: AppStrings.youCreatedEvent(title, dateStr),
             relatedTaskId: nil, relatedEventId: eventId,
-            isRead: false, createdAt: Date()
+            isRead: false, createdAt: Date.now
         ))
     }
     
@@ -465,7 +460,7 @@ final class NotificationViewModel {
                 title: "eventUpdatedNotification",
                 message: AppStrings.eventUpdatedNotifBody(title),
                 relatedTaskId: nil, relatedEventId: eventId,
-                isRead: false, createdAt: Date()
+                isRead: false, createdAt: Date.now
             ))
         }
     }
@@ -482,7 +477,7 @@ final class NotificationViewModel {
                 userId: pid, familyId: familyId, type: .eventCanceled,  // FIXED: was .eventCreated
                 title: "eventCanceledNotification",
                 message: AppStrings.eventCanceledNotifBody(title, deleterName),
-                relatedTaskId: nil, isRead: false, createdAt: Date()
+                relatedTaskId: nil, isRead: false, createdAt: Date.now
             ))
         }
     }
@@ -503,11 +498,11 @@ final class NotificationViewModel {
             userId: targetId,
             familyId: familyId,
             type: .rewardReceived,
-            title: "payoutRequest",
+            title: "payout_request",
             message: AppStrings.requestedPayoutFrom(requesterName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
-            createdAt: Date()
+            createdAt: Date.now
         ))
     }
     
@@ -522,11 +517,11 @@ final class NotificationViewModel {
             userId: requesterId,
             familyId: familyId,
             type: .rewardReceived,
-            title: "payoutApproved",
+            title: "payout_approved",
             message: AppStrings.payoutApprovedBody(payerName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
-            createdAt: Date()
+            createdAt: Date.now
         ))
     }
     
@@ -541,11 +536,11 @@ final class NotificationViewModel {
             userId: requesterId,
             familyId: familyId,
             type: .rewardReceived,
-            title: "payoutRejected",
+            title: "payout_rejected",
             message: AppStrings.payoutRejectedBody(rejecterName, Int(amount)),
             relatedTaskId: nil,
             isRead: false,
-            createdAt: Date()
+            createdAt: Date.now
         ))
     }
     
@@ -562,11 +557,57 @@ final class NotificationViewModel {
             userId: userId,
             familyId: familyId,
             type: .rewardReceived,
-            title: "rewardEarned",
+            title: "reward_earned",
             message: AppStrings.rewardEarnedBody(Int(amount), taskTitle, assignerName),
             relatedTaskId: taskId,
             isRead: false,
-            createdAt: Date()
+            createdAt: Date.now
+        ))
+    }
+    
+    // MARK: - Member Joined
+    
+    /// Notifies all existing family members when a new member joins.
+    func notifyMemberJoined(
+        newMemberId: String,
+        newMemberName: String,
+        familyId: String,
+        existingMemberIds: [String]
+    ) async {
+        for memberId in existingMemberIds where memberId != newMemberId {
+            write(.init(
+                userId: memberId,
+                familyId: familyId,
+                type: .memberJoined,
+                title: "member_joined",
+                message: String(localized: "member_joined_body \(newMemberName)"),
+                relatedTaskId: nil,
+                isRead: false,
+                createdAt: Date.now
+            ))
+        }
+    }
+    
+    // MARK: - Task Overdue (client-side, for immediate feedback)
+    
+    /// Creates an in-app notification when a task becomes overdue.
+    /// Note: The backend `checkOverdueTasks` scheduler also creates these,
+    /// but this provides immediate feedback when the user opens the app.
+    func notifyTaskOverdue(
+        taskId: String,
+        title: String,
+        assigneeId: String,
+        familyId: String
+    ) async {
+        write(.init(
+            userId: assigneeId,
+            familyId: familyId,
+            type: .taskOverdue,
+            title: "task_overdue",
+            message: String(localized: "task_overdue_body \(title)"),
+            relatedTaskId: taskId,
+            isRead: false,
+            createdAt: Date.now
         ))
     }
     

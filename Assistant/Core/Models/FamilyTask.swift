@@ -71,26 +71,26 @@ struct FamilyTask: Identifiable, Codable, Hashable {
     var totalFocusedSeconds: Int?
     var lastFocusDate: Date?
     
-    // MARK: - Task Type & AI Verification
+    // MARK: - Task Type & AI Verification (NEW)
     
     var taskType: TaskType?
-    var homeworkSubject: HomeworkSubject?
+    var homeworkSubject: HomeworkSubject?  // AI-populated from image analysis
     var aiVerification: AIVerification?
-    var aiVerificationStatus: String?
+    var aiVerificationStatus: String?  // "processing", "complete", "failed"
     
     // MARK: - Enums
     
     enum TaskStatus: String, Codable, CaseIterable {
-        case todo = "to_do"
-        case inProgress = "in_Progress"
-        case pendingVerification = "Pending_Verification"
+        case todo = "To-do"
+        case inProgress = "In Progress"
+        case pendingVerification = "Pending Verification"
         case completed = "Completed"
         
         var displayName: String {
             switch self {
-            case .todo: return "to_do"
-            case .inProgress: return "in_Progress"
-            case .pendingVerification: return "pending_Verification"
+            case .todo: return "todo"
+            case .inProgress: return "in_progress"
+            case .pendingVerification: return "pending_verification"
             case .completed: return "completed"
             }
         }
@@ -206,8 +206,8 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         
         var displayName: String {
             switch self {
-            case .chore: return "taskTypeChore"
-            case .homework: return "taskTypeHomework"
+            case .chore: return "task_type_chore"
+            case .homework: return "task_type_homework"
             }
         }
         
@@ -228,11 +228,11 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         
         var displayName: String {
             switch self {
-            case .math: return "subjectMath"
-            case .language: return "subjectLanguage"
-            case .reading: return "subjectReading"
-            case .science: return "subjectScience"
-            case .other: return "subjectOther"
+            case .math: return "subject_math"
+            case .language: return "subject_language"
+            case .reading: return "subject_reading"
+            case .science: return "subject_science"
+            case .other: return "subject_other"
             }
         }
         
@@ -313,7 +313,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
             }
         }
     }
-    
+
     struct AIVerificationQuestion: Codable, Hashable {
         var questionNumber: String
         var questionText: String?
@@ -323,7 +323,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         var note: String?
         var confidence: Double?
     }
-    
+
     // Keep the old struct for backwards compatibility
     struct AIVerificationIssue: Codable, Hashable {
         var question: String
@@ -410,7 +410,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
         var score: Double = 0
         
         // Factor 1: Due date urgency
-        let hoursUntilDue = dueDate.timeIntervalSince(Date()) / 3600
+        let hoursUntilDue = dueDate.timeIntervalSince(Date.now) / 3600
         
         if hoursUntilDue <= 0 {
             score += 100  // Overdue
@@ -454,18 +454,18 @@ struct FamilyTask: Identifiable, Codable, Hashable {
     
     /// Whether task is overdue
     var isOverdue: Bool {
-        dueDate < Date() && status != .completed
+        dueDate < Date.now && status != .completed
     }
     
     /// Whether task is due soon (within 2 hours)
     var isDueSoon: Bool {
-        let hours = dueDate.timeIntervalSince(Date()) / 3600
+        let hours = dueDate.timeIntervalSince(Date.now) / 3600
         return hours > 0 && hours <= 2 && status != .completed
     }
     
     /// Human-readable time until due
     var timeUntilDueText: String {
-        let hours = dueDate.timeIntervalSince(Date()) / 3600
+        let hours = dueDate.timeIntervalSince(Date.now) / 3600
         
         if hours <= 0 {
             return "overdue"
@@ -476,7 +476,7 @@ struct FamilyTask: Identifiable, Codable, Hashable {
             let h = Int(hours)
             return AppStrings.dueInHours(h)
         } else if hours < 48 {
-            return "due_Tomorrow"
+            return "due_tomorrow"
         } else {
             let days = Int(hours / 24)
             return AppStrings.dueInDays(days)
@@ -711,7 +711,7 @@ extension Array where Element == FamilyTask {
     
     /// Overdue tasks (past due date and not completed).
     var overdue: [FamilyTask] {
-        let now = Date()
+        let now = Date.now
         return filter { $0.dueDate < now && $0.status != .completed }
     }
     
@@ -739,3 +739,23 @@ struct TaskGroup: Identifiable, Codable, Hashable {
         case familyId, name, icon, color, createdBy, createdAt
     }
 }
+// MARK: - Improvements & Code Quality Notes
+//
+// SUGGESTION 1 — rewardPaid lacks write-atomicity:
+//   The balance increment (FieldValue.increment) and `rewardPaid = true` write
+//   happen in two separate Firestore operations. A crash between them creates
+//   a task with `rewardPaid = false` but an already-incremented balance.
+//   Wrap both in a Firestore transaction for atomicity.
+//
+// SUGGESTION 2 — TaskStatus raw values with spaces are fragile:
+//   "In Progress", "To-do" etc. work in Firestore but complicate switch statements
+//   and localization. Separate the stored raw value from the display name:
+//   add a `displayName: String` computed property.
+//
+// SUGGESTION 3 — RecurrenceRule.daysOfWeek not range-validated:
+//   Invalid values like `[8]` could be written by a buggy Cloud Function.
+//   Add a computed `var isValid: Bool` that validates the 0-6 range.
+//
+// SUGGESTION 4 — No Firestore composite index documentation:
+//   The query in TaskViewModel requires `familyId ASC + dueDate ASC`.
+//   This should be documented in the codebase (e.g., a firestore.indexes.json comment).

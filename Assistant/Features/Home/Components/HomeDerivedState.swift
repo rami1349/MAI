@@ -73,6 +73,26 @@ final class HomeDerivedState {
     
     /// Tasks pending verification that were assigned BY this user.
     private(set) var myPendingVerificationTasks: [FamilyTask] = []
+    
+    /// Slot 6: Active tasks NOT in focusTasks (the overflow).
+    private(set) var otherTasks: [FamilyTask] = []
+    
+    // MARK: - ADHD Completion Stats
+    
+    /// Today: tasks assigned to me that are due today (any status).
+    private(set) var todayTotalCount: Int = 0
+    
+    /// Today: tasks completed today.
+    private(set) var todayCompletedCount: Int = 0
+    
+    /// This week: total completed tasks.
+    private(set) var weeklyCompletedCount: Int = 0
+    
+    /// This week: earnings (passed through from rebuild).
+    private(set) var weeklyEarningsAmount: Double = 0
+    
+    /// Habit streak days (passed through from rebuild).
+    private(set) var habitStreakDays: Int = 0
 
     // MARK: - v2 Home Slots
 
@@ -233,6 +253,30 @@ final class HomeDerivedState {
         
         // Build Focus Now: top 5 tasks needing attention
         buildFocusTasks(from: active)
+        
+        // Slot 6: Other tasks = active minus focus
+        let focusIds = Set(focusTasks.compactMap { $0.id })
+        otherTasks = active.filter { task in
+            guard let id = task.id else { return false }
+            return !focusIds.contains(id)
+        }
+        
+        // ADHD stats: today's progress
+        let calendar = Calendar.current
+        let todayAll = allTasks.filter { task in
+            calendar.isDateInToday(task.dueDate) &&
+            (task.isAssigned(to: userId) || task.assignedBy == userId)
+        }
+        todayTotalCount = todayAll.count
+        todayCompletedCount = todayAll.filter { $0.status == .completed }.count
+        
+        // ADHD stats: weekly completed
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: .now)?.start ?? .now
+        weeklyCompletedCount = completed.filter { ($0.completedAt ?? $0.dueDate) >= startOfWeek }.count
+        
+        // Pass through values from rebuild params
+        weeklyEarningsAmount = weeklyEarnings
+        self.habitStreakDays = habitStreakDays
         
         // Build unified timeline
         buildTimeline(tasks: active, events: upcomingEvents)

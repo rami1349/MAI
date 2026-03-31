@@ -1,6 +1,6 @@
 // ============================================================================
 // AuthViewModel.swift
-// 
+//
 //
 // PURPOSE:
 //   Central authentication controller and session manager for .
@@ -701,22 +701,6 @@ final class AuthViewModel {
         }
     }
     
-    /// Updates the current user's reward wallet balance by a delta amount.
-    ///
-    /// Used when a task reward is earned or a reward is redeemed from the wallet.
-    /// Delegates the Firestore write to `FamilyManagementService`.
-    ///
-    /// - Parameter amount: Positive to add funds, negative to deduct.
-    func updateUserBalance(amount: Double) async {
-        guard let user = currentUser else { return }
-        
-        if let updatedUser = await FamilyManagementService.shared.updateUserBalance(user: user, amount: amount) {
-            currentUser = updatedUser
-        } else {
-            errorMessage = "Failed to update balance"
-        }
-    }
-    
     /// Marks the current user's onboarding flow as completed.
     ///
     /// Sets `hasCompletedOnboarding = true` on both the Firestore document and
@@ -803,25 +787,3 @@ final class AuthViewModel {
         return rootViewController.presentedViewController ?? rootViewController
     }
 }
-
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — signUp race condition:
-//   `currentUser = newUser` is set optimistically, but if the Firestore write fails,
-//   `currentUser` will be set to a user that was never persisted. Consider only
-//   setting `currentUser` after the Firestore write succeeds, or roll back on failure.
-//
-// SUGGESTION 2 — deleteAll() batching in deleteAccount():
-//   AccountDeletionService should use Firestore batch writes for multi-document
-//   deletes to reduce network round-trips and ensure atomicity.
-//
-// SUGGESTION 3 — Magic string "users":
-//   The Firestore collection name "users" appears in multiple files. Consider
-//   extracting to a `FirestoreCollections` constants enum to prevent typos.
-//
-// SUGGESTION 4 — resetOnboarding() is a debug function exposed publicly:
-//   Gate this behind `#if DEBUG` to prevent it from being callable in production.
-//
-// SUGGESTION 5 — markAllAsRead() in NotificationViewModel doesn't use batch writes:
-//   Individual Firestore writes in a loop should be replaced with a Firestore
-//   WriteBatch for atomicity and performance (see NotificationViewModel).

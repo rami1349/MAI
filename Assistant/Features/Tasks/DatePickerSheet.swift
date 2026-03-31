@@ -29,7 +29,7 @@ struct DatePickerSheet: View {
                     DatePicker(
                         title,
                         selection: $selectedDate,
-                        in: ...Date(),
+                        in: ...Date.now,
                         displayedComponents: .date
                     )
                     .datePickerStyle(.wheel)
@@ -59,7 +59,7 @@ struct TimePickerSheet: View {
     @Environment(\.dismiss) var dismiss
     @Binding var selectedTime: Date?
     @Binding var hasTime: Bool
-    @State private var tempTime = Date()
+    @State private var tempTime = Date.now
     
     var body: some View {
         NavigationStack {
@@ -72,7 +72,7 @@ struct TimePickerSheet: View {
                 .datePickerStyle(.wheel)
                 .labelsHidden()
                 
-                Button("clearTime") {
+                Button("clear_time") {
                     hasTime = false
                     selectedTime = nil
                     dismiss()
@@ -101,7 +101,7 @@ struct TimePickerSheet: View {
         .presentationDetents([.medium])
         .presentationBackground(.ultraThinMaterial)
         .onAppear {
-            tempTime = selectedTime ?? Date()
+            tempTime = selectedTime ?? Date.now
         }
     }
 }

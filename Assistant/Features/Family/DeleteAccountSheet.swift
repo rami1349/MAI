@@ -33,19 +33,19 @@ struct DeleteAccountSheet: View {
                     .padding(.top, DS.Spacing.xl)
                 
                 // Title
-                Text("deleteAccount")
+                Text("delete_account")
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.textPrimary)
                 
                 // Warning message
                 VStack(spacing: DS.Spacing.md) {
-                    Text("deleteAccountPermanent")
+                    Text("delete_account_permanent")
                         .font(.subheadline)
                         .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                     
-                    Text("deleteAccountRemoves")
+                    Text("delete_account_removes")
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
@@ -60,7 +60,7 @@ struct DeleteAccountSheet: View {
                     }
                     .padding(.horizontal)
                     
-                    Text("tasksUnassignedNote")
+                    Text("tasks_unassigned_note")
                         .font(.caption)
                         .foregroundStyle(.textTertiary)
                         .italic()
@@ -133,7 +133,7 @@ struct DeleteAccountSheet: View {
                     }
                 }
             }) {
-                Text("deleteMyAccount")
+                Text("delete_my_account")
                     .fontWeight(.semibold)
                     .foregroundStyle(.textOnAccent)
                     .frame(maxWidth: .infinity)
@@ -150,7 +150,7 @@ struct DeleteAccountSheet: View {
     
     private var reauthenticationStep: some View {
         VStack(spacing: DS.Spacing.lg) {
-            Text("reenterPassword")
+            Text("reenter_password")
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
             
@@ -181,7 +181,7 @@ struct DeleteAccountSheet: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     }
-                    Text("confirmAndDelete")
+                    Text("confirm_and_delete")
                         .fontWeight(.semibold)
                 }
                 .foregroundStyle(.textOnAccent)
@@ -195,7 +195,7 @@ struct DeleteAccountSheet: View {
             .disabled(password.count < 6 || authViewModel.isLoading)
             .padding(.horizontal)
             
-            Button("goBack") {
+            Button("go_back") {
                 step = .confirm
                 password = ""
                 authViewModel.errorMessage = nil
@@ -212,7 +212,7 @@ struct DeleteAccountSheet: View {
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.5)
             
-            Text("deletingAccount")
+            Text("deleting_account")
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
         }

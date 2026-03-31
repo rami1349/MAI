@@ -39,7 +39,7 @@ struct FamilyView: View {
     @State private var selectedMember: FamilyUser?
     @State private var selectedBannerPhoto: PhotosPickerItem?
     @State private var isUploadingBanner = false
-    @State private var heatmapMonth: Date = Date()  // For heatmap month navigation
+    @State private var heatmapMonth: Date = Date.now  // For heatmap month navigation
     
     var body: some View {
         contentView
@@ -82,12 +82,12 @@ struct FamilyView: View {
         .onAppear {
             // Only reset heatmap when it's a new year (fresh start for new year)
             let calendar = Calendar.current
-            let currentYear = calendar.component(.year, from: Date())
+            let currentYear = calendar.component(.year, from: Date.now)
             let heatmapYear = calendar.component(.year, from: heatmapMonth)
             
             // If it's a new year, reset to current month (fresh start)
             if heatmapYear != currentYear {
-                heatmapMonth = Date()
+                heatmapMonth = Date.now
                 Task {
                     await loadHabitLogsForMonth(heatmapMonth)
                 }
@@ -427,7 +427,7 @@ struct FamilyView: View {
     private var currentYear: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
-        return formatter.string(from: Date())
+        return formatter.string(from: Date.now)
     }
     
     // Tasks that belong to the current user (assigned to them OR created by them with no assignee)
@@ -554,11 +554,11 @@ struct MonthlyActivityHeatmap: View {
     
     // Navigation bounds
     private var currentYear: Int {
-        calendar.component(.year, from: Date())
+        calendar.component(.year, from: Date.now)
     }
     
     private var currentMonth: Int {
-        calendar.component(.month, from: Date())
+        calendar.component(.month, from: Date.now)
     }
     
     private var canGoBack: Bool {
@@ -758,7 +758,7 @@ struct MonthlyActivityHeatmap: View {
                                 let count = completedCount(for: date)
                                 let dayNum = calendar.component(.day, from: date)
                                 let isToday = calendar.isDateInToday(date)
-                                let isFuture = date > Date()
+                                let isFuture = date > Date.now
                                 
                                 ZStack {
                                     RoundedRectangle(cornerRadius: DS.Radius.sm)

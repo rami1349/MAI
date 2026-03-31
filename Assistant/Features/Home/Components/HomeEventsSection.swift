@@ -1,7 +1,5 @@
-//  HomeEventsSection.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/23/26.
+// ============================================================================
+// HomeEventsSection.swift
 //
 // SLOT 5: My Events (Today/Tomorrow)
 //
@@ -11,6 +9,7 @@
 // No role checks, no capability checks — events are visible to everyone.
 // This replaces both HomeTimelineSection and HomeWeekEventsSection.
 //
+// ============================================================================
 
 import SwiftUI
 

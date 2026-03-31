@@ -2,8 +2,14 @@
 //  PaywallView.swift
 //  Assistant
 //
-//  Premium upgrade screen. Shown when user taps "Upgrade" from
-//  the rate limit banner, settings, or anywhere else.
+//  v3: Only real features, honest paywall
+//
+//  WHAT CHANGED (v2 → v3):
+//    - Removed 5 fake features (analytics, support, AI model, family, tasks)
+//    - Only shows the one real Premium benefit: 300 AI messages/day
+//    - Cleaner hero with comparison callout
+//    - Both monthly ($9.99) + yearly ($79.99) plans
+//    - Auto-renewal disclosure (App Store requirement)
 //
 
 import SwiftUI
@@ -12,16 +18,16 @@ import StoreKit
 struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(SubscriptionManager.self) var store
-    
+
     @State private var selectedPlan: Product?
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: DS.Spacing.xl) {
                     heroSection
+                    comparisonCard
                     planCards
-                    featuresSection
                     purchaseButton
                     footerSection
                 }
@@ -30,7 +36,7 @@ struct PaywallView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle("upgradeToPremium")
+            .navigationTitle("upgrade_to_premium")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -45,7 +51,6 @@ struct PaywallView: View {
                 if store.subscriptionProducts.isEmpty {
                     await store.loadProducts()
                 }
-                // Default to yearly (better value)
                 selectedPlan = store.subscriptionProducts.last
             }
             .globalErrorBanner(errorMessage: Binding(
@@ -54,9 +59,9 @@ struct PaywallView: View {
             ))
         }
     }
-    
+
     // MARK: - Hero
-    
+
     private var heroSection: some View {
         VStack(spacing: DS.Spacing.md) {
             ZStack {
@@ -68,56 +73,125 @@ struct PaywallView: View {
                     .foregroundStyle(.accentPrimary)
             }
             .padding(.top, DS.Spacing.lg)
-            
-            Text("unlockTheFullMaiExperience")
+
+            Text("unlock_full_mai")
                 .font(DS.Typography.heading())
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.textPrimary)
+
+            Text("premium_subtitle")
+                .font(DS.Typography.body())
+                .foregroundStyle(.textSecondary)
+                .multilineTextAlignment(.center)
         }
     }
-    
+
+    // MARK: - Free vs Premium Comparison
+
+    private var comparisonCard: some View {
+        VStack(spacing: 0) {
+            // Free row
+            HStack {
+                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+                    Text("free")
+                        .font(DS.Typography.caption())
+                        .foregroundStyle(.textTertiary)
+                    Text("20")
+                        .font(DS.Typography.displayMedium())
+                        .foregroundStyle(.textSecondary)
+                }
+
+                Spacer()
+
+                Text("messages_per_day")
+                    .font(DS.Typography.caption())
+                    .foregroundStyle(.textTertiary)
+            }
+            .padding(DS.Spacing.lg)
+
+            Divider()
+
+            // Premium row
+            HStack {
+                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
+                    HStack(spacing: DS.Spacing.xs) {
+                        Text("premium")
+                            .font(DS.Typography.caption())
+                            .foregroundStyle(.accentPrimary)
+                        Image(systemName: "crown.fill")
+                            .font(DS.Typography.micro())
+                            .foregroundStyle(.accentPrimary)
+                    }
+                    Text("300")
+                        .font(DS.Typography.displayMedium())
+                        .foregroundStyle(.accentPrimary)
+                }
+
+                Spacer()
+
+                Text("messages_per_day")
+                    .font(DS.Typography.caption())
+                    .foregroundStyle(.textTertiary)
+
+                Text("15x")
+                    .font(DS.Typography.label())
+                    .foregroundStyle(.textOnAccent)
+                    .padding(.horizontal, DS.Spacing.sm)
+                    .padding(.vertical, DS.Spacing.xxs)
+                    .background(Capsule().fill(Color.accentPrimary))
+            }
+            .padding(DS.Spacing.lg)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .fill(Color.themeCardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .stroke(Color.accentPrimary.opacity(0.2), lineWidth: 1)
+        )
+    }
+
     // MARK: - Plan Cards
-    
+
     private var planCards: some View {
         HStack(spacing: DS.Spacing.md) {
             ForEach(store.subscriptionProducts, id: \.id) { product in
                 let isSelected = selectedPlan?.id == product.id
                 let isYearly = product.id == StoreProduct.premiumYearly
-                
+
                 Button {
                     withAnimation(.spring(response: 0.3)) { selectedPlan = product }
                     DS.Haptics.light()
                 } label: {
                     VStack(spacing: DS.Spacing.sm) {
                         if isYearly {
-                            Text("save")
+                            Text("save_33")
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.textOnAccent)
-                                .padding(.horizontal, 8)
+                                .padding(.horizontal, DS.Spacing.xs)
                                 .padding(.vertical, 3)
                                 .background(Capsule().fill(Color.accentGreen))
                         } else {
-                            Text(" ").font(DS.Typography.micro()).opacity(0)
-                                .padding(.horizontal, 8).padding(.vertical, 3)
+                            Color.clear.frame(height: 18)
                         }
-                        
-                        Text(isYearly ? "Yearly" : "Monthly")
-                            .font(DS.Typography.body())
-                            .fontWeight(.semibold)
+
+                        Text(isYearly ? "yearly" : "monthly")
+                            .font(DS.Typography.label())
                             .foregroundStyle(.textPrimary)
-                        
+
                         Text(product.displayPrice)
-                            .font(DS.Typography.displayMedium()) // was .rounded
+                            .font(DS.Typography.displayMedium())
                             .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
-                        
-                        Text(isYearly ? "per year" : "per month")
-                            .font(DS.Typography.subheading())
+
+                        Text(isYearly ? "per_year" : "per_month")
+                            .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
-                        
+
                         if isYearly {
                             let monthly = product.price / 12
-                            Text("\(monthly.formatted(.currency(code: "USD")))/mo")
-                                .font(DS.Typography.subheading())
+                            Text(monthly.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD")) + "/\(String(localized: "month_short"))")
+                                .font(DS.Typography.caption())
                                 .foregroundStyle(.accentGreen)
                         }
                     }
@@ -137,66 +211,9 @@ struct PaywallView: View {
             }
         }
     }
-    
-    // MARK: - Features
-    
-    private var featuresSection: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.md) {
-            Text("whatYouGet")
-                .font(DS.Typography.body())
-                .fontWeight(.semibold)
-                .foregroundStyle(.textPrimary)
-            
-            featureRow(icon: "bubble.left.and.text.bubble.right.fill",
-                       title: "300 messages/day",
-                       subtitle: "vs 20 on Free", color: Color.accentPrimary)
-            featureRow(icon: "brain.head.profile.fill",
-                       title: "Smarter AI model",
-                       subtitle: "GPT-4o for chat (vs GPT-4o-mini)", color: .purple)
-            featureRow(icon: "person.3.fill",
-                       title: "10 family members",
-                       subtitle: "vs 4 on Free", color: Color.accentGreen)
-            featureRow(icon: "checklist",
-                       title: "200 active tasks",
-                       subtitle: "vs 50 on Free", color: .orange)
-            featureRow(icon: "chart.bar.fill",
-                       title: "Advanced analytics",
-                       subtitle: "Task completion trends & insights", color: .blue)
-            featureRow(icon: "star.fill",
-                       title: "Priority support",
-                       subtitle: "Faster response times", color: .yellow)
-        }
-        .padding(DS.Spacing.lg)
-        .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
-                .fill(Color.themeCardBackground)
-        )
-    }
-    
-    private func featureRow(icon: String, title: String, subtitle: String, color: Color) -> some View {
-        HStack(spacing: DS.Spacing.md) {
-            ZStack {
-                RoundedRectangle(cornerRadius: DS.Radius.sm)
-                    .fill(color.opacity(0.12))
-                    .frame(width: 36, height: 36)
-                Image(systemName: icon)
-                    .font(DS.Typography.body())
-                    .foregroundStyle(color)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(DS.Typography.bodySmall())
-                    .fontWeight(.medium)
-                    .foregroundStyle(.textPrimary)
-                Text(subtitle)
-                    .font(DS.Typography.subheading())
-                    .foregroundStyle(.textSecondary)
-            }
-        }
-    }
-    
+
     // MARK: - Purchase Button
-    
+
     private var purchaseButton: some View {
         Button {
             guard let plan = selectedPlan else { return }
@@ -207,33 +224,38 @@ struct PaywallView: View {
                     ProgressView().tint(.white)
                 } else {
                     Text("subscribe")
-                        .fontWeight(.bold)
+                        .font(DS.Typography.label())
                     if let plan = selectedPlan {
                         Text("· \(plan.displayPrice)")
+                            .font(DS.Typography.label())
                     }
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, DS.Spacing.md)
             .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.accentPrimary))
             .foregroundStyle(.textOnAccent)
-            .font(DS.Typography.body())
         }
         .disabled(selectedPlan == nil || store.isPurchasing)
         .opacity(selectedPlan == nil ? 0.5 : 1)
     }
-    
+
     // MARK: - Footer
-    
+
     private var footerSection: some View {
         VStack(spacing: DS.Spacing.md) {
-            Button("restorePurchases") {
+            Button("restore_purchases") {
                 Task { await store.restorePurchases() }
             }
             .font(DS.Typography.bodySmall())
             .foregroundStyle(.accentPrimary)
-            
-            Text("paymentWillBeChargedToYourAppleIdAccountS")
+
+            Text("payment_apple_id")
+                .font(DS.Typography.micro())
+                .foregroundStyle(.textTertiary)
+                .multilineTextAlignment(.center)
+
+            Text("subscription_auto_renews")
                 .font(DS.Typography.micro())
                 .foregroundStyle(.textTertiary)
                 .multilineTextAlignment(.center)

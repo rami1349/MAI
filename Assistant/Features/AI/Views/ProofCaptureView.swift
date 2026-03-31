@@ -184,7 +184,7 @@ struct ProofCaptureView: View {
                     ImageProcessingOverlay(message: processingMessage)
                 }
             }
-            .navigationTitle("submitProof")
+            .navigationTitle("submit_proof")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -212,15 +212,15 @@ struct ProofCaptureView: View {
                     ProofPreviewSheet(item: item)
                 }
             }
-            .alert("noTextDetected", isPresented: $showNoTextWarning) {
-                Button("useAnyway") { }
+            .alert("no_text_detected", isPresented: $showNoTextWarning) {
+                Button("use_anyway") { }
                 Button("Retake", role: .cancel) {
                     if let lastItem = proofItems.last {
                         proofItems.removeAll { $0.id == lastItem.id }
                     }
                 }
             } message: {
-                Text("thisImageMayNotBeReadable")
+                Text("this_image_may_not_contain_readable_homework_the_analysis")
             }
         }
     }
@@ -285,10 +285,10 @@ struct ProofCaptureView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: DS.IconSize.md, height: DS.IconSize.md)
-                Text("maiWillCheckYourWork")
+                Text("mai_will_check_your_work")
             } else {
                 Image(systemName: "person.fill")
-                Text("parentWillReview")
+                Text("parent_will_review")
             }
         }
         .font(.caption)
@@ -319,10 +319,10 @@ struct ProofCaptureView: View {
             }
             
             VStack(spacing: DS.Spacing.xs) {
-                Text("addProofOfCompletion")
+                Text("add_proof_of_completion")
                     .font(.headline)
                 
-                Text("uploadFiles")
+                Text("upload_files")
                     .font(.subheadline)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -331,7 +331,7 @@ struct ProofCaptureView: View {
             // Tips for homework photos (only show for homework)
             if task.taskType == .homework {
                 VStack(spacing: DS.Spacing.xs) {
-                    Text("tipsForHomeworkPhotos")
+                    Text("tips_for_homework_photos")
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(.textSecondary)
@@ -412,7 +412,7 @@ struct ProofCaptureView: View {
     
     private var addProofSection: some View {
         VStack(spacing: DS.Spacing.md) {
-            Text("add_More")
+            Text("add_more")
                 .font(.subheadline)
                 .foregroundStyle(.textSecondary)
             
@@ -469,7 +469,7 @@ struct ProofCaptureView: View {
                 } else {
                     Image(systemName: "arrow.up.circle.fill")
                 }
-                Text(isUploading ? "Uploading..." : "Submit_Proof")
+                Text(isUploading ? "Uploading..." : "Submit Proof")
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)

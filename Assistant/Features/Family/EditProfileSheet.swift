@@ -49,7 +49,7 @@ struct EditProfileSheet: View {
                             }
                             
                             PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                                Text("changePhoto")
+                                Text("change_photo")
                                     .font(.subheadline)
                                     .foregroundStyle(.accentPrimary)
                             }
@@ -60,14 +60,14 @@ struct EditProfileSheet: View {
                 }
                 
                 // Basic Info Section
-                Section("basicInfo") {
-                    TextField("displayName", text: $displayName)
+                Section("basic_info") {
+                    TextField("display_name", text: $displayName)
                     
                     Button {
                         showDatePicker.toggle()
                     } label: {
                         HStack {
-                            Text("dateOfBirth")
+                            Text("date_of_birth")
                                 .foregroundStyle(.textPrimary)
                             Spacer()
                             Text(dateOfBirth.formattedDate)
@@ -95,7 +95,7 @@ struct EditProfileSheet: View {
                             .overlay(
                                 Group {
                                     if goal.isEmpty {
-                                        Text("yearlyGoalPlaceholder")
+                                        Text("yearly_goal_place_holder")
                                             .foregroundStyle(.textTertiary)
                                             .padding(.top, DS.Spacing.sm)
                                             .padding(.leading, DS.Spacing.xs)
@@ -106,13 +106,11 @@ struct EditProfileSheet: View {
                             )
                     }
                 } header: {
-                    Text("yearlyGoal")
-                } footer: {
-                    Text("yearlyGoalDescription")
+                    Text("yearly_goal")
                 }
                 
                 // Goal Suggestions
-                Section("goalIdeas") {
+                Section("goal_ideas") {
                     GoalSuggestionButton(text: "Exercise regularly and stay healthy") {
                         goal = "Exercise regularly and stay healthy"
                     }
@@ -127,7 +125,7 @@ struct EditProfileSheet: View {
                     }
                 }
             }
-            .navigationTitle("editProfile")
+            .navigationTitle("edit_profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

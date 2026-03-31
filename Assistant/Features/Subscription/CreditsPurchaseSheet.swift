@@ -2,11 +2,13 @@
 //  CreditsPurchaseSheet.swift
 //  Assistant
 //
-//  Created by Ramiro  on 3/1/26.
+//  v2: All strings localized, modern iOS 18.6 syntax
 //
-//  Shown when free user hits daily limit. Offers:
-//  1) Buy a credits pack (one-time, never expire)
-//  2) Upgrade to Premium instead
+//  WHAT CHANGED (v1 → v2):
+//    - "credits", "per credit", "Best Value" → localization keys
+//    - camelCase keys → snake_case
+//    - Hardcoded "$X.XX/credit" uses user's locale currency format
+//    - Modern Swift 6 concurrency patterns
 //
 
 import SwiftUI
@@ -14,13 +16,13 @@ import SwiftUI
 struct CreditsPurchaseSheet: View {
     @Environment(\.dismiss) var dismiss
     @Environment(SubscriptionManager.self) var store
-    
+
     @State private var selectedPackage: CreditPackage?
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: DS.Spacing.xl) {
-                
+
                 // Header
                 VStack(spacing: DS.Spacing.sm) {
                     ZStack {
@@ -31,30 +33,30 @@ struct CreditsPurchaseSheet: View {
                             .font(DS.Typography.displayMedium())
                             .foregroundStyle(.statusWarning)
                     }
-                    
-                    Text("needMoreMessages")
+
+                    Text("need_more_messages")
                         .font(DS.Typography.heading())
                         .foregroundStyle(.textPrimary)
-                    
-                    Text("buyCreditsToKeepChatting")
+
+                    Text("credits_never_expire")
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.top, DS.Spacing.lg)
-                
+
                 // Current balance
                 if store.aiCredits > 0 {
                     HStack(spacing: DS.Spacing.xs) {
-                        Image(systemName: "circle.fill")
-                            .font(DS.Typography.micro())
-                            .foregroundStyle(.accentGreen)
-                        Text("\(store.aiCredits) credits remaining")
+                        Circle()
+                            .fill(Color.accentGreen)
+                            .frame(width: 6, height: 6)
+                        Text("credits_remaining \(store.aiCredits)")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
                     }
                 }
-                
+
                 // Credit packages
                 VStack(spacing: DS.Spacing.md) {
                     ForEach(store.creditPackages) { pkg in
@@ -62,7 +64,7 @@ struct CreditsPurchaseSheet: View {
                     }
                 }
                 .padding(.horizontal, DS.Spacing.lg)
-                
+
                 // Buy button
                 Button {
                     guard let pkg = selectedPackage else { return }
@@ -73,27 +75,26 @@ struct CreditsPurchaseSheet: View {
                             ProgressView().tint(.white)
                         } else {
                             Text("buy_credits")
-                                .fontWeight(.bold)
+                                .font(DS.Typography.label())
                             if let pkg = selectedPackage {
                                 Text("· \(pkg.displayPrice)")
+                                    .font(DS.Typography.label())
                             }
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, DS.Spacing.md)
                     .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.accentPrimary))
                     .foregroundStyle(.textOnAccent)
-                    .font(DS.Typography.body())
                 }
                 .disabled(selectedPackage == nil || store.isPurchasing)
                 .opacity(selectedPackage == nil ? 0.5 : 1)
                 .padding(.horizontal, DS.Spacing.lg)
-                
+
                 // Or upgrade
                 if !store.tier.isPremium {
                     Button {
                         dismiss()
-                        // Small delay so sheet dismisses first
                         Task { @MainActor in
                             try? await Task.sleep(for: .seconds(0.3))
                             store.showPaywall = true
@@ -102,18 +103,18 @@ struct CreditsPurchaseSheet: View {
                         HStack(spacing: DS.Spacing.xs) {
                             Image(systemName: "sparkles")
                                 .font(DS.Typography.body())
-                            Text("orUpgradeToPremium")
+                            Text("or_upgrade_to_premium")
                                 .font(DS.Typography.bodySmall())
                         }
                         .foregroundStyle(.accentPrimary)
                     }
                 }
-                
+
                 Spacer()
             }
             .scrollContentBackground(.hidden)
             .background(AdaptiveBackgroundView())
-            .navigationTitle("buyCredits")
+            .navigationTitle("buy_credits")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -128,7 +129,6 @@ struct CreditsPurchaseSheet: View {
                 if store.creditProducts.isEmpty {
                     await store.loadProducts()
                 }
-                // Default to best value
                 selectedPackage = store.creditPackages.first { $0.isBestValue }
             }
             .globalErrorBanner(errorMessage: Binding(
@@ -137,50 +137,48 @@ struct CreditsPurchaseSheet: View {
             ))
         }
     }
-    
+
     // MARK: - Package Row
-    
+
     private func creditPackageRow(_ pkg: CreditPackage) -> some View {
         let isSelected = selectedPackage?.id == pkg.id
-        
+
         return Button {
             withAnimation(.spring(response: 0.3)) { selectedPackage = pkg }
             DS.Haptics.light()
         } label: {
             HStack(spacing: DS.Spacing.md) {
-                // Credits count
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: DS.Spacing.xs) {
                         Text("\(pkg.credits)")
-                            .font(DS.Typography.stat()) // was .rounded
+                            .font(DS.Typography.stat())
                             .foregroundStyle(.textPrimary)
                         Text("credits")
                             .font(DS.Typography.bodySmall())
                             .foregroundStyle(.textSecondary)
-                        
+
                         if pkg.isBestValue {
-                            Text("bestValue")
+                            Text("best_value")
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.textOnAccent)
-                                .padding(.horizontal, 6)
+                                .padding(.horizontal, DS.Spacing.xs)
                                 .padding(.vertical, 2)
                                 .background(Capsule().fill(Color.accentGreen))
                         }
                     }
-                    
+
                     if pkg.credits > 0, let product = pkg.product {
                         let perCredit = product.price / Decimal(pkg.credits)
-                        Text("\(perCredit.formatted(.currency(code: "USD")))/credit")
-                            .font(DS.Typography.subheading())
+                        Text("per_credit \(perCredit.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD")))")
+                            .font(DS.Typography.caption())
                             .foregroundStyle(.textTertiary)
                     }
                 }
-                
+
                 Spacer()
-                
-                // Price
+
                 Text(pkg.displayPrice)
-                    .font(DS.Typography.heading()) // was .rounded
+                    .font(DS.Typography.heading())
                     .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
             }
             .padding(DS.Spacing.lg)

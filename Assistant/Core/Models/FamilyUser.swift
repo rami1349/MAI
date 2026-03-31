@@ -13,7 +13,7 @@
 // ============================================================================
 
 import Foundation
-import FirebaseFirestore
+@preconcurrency import FirebaseFirestore
 
 struct FamilyUser: Identifiable, Codable, Hashable, Sendable {
 

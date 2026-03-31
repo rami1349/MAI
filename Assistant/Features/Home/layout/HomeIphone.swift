@@ -1,34 +1,37 @@
 // HomeIphone.swift
 //
-
-// REMOVED FROM HOME (v1 → v2):
-//   - Timeline section → absorbed into Slots 3 + 5
-//   - Week Events → Calendar tab
-//   - Calendar Permission prompt → Settings (Me tab)
-//   - Task Groups grid → Tasks tab
-//   - Full task search → Tasks tab
-//   - Pending Verification section → becomes Action Card (Slot 2)
+// v3: 8-Slot Layout + ADHD upgrades
 //
+// │ SLOT 1: Greeting + Progress Ring (ADHD)
+// │ SLOT 2: Action Card
+// │ SLOT 3: My Tasks (Focus Now)
+// │ SLOT 4: My Habits (Today)
+// │ SLOT 6: My Folders (NEW)
+// │ SLOT 7: Other Tasks (NEW)
+// │ SLOT 5: My Events (Today/Tomorrow)
+// │ SLOT 8: Weekly Wins (ADHD)
 
 import SwiftUI
 
 extension HomeView {
 
-    // MARK: - iPhone Layout (5-Slot Linear Scroll)
+    // MARK: - iPhone Layout (8-Slot Linear Scroll)
 
     var iPhoneLayout: some View {
         ScrollView(showsIndicators: false) {
             LazyVStack(spacing: DS.Spacing.xl) {
 
-                // ── SLOT 1: Greeting + Personal Stat ─────────────
+                // ── SLOT 1: Greeting + Progress Ring ──────────
                 HomeGreetingSection(
                     userName: authVM.currentUser?.displayName ?? "",
                     stat: derived.personalStat,
                     unreadNotificationCount: notificationVM.unreadCount,
-                    onNotificationsTapped: { showNotifications = true }
+                    onNotificationsTapped: { router.present(.notifications) },
+                    todayCompleted: derived.todayCompletedCount,
+                    todayTotal: derived.todayTotalCount
                 )
 
-                // ── SLOT 2: Action Card (conditional) ────────────
+                // ── SLOT 2: Action Card (conditional) ────────
                 if let actionCard = derived.actionCard {
                     HomeActionCard(data: actionCard) {
                         handleActionCardTap(actionCard)
@@ -36,12 +39,12 @@ extension HomeView {
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
 
-                // ── SLOT 3: My Tasks (Focus Now) ─────────────────
+                // ── SLOT 3: My Tasks (Focus Now) ──────────────
                 if !derived.focusTasks.isEmpty {
                     HomeFocusNowSection(
                         tasks: derived.focusTasks,
                         groupLookup: { familyMemberVM.getTaskGroup(by: $0) },
-                        onSelectTask: { selectedTask = $0 },
+                        onSelectTask: { router.present(.taskDetail($0)) },
                         onCompleteTask: { task in
                             await familyVM.updateTaskStatus(task, to: .completed)
                         }
@@ -52,7 +55,7 @@ extension HomeView {
                         .padding(.horizontal, DS.Spacing.screenH)
                 }
 
-                // ── SLOT 4: My Habits (Today) ────────────────────
+                // ── SLOT 4: My Habits (Today) ─────────────────
                 if !habitVM.habits.isEmpty {
                     QuickHabitsWidget()
                         .tourTarget("home.habitsWidget")
@@ -61,18 +64,57 @@ extension HomeView {
                     addHabitCTA
                         .padding(.horizontal, DS.Spacing.screenH)
                 }
+                
+                // ── SLOT 6: My Folders (NEW) ──────────────────
+                if !derived.myVisibleGroups.isEmpty {
+                    HomeGroupsSection(
+                        groups: derived.myVisibleGroups,
+                        onSelectGroup: { group in
+                            if let id = group.id {
+                                router.push(HomeRoute.taskGroup(id: id))
+                            }
+                        },
+                        onAddTask: { group in
+                            router.present(.addTask(groupId: group.id))
+                        },
+                        onDropTask: { stableId, groupId in
+                            if let task = taskVM.allTasks.first(where: { $0.stableId == stableId }) {
+                                await familyVM.moveTaskToGroup(task, groupId: groupId)
+                            }
+                        }
+                    )
+                    .padding(.horizontal, DS.Spacing.screenH)
+                }
+                
+                // ── SLOT 7: Other Tasks (NEW) ─────────────────
+                if !derived.otherTasks.isEmpty {
+                    HomeOtherTasksSection(
+                        tasks: derived.otherTasks,
+                        groups: familyMemberVM.taskGroups,
+                        onSelectTask: { router.present(.taskDetail($0)) },
+                        onMoveTask: { task, groupId in
+                            await familyVM.moveTaskToGroup(task, groupId: groupId)
+                        }
+                    )
+                    .padding(.horizontal, DS.Spacing.screenH)
+                }
 
-                // ── SLOT 5: My Events (Today/Tomorrow) ───────────
+                // ── SLOT 5: My Events (Today/Tomorrow) ────────
                 if !derived.todayTomorrowEvents.isEmpty {
                     HomeEventsSection(
                         events: derived.todayTomorrowEvents,
-                        onSeeAll: {
-                            // Navigate to Calendar tab
-                            // Parent view handles this via tab selection binding
-                        },
+                        onSeeAll: { router.selectedTab = .calendar },
                         onDeleteEvent: deleteUpcomingEvent
                     )
                 }
+                
+                // ── SLOT 8: Weekly Wins (ADHD) ────────────────
+                HomeWeeklyWinsSection(
+                    completedCount: derived.weeklyCompletedCount,
+                    earnings: derived.weeklyEarningsAmount,
+                    streakDays: derived.habitStreakDays
+                )
+                .padding(.horizontal, DS.Spacing.screenH)
 
                 Spacer().frame(height: 120)
             }
@@ -89,9 +131,9 @@ extension HomeView {
     private func handleActionCardTap(_ card: ActionCardData) {
         switch card {
         case .reviewHomework(let task):
-            selectedTask = task
+            router.present(.taskDetail(task))
         case .overdueTask(let task):
-            selectedTask = task
+            router.present(.taskDetail(task))
         case .claimReward:
             break
         }
@@ -100,8 +142,6 @@ extension HomeView {
 
 // MARK: - Inline CTA (Empty State Action Card)
 
-/// Compact inline card shown when a home section is empty.
-/// Doubles as a tour target for first-time onboarding.
 struct HomeInlineCTA: View {
     let icon: String
     let iconColor: Color
@@ -113,33 +153,25 @@ struct HomeInlineCTA: View {
     var body: some View {
         VStack(spacing: DS.Spacing.md) {
             HStack(spacing: DS.Spacing.md) {
-                // Icon
                 ZStack {
                     Circle()
                         .fill(iconColor.opacity(0.1))
                         .frame(width: 44, height: 44)
-
                     Image(systemName: icon)
                         .font(DS.Typography.heading())
                         .foregroundStyle(iconColor)
                 }
-
-                // Text
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(DS.Typography.label())
                         .foregroundStyle(.textPrimary)
-
                     Text(subtitle)
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                         .lineLimit(2)
                 }
-
                 Spacer(minLength: 0)
             }
-
-            // Action button
             Button(action: action) {
                 HStack(spacing: DS.Spacing.xs) {
                     Image(systemName: "plus")

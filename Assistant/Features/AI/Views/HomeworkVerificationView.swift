@@ -40,7 +40,7 @@ struct HomeworkVerificationView: View {
                 }
                 .padding()
             }
-            .navigationTitle("homeworkCheck")
+            .navigationTitle("homework_check")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -80,7 +80,7 @@ struct HomeworkVerificationView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 
-                Text("suggestionsOnlyYouDecide")
+                Text("suggestions_only_you_decide")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -141,7 +141,7 @@ struct HomeworkVerificationView: View {
             Text("mai")
                 .font(.headline)
             
-            Text("getMaiRecommendationToHelpYouReviewThisHom")
+            Text("get_mai_recommendation_to_help_you_review_this_homework")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -167,7 +167,7 @@ struct HomeworkVerificationView: View {
             Button {
                 Task { await verify() }
             } label: {
-                Label("getMaiSuggestion", image: "samy")
+                Label("get_mai_suggestion", image: "samy")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -187,18 +187,18 @@ struct HomeworkVerificationView: View {
             ProgressView()
                 .scaleEffect(1.5)
             
-            Text("analyzingHomework")
+            Text("analyzing_homework")
                 .font(.headline)
             
             VStack(spacing: 4) {
-                Text("Checking_Answers")
-                Text("this_May_Take_A_Moment")
+                Text("CheckingAnswers")
+                Text("this_may_take_a_moment")
             }
             .font(.caption)
             .foregroundStyle(.secondary)
             
             // Reminder during loading
-            Text("remember_Mai_Suggestions_May_Be_Inaccurate")
+            Text("remember_mai_suggestions_may_be_inaccurate")
                 .font(.caption2)
                 .foregroundStyle(.statusWarning)
                 .padding(.top, 8)
@@ -208,7 +208,7 @@ struct HomeworkVerificationView: View {
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("analyzing_Homework_Please_Wait")
+        .accessibilityLabel("analyzing_homework_please_wait")
     }
     
     // MARK: - Results View
@@ -255,7 +255,7 @@ struct HomeworkVerificationView: View {
                     .font(.title2)
                     .foregroundStyle(.statusWarning)
                 
-                Text("low_Confidence_Analysis")
+                Text("low_confidence_analysis")
                     .font(.headline)
                     .foregroundStyle(.statusWarning)
             }
@@ -265,7 +265,7 @@ struct HomeworkVerificationView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             
-            Text("manual_Review_Strongly_Recommended")
+            Text("manual_review_strongly_recommended")
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundStyle(.statusWarning)
@@ -275,7 +275,7 @@ struct HomeworkVerificationView: View {
         .background(Color.orange.opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Manual_Review")
+        .accessibilityLabel("warningLowConfidenceAnalysisManualReviewStro")
     }
     
     // MARK: - Recommendation Banner
@@ -412,7 +412,7 @@ struct HomeworkVerificationView: View {
     
     private func questionsBreakdown(_ result: VerificationResult) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("question_Details")
+            Text("question_details")
                 .font(.headline)
             
             ForEach(result.questions) { question in
@@ -588,7 +588,7 @@ struct HomeworkVerificationView: View {
                 .tint(.green)
             }
             
-            Text("only_you_can_approve_or_reject")
+            Text("only_you_can_approve_or_reject_ai_cannot_make_this")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -666,7 +666,7 @@ struct HomeworkVerificationView: View {
             scheduledTime: nil,
             status: .pendingVerification,
             priority: .medium,
-            createdAt: Date(),
+            createdAt: Date.now,
             completedAt: nil,
             hasReward: true,
             rewardAmount: 5.0,

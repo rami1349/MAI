@@ -94,7 +94,7 @@ struct EditEventView: View {
                         .foregroundStyle(.textSecondary)
                 }
                 ToolbarItem(placement: .principal) {
-                    Text("editEvent")
+                    Text("edit_event")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                 }
@@ -138,7 +138,7 @@ struct EditEventView: View {
     
     private var heroTitleSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-            Text("what_happening")
+            Text("event_what_happening")
                 .font(DS.Typography.caption())
                 .foregroundStyle(.textTertiary)
             
@@ -238,7 +238,7 @@ struct EditEventView: View {
                     startDate = calendar.startOfDay(for: startDate)
                     endDate = calendar.date(byAdding: .day, value: 1, to: startDate)!
                 } else {
-                    let hour = calendar.component(.hour, from: Date())
+                    let hour = calendar.component(.hour, from: Date.now)
                     startDate = calendar.date(bySettingHour: max(hour + 1, 9), minute: 0, second: 0, of: startDate) ?? startDate
                     endDate = calendar.date(byAdding: .hour, value: 1, to: startDate)!
                 }
@@ -650,15 +650,15 @@ private struct EditCollapsibleParticipantsRow: View {
         familyId: "test",
         title: "Family Dinner",
         description: "Weekly family dinner",
-        startDate: Date(),
-        endDate: Date().addingTimeInterval(7200),
+        startDate: Date.now,
+        endDate: Date.now.addingTimeInterval(7200),
         isAllDay: false,
         color: "7C3AED",
         createdBy: "user1",
         participants: ["user1"],
         linkedTaskId: nil,
         eventType: nil,
-        createdAt: Date()
+        createdAt: Date.now
     ))
     .environment(AuthViewModel())
     .environment(familyVM)

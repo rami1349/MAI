@@ -172,12 +172,12 @@ struct CalendarSearchSheet: View {
                             .font(DS.Typography.displayLarge())
                             .foregroundStyle(.textTertiary)
                         
-                        Text(searchText.isEmpty ? "no_Events" : "no_Events_Found")
+                        Text(searchText.isEmpty ? "no_events" : "no_events_eound")
                             .font(.headline)
                             .foregroundStyle(.textPrimary)
                         
                         if !searchText.isEmpty {
-                            Text("try_Different_Search")
+                            Text("try_different_search")
                                 .font(.subheadline)
                                 .foregroundStyle(.textSecondary)
                         }
@@ -255,7 +255,7 @@ struct SearchEventRow: View {
     
     private var timeString: String {
         if event.isAllDay {
-            return "allDay"
+            return "all_day"
         }
         return event.startDate.formattedTime
     }

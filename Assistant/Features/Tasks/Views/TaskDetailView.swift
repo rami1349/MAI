@@ -102,7 +102,7 @@ struct TaskDetailView: View {
                 
                 if let task = task {
                     ScrollView(showsIndicators: false) {
-                        VStack(spacing: DS.Spacing.xl) {
+                        VStack(spacing: DS.Spacing.lg) {
                             headerSection(task: task)
                             titleSection(task: task)
                             infoSection(task: task)
@@ -112,9 +112,8 @@ struct TaskDetailView: View {
                                 proofSection(task: task)
                             }
                             
-                            Spacer().frame(height: DS.Spacing.xl)
                             actionButtons(task: task)
-                            Spacer().frame(height: DS.Spacing.jumbo * 2.5)
+                            Spacer().frame(height: DS.Spacing.jumbo)
                         }
                         .padding(DS.Layout.adaptiveScreenPadding)
                         .constrainedWidth(.readable)
@@ -122,10 +121,10 @@ struct TaskDetailView: View {
                 } else {
                     VStack(spacing: DS.Spacing.lg) {
                         Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
+                            .font(DS.Typography.displayLarge())
                             .foregroundStyle(.textSecondary)
                         Text("task_not_found")
-                            .font(.headline)
+                            .font(DS.Typography.subheading())
                             .foregroundStyle(.textSecondary)
                     }
                 }
@@ -166,7 +165,7 @@ struct TaskDetailView: View {
             .sheet(isPresented: $showEditTask) {
                 if let task = task {
                     EditTaskView(task: task)
-                        .presentationBackground(Color.backgroundPrimary)
+                        .presentationBackground(Color.themeSurfacePrimary)
                 }
             }
             .alert("delete_task_confirm", isPresented: $showDeleteConfirm) {
@@ -193,8 +192,8 @@ struct TaskDetailView: View {
                 Image(systemName: task.taskType?.icon ?? "checklist")
                 Text(task.taskType?.displayName ?? "Task")
             }
-            .font(.caption)
-            .fontWeight(.medium)
+            .font(DS.Typography.caption())
+            
             .foregroundStyle(task.taskType == .homework ? .accentPrimary : .textSecondary)
             .padding(.horizontal, DS.Spacing.md)
             .padding(.vertical, DS.Spacing.xs)
@@ -202,7 +201,7 @@ struct TaskDetailView: View {
                 Capsule().fill(
                     task.taskType == .homework
                         ? Color.accentPrimary.opacity(0.15)
-                        : Color.backgroundSecondary
+                        : Color.themeCardBackground
                 )
             )
             
@@ -214,8 +213,8 @@ struct TaskDetailView: View {
                     .fill(statusColor)
                     .frame(width: 8, height: 8)
                 Text(task.status.rawValue)
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(DS.Typography.caption())
+                    
             }
             .foregroundStyle(statusColor)
             .padding(.horizontal, DS.Spacing.md)
@@ -230,7 +229,6 @@ struct TaskDetailView: View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             Text(task.title)
                 .font(.title2)
-                .fontWeight(.bold)
                 .foregroundStyle(.textPrimary)
             
             if let description = task.description, !description.isEmpty {
@@ -283,7 +281,7 @@ struct TaskDetailView: View {
                 infoRow(icon: "dollarsign.circle.fill", label: "reward") {
                     Text(amount.currencyString)
                         .foregroundStyle(.accentGreen)
-                        .fontWeight(.semibold)
+                        
                 }
             }
             
@@ -302,11 +300,11 @@ struct TaskDetailView: View {
     private func infoRow<Content: View>(icon: String, label: String, @ViewBuilder content: () -> Content) -> some View {
         HStack {
             Label(label, systemImage: icon)
-                .font(.subheadline)
+                .font(DS.Typography.body())
                 .foregroundStyle(.textSecondary)
             Spacer()
             content()
-                .font(.subheadline)
+                .font(DS.Typography.body())
         }
     }
     
@@ -319,7 +317,7 @@ struct TaskDetailView: View {
                 Image(systemName: "doc.text.image")
                     .foregroundStyle(.accentPrimary)
                 Text("submitted_proof")
-                    .font(.headline)
+                    .font(DS.Typography.subheading())
                 Spacer()
                 proofStatusBadge(task: task)
             }
@@ -344,7 +342,7 @@ struct TaskDetailView: View {
                     Image(systemName: "checkmark.seal.fill")
                         .foregroundStyle(.accentGreen)
                     Text(AppStrings.verifiedOnDate(verifiedAt.formattedDate))
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 }
             }
@@ -368,8 +366,8 @@ struct TaskDetailView: View {
                     Image(systemName: "clock.fill")
                     Text("pending")
                 }
-                .font(.caption)
-                .fontWeight(.medium)
+                .font(DS.Typography.caption())
+                
                 .foregroundStyle(.textOnAccent)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
@@ -380,8 +378,8 @@ struct TaskDetailView: View {
                     Image(systemName: "checkmark.seal.fill")
                     Text("verified")
                 }
-                .font(.caption)
-                .fontWeight(.medium)
+                .font(DS.Typography.caption())
+                
                 .foregroundStyle(.textOnAccent)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
@@ -407,7 +405,7 @@ struct TaskDetailView: View {
                         .clipShape(RoundedRectangle(cornerRadius: DS.Radius.card))
                 } placeholder: {
                     RoundedRectangle(cornerRadius: DS.Radius.card)
-                        .fill(Color.backgroundSecondary)
+                        .fill(Color.themeCardBackground)
                         .frame(height: isRegularWidth ? 280 : 200)
                         .overlay(ProgressView())
                 }
@@ -424,7 +422,7 @@ struct TaskDetailView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
                             } placeholder: {
                                 RoundedRectangle(cornerRadius: DS.Radius.md)
-                                    .fill(Color.backgroundSecondary)
+                                    .fill(Color.themeCardBackground)
                                     .frame(width: 140, height: 140)
                                     .overlay(ProgressView())
                             }
@@ -449,7 +447,7 @@ struct TaskDetailView: View {
                         .fill(recommendationColor(computedStats.recommendation).opacity(0.15))
                         .frame(width: 40, height: 40)
                     Image(systemName: recommendationIcon(computedStats.recommendation))
-                        .font(.title3)
+                        .font(DS.Typography.heading())
                         .foregroundStyle(recommendationColor(computedStats.recommendation))
                 }
                 
@@ -459,16 +457,16 @@ struct TaskDetailView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: DS.IconSize.md, height: DS.IconSize.md)
-                            .font(.caption)
+                            .font(DS.Typography.caption())
                         Text("mai_analysis")
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .font(DS.Typography.caption())
+                            
                     }
                     .foregroundStyle(.textSecondary)
                     
                     Text(recommendationMessage(computedStats.recommendation))
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .font(DS.Typography.body())
+                        
                         .foregroundStyle(recommendationColor(computedStats.recommendation))
                 }
                 
@@ -478,8 +476,8 @@ struct TaskDetailView: View {
                 if computedStats.total > 0 {
                     VStack(spacing: 2) {
                         Text("\(computedStats.scorePercent)%")
-                            .font(.caption)
-                            .fontWeight(.bold)
+                            .font(DS.Typography.caption())
+                            
                             .foregroundStyle(confidenceColor(Double(computedStats.scorePercent) / 100.0))
                         Text("score")
                             .font(.caption2)
@@ -488,8 +486,8 @@ struct TaskDetailView: View {
                 } else {
                     VStack(spacing: 2) {
                         Text("\(Int(verification.confidence * 100))%")
-                            .font(.caption)
-                            .fontWeight(.bold)
+                            .font(DS.Typography.caption())
+                            
                             .foregroundStyle(confidenceColor(verification.confidence))
                         Text("conf.")
                             .font(.caption2)
@@ -521,7 +519,7 @@ struct TaskDetailView: View {
             // Encouragement for the child
             if let encouragement = verification.encouragement, !encouragement.isEmpty {
                 Text(encouragement)
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.accentPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -620,8 +618,8 @@ struct TaskDetailView: View {
             // Show wrong/uncertain answers first (these are what parents care about)
             if !wrong.isEmpty {
                 Text("needs_attention")
-                    .font(.caption)
-                    .fontWeight(.semibold)
+                    .font(DS.Typography.caption())
+                    
                     .foregroundStyle(.statusError)
                 
                 ForEach(wrong, id: \.questionNumber) { q in
@@ -637,8 +635,8 @@ struct TaskDetailView: View {
                     }
                 } label: {
                     Text("\(correct.count) correct answers")
-                        .font(.caption)
-                        .fontWeight(.semibold)
+                        .font(DS.Typography.caption())
+                        
                         .foregroundStyle(.accentGreen)
                 }
                 .tint(Color.accentGreen)
@@ -649,7 +647,7 @@ struct TaskDetailView: View {
     private func questionRow(_ q: FamilyTask.AIVerificationQuestion, isCorrect: Bool) -> some View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(isCorrect ? .accentGreen : .red)
                 .padding(.top, 2)
             
@@ -657,12 +655,12 @@ struct TaskDetailView: View {
                 // Question number + text
                 if let text = q.questionText, !text.isEmpty {
                     Text(AppStrings.questionNumberWithText(q.questionNumber, text))
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textPrimary)
                         .lineLimit(2)
                 } else {
                     Text(AppStrings.questionNumberLabel(q.questionNumber))
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textPrimary)
                 }
                 
@@ -674,7 +672,6 @@ struct TaskDetailView: View {
                             .foregroundStyle(.textTertiary)
                         Text("student")
                             .font(.caption2)
-                            .fontWeight(.medium)
                             .foregroundStyle(isCorrect ? .accentGreen : .red)
                     }
                 }
@@ -702,8 +699,8 @@ struct TaskDetailView: View {
     private func statItem(value: String, label: String, color: Color) -> some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.subheadline)
-                .fontWeight(.bold)
+                .font(DS.Typography.body())
+                
                 .foregroundStyle(color)
             Text(label)
                 .font(.caption2)
@@ -725,13 +722,13 @@ struct TaskDetailView: View {
                         .scaledToFit()
                         .frame(width: DS.IconSize.md, height: DS.IconSize.md)
                     Text("mai_analysis")
-                        .fontWeight(.medium)
+                        
                 }
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.accentPrimary)
                 
                 Text("checking_homework")
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }
             
@@ -752,8 +749,8 @@ struct TaskDetailView: View {
                 .foregroundStyle(.statusWarning)
             VStack(alignment: .leading, spacing: 2) {
                 Text("mai_couldnt_analyze_please_review_manually")
-                    .font(.caption)
-                    .fontWeight(.medium)
+                    .font(DS.Typography.caption())
+                    
                     .foregroundStyle(.statusWarning)
             }
             
@@ -782,7 +779,7 @@ struct TaskDetailView: View {
                     Image(systemName: "eye.fill")
                         .foregroundStyle(.textSecondary)
                     Text("review_the_photo_and_decide_if_the_chore_is_done")
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -801,8 +798,8 @@ struct TaskDetailView: View {
                         }
                         Text("needs_redo")
                     }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .font(DS.Typography.body())
+                    
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(Color.red.opacity(0.1))
@@ -822,8 +819,8 @@ struct TaskDetailView: View {
                         }
                         Text("approve")
                     }
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .font(DS.Typography.body())
+                    
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(Color.accentGreen)
@@ -843,7 +840,7 @@ struct TaskDetailView: View {
                 .foregroundStyle(recommendationColor(recommendation))
             
             Text(guidanceMessage(recommendation))
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -912,22 +909,22 @@ struct TaskDetailView: View {
                     
                 case .inProgress:
                     Button(action: { showFocusTimer = true }) {
-                        HStack(spacing: 10) {
+                        HStack(spacing: DS.Spacing.sm) {
                             Image(systemName: "timer")
-                                .font(.title3)
+                                .font(DS.Typography.heading())
                             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
                                 Text("start_focus")
-                                    .font(.headline)
+                                    .font(DS.Typography.subheading())
                                 Text("pomodoro_for_task")
-                                    .font(.caption)
+                                    .font(DS.Typography.caption())
                                     .opacity(0.8)
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.caption)
+                                .font(DS.Typography.caption())
                         }
                         .foregroundStyle(.textOnAccent)
-                        .padding(16)
+                        .padding(DS.Spacing.md)
                         .background(
                             LinearGradient(
                                 colors: [Color.accentPrimary, Color.accentBlue],
@@ -1041,7 +1038,7 @@ struct TaskDetailView: View {
     
     private func statusMessage(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.subheadline)
+            .font(DS.Typography.body())
             .foregroundStyle(.textSecondary)
             .frame(maxWidth: .infinity)
             .padding()
@@ -1049,13 +1046,13 @@ struct TaskDetailView: View {
     }
     
     private var completedMessage: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: DS.Spacing.xs) {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.statusCompleted)
             Text("task_completed")
-                .fontWeight(.semibold)
+                
         }
-        .font(.subheadline)
+        .font(DS.Typography.body())
         .foregroundStyle(.statusCompleted)
         .frame(maxWidth: .infinity)
         .padding()

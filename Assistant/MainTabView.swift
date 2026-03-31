@@ -1,79 +1,20 @@
 // ============================================================================
 // MainTabView.swift
 //
-// v2 NAVIGATION: Home · Calendar · ✨ MAI ✨ · Tasks · Me
+// v3 NAVIGATION: Centralized via NavigationRouter
 //
-// ARCHITECTURE:
-//   Thin shell that owns ONLY shared state (tab selection, context sheets).
-//   Delegates layout to child structs:
-//     - MainTabiPhoneContent: custom tab bar with MAI center, nav bar "+"
-//     - MainTabiPadContent: 3-item sidebar, Me bottom, MAI floating button
-//
-// WHAT CHANGED (v1 → v2):
-//   - NavigationItem: .chat → .mai, .family → .me
-//   - TasksViewMode enum: REMOVED (Tasks tab is pure tasks, no habits toggle)
-//   - FAB state (showFABMenu): REMOVED (replaced by context "+" in nav bar)
-//   - showAddHabit: kept (triggered from Home slot 4 empty CTA only)
+// WHAT CHANGED (v2 → v3):
+//   - @State selectedTab → router.selectedTab
+//   - 3 @State show* booleans → router.activeSheet (one enum)
+//   - .sheet(isPresented:) × 3 → .sheet(item: router.activeSheet) × 1
+//   - resetTrigger UUID hack → router.popToRoot()
+//   - Deep link handling via .onOpenURL → router.navigate(to:)
+//   - State restoration: tab persisted via @SceneStorage
+//   - Sheets presented once here, not duplicated in child views
 //
 // ============================================================================
 
 import SwiftUI
-
-// MARK: - Navigation Item Model
-
-enum NavigationItem: String, CaseIterable, Identifiable, Sendable {
-    case home
-    case calendar
-    case mai
-    case tasks
-    case me
-
-    var id: String { rawValue }
-
-    /// All 5 tabs for iPhone tab bar
-    static var phoneTabs: [NavigationItem] { allCases }
-
-    /// 3 tabs for iPad sidebar (MAI uses floating button, Me is sidebar bottom)
-    static var sidebarTabs: [NavigationItem] { [.home, .calendar, .tasks] }
-
-    /// Localization key for the tab title (matches xcstrings)
-    var localizationKey: String {
-        switch self {
-        case .home:     "home"
-        case .calendar: "calendar"
-        case .mai:      "mai"
-        case .tasks:    "tasks"
-        case .me:       "me_tab"
-        }
-    }
-
-    /// Resolved title string for code contexts.
-    var title: String {
-        AppStrings.localized(.init(localizationKey))
-    }
-
-    var icon: String {
-        switch self {
-        case .home:     "house.fill"
-        case .calendar: "calendar"
-        case .mai:      "sparkles"
-        case .tasks:    "checkmark.circle"
-        case .me:       "person.circle"
-        }
-    }
-
-    var selectedIcon: String {
-        switch self {
-        case .home:     "house.fill"
-        case .calendar: "calendar"
-        case .mai:      "sparkles"
-        case .tasks:    "checkmark.circle.fill"
-        case .me:       "person.circle.fill"
-        }
-    }
-}
-
-// MARK: - Main Tab View (Thin Shell)
 
 struct MainTabView: View {
     @Environment(AuthViewModel.self) var authViewModel
@@ -81,23 +22,12 @@ struct MainTabView: View {
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(NotificationViewModel.self) var notificationVM
     @Environment(TourManager.self) var tourManager
+    @Environment(NavigationRouter.self) var router
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // SHARED STATE — Only state needed by BOTH layouts lives here.
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-    /// Current tab selection
-    @State private var selectedTab: NavigationItem = .home
-
-    /// Incremented to reset child view state
-    @State private var resetTrigger = UUID()
-
-    // Context-aware "+" sheets (triggered from nav bar buttons per tab)
-    @State private var showAddTask = false
-    @State private var showAddEvent = false
-    @State private var showAddHabit = false  // Home slot 4 empty CTA only
+    // State restoration: persist selected tab across launches
+    @SceneStorage("selectedTab") private var persistedTab: String = NavigationItem.home.rawValue
 
     private var isRegularWidth: Bool {
         horizontalSizeClass == .regular
@@ -107,46 +37,85 @@ struct MainTabView: View {
 
     var body: some View {
         @Bindable var familyViewModel = familyViewModel
+        @Bindable var router = router
+        
         Group {
             if isRegularWidth {
-                MainTabiPadContent(
-                    selectedTab: $selectedTab,
-                    resetTrigger: resetTrigger,
-                    showAddTask: $showAddTask,
-                    showAddEvent: $showAddEvent,
-                    showAddHabit: $showAddHabit
-                )
+                MainTabiPadContent()
             } else {
-                MainTabiPhoneContent(
-                    selectedTab: $selectedTab,
-                    resetTrigger: resetTrigger,
-                    showAddTask: $showAddTask,
-                    showAddEvent: $showAddEvent,
-                    showAddHabit: $showAddHabit
-                )
+                MainTabiPhoneContent()
             }
         }
         .task {
             await loadInitialData()
         }
-        // ── Context Sheets ──────────────────────────────────────────
-        .sheet(isPresented: $showAddTask) {
-            AddTaskView()
-                .presentationBackground(Color.themeSurfacePrimary)
+        // ── Deep Link Handler ────────────────────────────────────
+        .onOpenURL { url in
+            router.navigate(to: url)
         }
-        .sheet(isPresented: $showAddEvent) {
-            AddEventView()
-                .presentationBackground(Color.themeSurfacePrimary)
+        // ── Deep Link Task Resolution ────────────────────────────
+        .onReceive(NotificationCenter.default.publisher(for: .deepLinkTask)) { notification in
+            if let taskId = notification.userInfo?["taskId"] as? String,
+               let task = familyViewModel.taskVM.task(byStableId: taskId)
+                           ?? familyViewModel.taskVM.allTasks.first(where: { $0.id == taskId }) {
+                router.present(.taskDetail(task))
+            }
         }
-        .sheet(isPresented: $showAddHabit) {
-            AddHabitView()
-                .presentationBackground(Color.themeSurfacePrimary)
+        .onReceive(NotificationCenter.default.publisher(for: .deepLinkEvent)) { notification in
+            if let eventId = notification.userInfo?["eventId"] as? String,
+               let event = familyViewModel.calendarVM.events.first(where: { $0.id == eventId }) {
+                router.present(.eventDetail(event))
+            }
+        }
+        // ── Centralized Sheet Presentation ───────────────────────
+        .sheet(item: $router.activeSheet) { sheet in
+            sheetContent(for: sheet)
         }
         .globalErrorBanner(errorMessage: $familyViewModel.errorMessage)
         .offlineBanner()
         .withFeatureTour()
+        // ── State Restoration ────────────────────────────────────
         .onAppear {
             tourManager.startIfNeeded()
+            // Restore tab from previous session
+            if let tab = NavigationItem(rawValue: persistedTab) {
+                router.selectedTab = tab
+            }
+        }
+        .onChange(of: router.selectedTab) { _, newTab in
+            persistedTab = newTab.rawValue
+        }
+    }
+
+    // MARK: - Centralized Sheet Content
+
+    @ViewBuilder
+    private func sheetContent(for sheet: AppSheet) -> some View {
+        switch sheet {
+        case .addTask(let groupId):
+            AddTaskView(preSelectedGroupId: groupId)
+                .presentationBackground(Color.themeSurfacePrimary)
+        case .addEvent:
+            AddEventView()
+                .presentationBackground(Color.themeSurfacePrimary)
+        case .addHabit:
+            AddHabitView()
+                .presentationBackground(Color.themeSurfacePrimary)
+        case .createGroup:
+            CreateTaskGroupView()
+                .presentationBackground(Color.themeSurfacePrimary)
+        case .taskDetail(let task):
+            TaskDetailView(task: task)
+        case .eventDetail(let event):
+            EventDetailView(event: event)
+        case .notifications:
+            NotificationsView()
+        case .rewardWallet:
+            RewardWalletView()
+        case .inviteCode:
+            InviteCodeSheet()
+        case .paywall:
+            PaywallView()
         }
     }
 

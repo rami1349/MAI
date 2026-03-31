@@ -143,11 +143,11 @@ struct HomeTimelineSection: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text( "clearSchedule")
+                Text( "clear_schedule")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
                 
-                Text( "nothingScheduledForTodayOrTomorrow")
+                Text( "nothing_scheduled_for_today")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }

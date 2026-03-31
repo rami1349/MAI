@@ -1,7 +1,5 @@
 //
 //  FocusTimerView.swift
-//  
-//
 //  Full-screen Pomodoro timer with animated progress ring
 //
 
@@ -83,7 +81,7 @@ struct FocusTimerView: View {
             
             // Header
             VStack(spacing: DS.Spacing.sm) {
-                Text("focusTimer")
+                Text("focus_timer")
                     .font(DS.Typography.displayMedium())
                     .foregroundStyle(.textPrimary)
                 
@@ -150,7 +148,7 @@ struct FocusTimerView: View {
             Button(action: startFocusSession) {
                 HStack(spacing: DS.Spacing.md) {
                     Image(systemName: "play.fill")
-                    Text("startFocus")
+                    Text("start_focus")
                 }
                 .font(DS.Typography.heading())
                 .foregroundStyle(.textOnAccent)
@@ -378,7 +376,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "cup.and.saucer.fill")
-                            Text("shortBreak")
+                            Text("short_break")
                         }
                         .font(.headline)
                         .foregroundStyle(.accentPrimary)
@@ -396,7 +394,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "figure.walk")
-                            Text("longBreak")
+                            Text("long_break")
                         }
                         .font(.headline)
                         .foregroundStyle(.textSecondary)
@@ -424,7 +422,7 @@ struct FocusTimerView: View {
                     }) {
                         HStack {
                             Image(systemName: "arrow.up.doc.fill")
-                            Text("submitProof")
+                            Text("submit_proof")
                         }
                         .font(.headline)
                         .foregroundStyle(.textOnAccent)
@@ -447,7 +445,7 @@ struct FocusTimerView: View {
                                     .scaleEffect(0.8)
                             }
                             Image(systemName: "checkmark.circle.fill")
-                            Text("completeTask")
+                            Text("complete_task")
                         }
                         .font(.headline)
                         .foregroundStyle(.textOnAccent)
@@ -465,7 +463,7 @@ struct FocusTimerView: View {
                 Button(action: {
                     saveSessionAndClose()
                 }) {
-                    Text("continueLater")
+                    Text("continue_later")
                         .font(.subheadline)
                         .foregroundStyle(.textSecondary)
                 }

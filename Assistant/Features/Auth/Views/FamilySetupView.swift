@@ -35,7 +35,7 @@ struct FamilySetupView: View {
                             .fontWeight(.bold)
                             .foregroundStyle(.textPrimary)
                         
-                        Text("letSetupFamily")
+                        Text("let_setup_family")
                             .font(.subheadline)
                             .foregroundStyle(.textSecondary)
                     }
@@ -55,7 +55,7 @@ struct FamilySetupView: View {
                     
                     // Action Button
                     PrimaryButton(
-                        title: isCreating ? "createFamily" :"joinFamily",
+                        title: isCreating ? "create_family" :"join_family",
                         isLoading: authViewModel.isLoading,
                         isDisabled: isCreating ? familyName.isEmpty : inviteCode.count != 6
                     ) {
@@ -70,7 +70,7 @@ struct FamilySetupView: View {
                     .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                     
                     // Sign out option
-                    Button("signOut") {
+                    Button("sign_out") {
                         authViewModel.signOut()
                     }
                     .font(.subheadline)
@@ -87,7 +87,7 @@ struct FamilySetupView: View {
     private var modeToggle: some View {
         HStack(spacing: 0) {
             Button(action: { isCreating = true }) {
-                Text("createFamily")
+                Text("create_family")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(isCreating ? .textOnAccent : .textSecondary)
@@ -101,7 +101,7 @@ struct FamilySetupView: View {
             }
             
             Button(action: { isCreating = false }) {
-                Text("joinFamily")
+                Text("join_family")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundStyle(!isCreating ? .textOnAccent : .textSecondary)
@@ -129,13 +129,13 @@ struct FamilySetupView: View {
                 // Family name with help
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     CustomTextField(
-                        placeholder: "familyName",
+                        placeholder: "family_name",
                         text: $familyName,
                         icon: "house"
                     )
                 }
                 
-                Text("createFamilyMessage")
+                Text("create_family_message")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -143,14 +143,14 @@ struct FamilySetupView: View {
                 // Invite code with help
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     CustomTextField(
-                        placeholder: "inviteCode",
+                        placeholder: "invite_code",
                         text: $inviteCode,
                         icon: "ticket"
                     )
                     .textInputAutocapitalization(.characters)
                 }
                 
-                Text("enterInviteCode")
+                Text("enter_invite_code")
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)

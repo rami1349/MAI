@@ -1,20 +1,15 @@
 // ============================================================================
 // MainTabiPhoneContent.swift
 //
-// v2 IPHONE NAVIGATION
+// v3 IPHONE NAVIGATION — Centralized via NavigationRouter
 //
-// Tab bar: Home · Calendar · ✨ MAI ✨ · Tasks · Me
-//
-// WHAT CHANGED (v1 → v2):
-//   - FAB (floating action button + radial menu): REMOVED entirely
-//   - Context "+" in nav bar: Home→AddTask, Calendar→AddEvent, Tasks→AddTask
-//   - Chat tab → MAI tab (center, raised button with sparkles icon)
-//   - Family tab → Me tab (personal hub)
-//   - TasksViewMode binding: REMOVED (Tasks tab is pure tasks)
-//
-// ARCHITECTURE:
-//   MAI uses full-screen overlay (same as v1 chat), triggered by center tab.
-//   Other 4 tabs are standard NavigationStack content.
+// WHAT CHANGED (v2 → v3):
+//   - Binding<selectedTab> → router.selectedTab
+//   - 3 × Binding<showAdd*> → router.present(.addTask) etc
+//   - showCreateGroup @State → router.present(.createGroup)
+//   - Per-tab NavigationStack() → NavigationStack(path: router.*Path)
+//   - resetTrigger → router.handleTabReselection() (standard iOS UX)
+//   - .navigationDestination(for:) registered per route type
 //
 // ============================================================================
 
@@ -22,12 +17,8 @@ import SwiftUI
 
 struct MainTabiPhoneContent: View {
 
-    // ── Shared state (owned by MainTabView) ──
-    @Binding var selectedTab: NavigationItem
-    let resetTrigger: UUID
-    @Binding var showAddTask: Bool
-    @Binding var showAddEvent: Bool
-    @Binding var showAddHabit: Bool
+    // ── Router (owned by AssistantApp, injected via .environment) ──
+    @Environment(NavigationRouter.self) private var router
 
     // ── Environment ──
     @Environment(AuthViewModel.self) private var authViewModel
@@ -38,11 +29,13 @@ struct MainTabiPhoneContent: View {
 
     // MARK: - Derived
 
-    private var isMAIActive: Bool { selectedTab == .mai }
+    private var isMAIActive: Bool { router.selectedTab == .mai }
 
     // MARK: - Body
 
     var body: some View {
+        @Bindable var router = router
+        
         ZStack {
             // LAYER 1: Main content with tab bar
             mainTabContent
@@ -60,11 +53,12 @@ struct MainTabiPhoneContent: View {
     // MARK: - Main Tab Content
 
     private var mainTabContent: some View {
-        TabView(selection: $selectedTab) {
+        @Bindable var router = router
+        
+        return TabView(selection: $router.selectedTab) {
             // ── Home ─────────────────────────────────────────
-            NavigationStack {
+            NavigationStack(path: $router.homePath) {
                 HomeView(
-                    resetTrigger: resetTrigger,
                     authVM: authViewModel,
                     familyVM: familyViewModel,
                     taskVM: taskVM,
@@ -76,15 +70,33 @@ struct MainTabiPhoneContent: View {
                         homeCreateMenu
                     }
                 }
+                .navigationDestination(for: HomeRoute.self) { route in
+                    switch route {
+                    case .todayTasks:
+                        TodayTasksView()
+                    case .taskGroup(let id):
+                        if let group = familyMemberVM.getTaskGroup(by: id) {
+                            TaskGroupDetailView(taskGroup: group)
+                        }
+                    }
+                }
             }
             .tag(NavigationItem.home)
 
             // ── Calendar ─────────────────────────────────────
-            NavigationStack {
+            NavigationStack(path: $router.calendarPath) {
                 CalendarView()
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
-                            contextPlusButton { showAddEvent = true }
+                            contextPlusButton { router.present(.addEvent) }
+                        }
+                    }
+                    .navigationDestination(for: CalendarRoute.self) { route in
+                        switch route {
+                        case .eventDetail(let id):
+                            if let event = familyViewModel.calendarVM.events.first(where: { $0.id == id }) {
+                                EventDetailView(event: event)
+                            }
                         }
                     }
             }
@@ -94,20 +106,38 @@ struct MainTabiPhoneContent: View {
             Color.clear
                 .tag(NavigationItem.mai)
 
-            // ── Tasks (pure execution — no habits toggle) ────
-            NavigationStack {
+            // ── Tasks (pure execution) ────────────────────────
+            NavigationStack(path: $router.tasksPath) {
                 TasksView()
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
-                            contextPlusButton { showAddTask = true }
+                            contextPlusButton { router.present(.addTask()) }
+                        }
+                    }
+                    .navigationDestination(for: TasksRoute.self) { route in
+                        switch route {
+                        case .taskGroupDetail(let id):
+                            if let group = familyMemberVM.getTaskGroup(by: id) {
+                                TaskGroupDetailView(taskGroup: group)
+                            }
                         }
                     }
             }
             .tag(NavigationItem.tasks)
 
-            // ── Me (personal hub — replaces Family) ──────────
-            NavigationStack {
+            // ── Me (personal hub) ─────────────────────────────
+            NavigationStack(path: $router.mePath) {
                 MeView()
+                    .navigationDestination(for: MeRoute.self) { route in
+                        switch route {
+                        case .settings:
+                            SettingsView()
+                        case .memberDetail(let id):
+                            if let member = familyMemberVM.getMember(by: id) {
+                                MemberDetailView(member: member)
+                            }
+                        }
+                    }
             }
             .tag(NavigationItem.me)
         }
@@ -123,7 +153,7 @@ struct MainTabiPhoneContent: View {
         NavigationStack {
             AIChatView(onBack: {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    selectedTab = .home
+                    router.selectedTab = .home
                 }
             })
             .toolbar(.hidden, for: .navigationBar)
@@ -131,18 +161,22 @@ struct MainTabiPhoneContent: View {
         .background(Color(.systemBackground))
     }
 
-    // MARK: - Home "+" Menu (all 3 creation options)
+    // MARK: - Home "+" Menu (all creation options)
 
     private var homeCreateMenu: some View {
         Menu {
-            Button(action: { showAddTask = true }) {
+            Button(action: { router.present(.addTask()) }) {
                 Label("add_task", systemImage: "checkmark.circle")
             }
-            Button(action: { showAddEvent = true }) {
+            Button(action: { router.present(.addEvent) }) {
                 Label("add_event", systemImage: "calendar.badge.plus")
             }
-            Button(action: { showAddHabit = true }) {
+            Button(action: { router.present(.addHabit) }) {
                 Label("add_habit", systemImage: "flame")
+            }
+            Divider()
+            Button(action: { router.present(.createGroup) }) {
+                Label("new_group", systemImage: "folder.badge.plus")
             }
         } label: {
             Image(systemName: "plus")
@@ -153,8 +187,6 @@ struct MainTabiPhoneContent: View {
 
     // MARK: - Context "+" Button
 
-    /// Nav bar "+" that opens the context-appropriate creation sheet.
-    /// Home + Tasks → AddTask, Calendar → AddEvent.
     private func contextPlusButton(action: @escaping () -> Void) -> some View {
         Button(action: {
             DS.Haptics.light()
@@ -177,11 +209,16 @@ struct MainTabiPhoneContent: View {
                 } else {
                     TabBarButton(
                         item: item,
-                        isSelected: selectedTab == item,
+                        isSelected: router.selectedTab == item,
                         badge: badgeCount(for: item)
                     ) {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selectedTab = item
+                        if router.selectedTab == item {
+                            // Tap already-selected tab → pop to root (standard iOS)
+                            router.popToRoot(tab: item)
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                router.selectedTab = item
+                            }
                         }
                     }
                     .tourTarget("tabbar.\(item.rawValue)")
@@ -201,12 +238,12 @@ struct MainTabiPhoneContent: View {
     // MARK: - MAI Tab Button (Raised Center)
 
     private var maiTabButton: some View {
-        let isSelected = selectedTab == .mai
+        let isSelected = router.selectedTab == .mai
 
         return Button(action: {
             DS.Haptics.selection()
             withAnimation(.easeInOut(duration: 0.15)) {
-                selectedTab = .mai
+                router.selectedTab = .mai
             }
         }) {
             VStack(spacing: DS.Spacing.xxs) {

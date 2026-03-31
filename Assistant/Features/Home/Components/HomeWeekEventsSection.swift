@@ -1,187 +1,112 @@
+// ============================================================================
+// HomeWeeklyWinsSection.swift
 //
-//  HomeWeekEventsSection.swift
+// SLOT 8: Weekly Wins (ADHD Dopamine Reward)
 //
+// Shows a compact summary of the week's accomplishments.
+// Designed to provide closure and motivation to keep going.
+// Only appears when there's at least one win to celebrate.
+//
+// ============================================================================
 
 import SwiftUI
 
-struct HomeWeekEventsSection: View {
-    let events: [UpcomingEvent]
-    let isLoading: Bool
-    let onDeleteEvent: (UpcomingEvent) -> Void
+struct HomeWeeklyWinsSection: View {
+    let completedCount: Int
+    let earnings: Double
+    let streakDays: Int
     
-    @State private var isExpanded: Bool = true
-    
-    private var shouldDefaultExpanded: Bool {
-        events.count >= 1 && events.count <= 4
+    private var hasContent: Bool {
+        completedCount > 0 || earnings > 0 || streakDays > 0
     }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-            sectionHeader
-            
-            if isExpanded {
-                eventContent
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-        }
-        .animation(.easeInOut(duration: 0.25), value: isExpanded)
-        .onAppear { isExpanded = shouldDefaultExpanded }
-    }
-    
-    // MARK: - Header
-    
-    private var sectionHeader: some View {
-        Button(action: { isExpanded.toggle() }) {
-            HStack(spacing: DS.Spacing.sm) {
-                // Icon badge
-                Image(systemName: "calendar")
-                    .font(DS.Typography.body())
-                    .foregroundStyle(.accentPrimary)
-                    .frame(width: 28, height: 28)
-                    .background(
-                        Circle()
-                            .fill(Color.accentPrimary.opacity(0.1))
-                    )
-                
-                Text("thisWeek")
-                    .font(DS.Typography.subheading())
-                    .foregroundStyle(.textPrimary)
-                
-                // Count badge
-                if !events.isEmpty {
-                    Text("\(events.count)")
-                        .font(DS.Typography.captionMedium())
-                        .foregroundStyle(.accentPrimary)
-                        .padding(.horizontal, DS.Spacing.sm)
-                        .padding(.vertical, 2)
-                        .background(
-                            Capsule()
-                                .fill(Color.accentPrimary.opacity(0.1))
-                        )
-                }
-                
-                if isLoading {
-                    ProgressView()
-                        .scaleEffect(0.7)
-                }
-                
-                Spacer()
-                
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(DS.Typography.captionMedium())
-                    .foregroundStyle(.textTertiary)
-            }
-            .padding(.vertical, DS.Spacing.xs)
-        }
-        .buttonStyle(.plain)
-        .frame(minHeight: 44)
-        .padding(.horizontal, DS.Spacing.screenH)
-        .accessibilityLabel("This week events, \(events.count) items")
-        .accessibilityHint(isExpanded ? "Tap to collapse" : "Tap to expand")
-    }
-    
-    // MARK: - Content
     
     @ViewBuilder
-    private var eventContent: some View {
-        if events.isEmpty {
-            // Empty state
-            HStack(spacing: DS.Spacing.md) {
-                ZStack {
-                    Circle()
-                        .fill(Color.accentPrimary.opacity(0.08))
-                        .frame(width: 40, height: 40)
+    var body: some View {
+        if hasContent {
+            VStack(alignment: .leading, spacing: DS.Spacing.md) {
+                // Header
+                HStack(spacing: DS.Spacing.sm) {
+                    Image(systemName: "trophy.fill")
+                        .font(DS.Typography.label())
+                        .foregroundStyle(.accentGreen)
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(Color.accentGreen.opacity(0.1))
+                        )
                     
-                    Image(systemName: "leaf")
-                        .font(DS.Typography.body())
-                        .foregroundStyle(.accentPrimary.opacity(0.5))
+                    Text("weekly_wins")
+                        .font(DS.Typography.subheading())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
                 }
                 
-                VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                    Text("noEvents")
-                        .font(DS.Typography.body())
-                        .foregroundStyle(.textSecondary)
+                // Stats row
+                HStack(spacing: DS.Spacing.md) {
+                    if completedCount > 0 {
+                        WinPill(
+                            icon: "checkmark.circle.fill",
+                            value: "\(completedCount)",
+                            label: "done",
+                            color: .accentPrimary
+                        )
+                    }
                     
-                    Text("enjoyAPeacefulWeek")
-                        .font(DS.Typography.caption())
-                        .foregroundStyle(.textTertiary)
-                }
-                
-                Spacer()
-            }
-            .padding(.vertical, DS.Spacing.sm)
-            .padding(.horizontal, DS.Spacing.screenH)
-        } else {
-            VStack(spacing: DS.Spacing.xs) {
-                ForEach(events) { event in
-                    if event.canDelete {
-                        CompactEventRow(event: event)
-                            .swipeToDelete {
-                                onDeleteEvent(event)
-                            }
-                    } else {
-                        CompactEventRow(event: event)
+                    if earnings > 0 {
+                        WinPill(
+                            icon: "dollarsign.circle.fill",
+                            value: earnings.currencyString,
+                            label: "earned",
+                            color: .accentGreen
+                        )
+                    }
+                    
+                    if streakDays > 0 {
+                        WinPill(
+                            icon: "flame.fill",
+                            value: "\(streakDays)d",
+                            label: "streak",
+                            color: .accentOrange
+                        )
                     }
                 }
             }
-            .padding(.horizontal, DS.Spacing.screenH)
+            .padding(DS.Spacing.lg)
+            .background(
+                RoundedRectangle(cornerRadius: DS.Radius.xl)
+                    .fill(Color.themeCardBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DS.Radius.xl)
+                    .stroke(Color.accentGreen.opacity(0.15), lineWidth: 1)
+            )
         }
     }
 }
 
-// MARK: - Compact Event Row
+// MARK: - Win Pill
 
-struct CompactEventRow: View {
-    let event: UpcomingEvent
+private struct WinPill: View {
+    let icon: String
+    let value: String
+    let label: String
+    let color: Color
     
     var body: some View {
-        HStack(spacing: DS.Spacing.md) {
-            // Color indicator
-            Circle()
-                .fill(event.color)
-                .frame(width: 8, height: 8)
+        VStack(spacing: DS.Spacing.xxs) {
+            Image(systemName: icon)
+                .font(DS.Typography.heading())
+                .foregroundStyle(color)
             
-            // Icon
-            Image(systemName: event.icon)
-                .font(DS.Typography.body())
-                .foregroundStyle(event.color)
-                .frame(width: 20)
+            Text(value)
+                .font(DS.Typography.stat())
+                .foregroundStyle(.textPrimary)
             
-            // Content
-            VStack(alignment: .leading, spacing: 0) {
-                Text(event.title)
-                    .font(DS.Typography.label())
-                    .foregroundStyle(.textPrimary)
-                    .lineLimit(1)
-                
-                if let subtitle = event.subtitle {
-                    Text(subtitle)
-                        .font(DS.Typography.micro())
-                        .foregroundStyle(.textTertiary)
-                        .lineLimit(1)
-                }
-            }
-            
-            Spacer()
-            
-            // Countdown badge
-            Text(event.countdownText)
-                .font(DS.Typography.captionMedium())
-                .foregroundStyle(event.daysUntil <= 1 ? .textOnAccent : .accentPrimary)
-                .padding(.horizontal, DS.Spacing.sm)
-                .padding(.vertical, 4)
-                .background(
-                    Capsule()
-                        .fill(event.daysUntil <= 1 ? event.color : Color.accentPrimary.opacity(0.1))
-                )
+            Text(LocalizedStringKey(label))
+                .font(DS.Typography.micro())
+                .foregroundStyle(.textTertiary)
         }
-        .padding(.vertical, DS.Spacing.sm)
-        .padding(.horizontal, DS.Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
-                .fill(Color.themeCardBackground)
-        )
-        .elevation1()
-        .accessibilityElement(children: .combine)
+        .frame(maxWidth: .infinity)
     }
 }

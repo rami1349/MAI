@@ -2,14 +2,6 @@
 //  FocusSession.swift
 //  Assistant
 //
-//  Created by Ramiro  on 1/25/26.
-//
-
-
-//
-//  FocusSession.swift
-//  
-//
 //  Focus session model for Pomodoro tracking
 //
 

@@ -1,29 +1,31 @@
 //
 //  HomeView.swift
 //
+//  v3: NAVIGATION VIA ROUTER
 //
-//  LUXURY CALM REDESIGN
-//  - Clean, minimal header with soft notification badge
-//  - Premium typography throughout
-//  - Elegant greeting and date display
-//  - Refined spacing using 8pt grid
-//
-//  PERFORMANCE: Snapshot provider pattern
-//  - ViewModels passed as parameters (not @Environment)
-//  - Minimizes cascade re-renders
-//  - Only 2 @Environment kept
+//  WHAT CHANGED (v2 → v3):
+//    - resetTrigger parameter: REMOVED
+//    - 7 navigation @State vars: REMOVED
+//      (showNotifications, showTodayTasks, showTaskGroup, selectedTask,
+//       showAddTask, showAddHabit, showAddEvent)
+//    - applyNavigationDestinations/applySheets: REMOVED
+//      (destinations now declared at NavigationStack level in MainTab*Content)
+//      (sheets now centralized in MainTabView)
+//    - .onReceive(.dismissTaskSheets): REMOVED (router.dismissSheet())
+//    - .onChange(of: resetTrigger): REMOVED (router.popToRoot())
+//    - All data logic, derived state, fingerprint, etc: UNCHANGED
 //
 
 import SwiftUI
 import EventKit
 
 struct HomeView: View {
-    // MARK: - Essential EnvironmentObjects (kept to 2)
+    // MARK: - Essential Environments
     @Environment(ThemeManager.self) var themeManager
     @Environment(TourManager.self) var tourManager
+    @Environment(NavigationRouter.self) var router
     
     // MARK: - Parameters (snapshot provider pattern)
-    let resetTrigger: UUID
     let authVM: AuthViewModel
     let familyVM: FamilyViewModel
     let taskVM: TaskViewModel
@@ -38,19 +40,6 @@ struct HomeView: View {
     var familyMemberVM: FamilyMemberViewModel { familyVM.familyMemberVM }
     var calendarVM: CalendarViewModel { familyVM.calendarVM }
     
-    // MARK: - Navigation State
-    
-    @State var showNotifications = false
-    @State var showTodayTasks = false
-    @State var showTaskGroup: TaskGroup? = nil
-    @State var selectedTask: FamilyTask? = nil
-    
-    // MARK: - Add Sheets (for inline empty-state CTAs)
-    
-    @State var showAddTask = false
-    @State var showAddHabit = false
-    @State var showAddEvent = false
-    
     // MARK: - EventKit
     
     var eventKitService = EventKitCalendarService.shared
@@ -64,15 +53,11 @@ struct HomeView: View {
     // MARK: - Rebuild Debounce
     //
     // P-2 FIX: Replaced 9 separate .onChange handlers with a single fingerprint.
-    // Before: each onChange allocated a new Task, canceled the old one — up to 9× per snapshot.
-    // After: one .onChange on a cheap Int fingerprint, single debounced rebuild.
-    //
     // P-3 FIX: Single Task handle reused instead of allocating new Tasks per trigger.
     @State private var rebuildTask: Task<Void, Never>?
     @State private var pendingEventRecompute = false
     
     /// Cheap fingerprint combining all data source counts + identity.
-    /// Changes when any source data changes; compared by SwiftUI as a single Int.
     private var dataFingerprint: Int {
         var hasher = Hasher()
         hasher.combine(taskVM.allTasks.count)
@@ -83,7 +68,6 @@ struct HomeView: View {
         hasher.combine(calendarVM.events.count)
         hasher.combine(eventKitService.events.count)
         hasher.combine(eventKitService.holidayEvents.count)
-        // Include a coarse date component so selectedDate changes trigger rebuild
         hasher.combine(Calendar.current.component(.day, from: calendarVM.selectedDate))
         return hasher.finalize()
     }
@@ -94,9 +78,6 @@ struct HomeView: View {
         horizontalSizeClass == .regular
     }
     
-    // myPendingVerificationTasks → moved to derived.myPendingVerificationTasks
-    // myVisibleGroups → moved to derived.myVisibleGroups
-    
     // MARK: - Shared Inline CTAs (used by both iPhone and iPad layouts)
     
     var addTaskCTA: some View {
@@ -106,7 +87,7 @@ struct HomeView: View {
             title: "create_your_first_task",
             subtitle: "create_your_first_task_subtitle",
             buttonLabel: "add_task",
-            action: { showAddTask = true }
+            action: { router.present(.addTask()) }
         )
         .tourTarget("home.addTask")
     }
@@ -118,7 +99,7 @@ struct HomeView: View {
             title: "start_tracking_habits",
             subtitle: "start_tracking_habits_subtitle",
             buttonLabel: "add_habit",
-            action: { showAddHabit = true }
+            action: { router.present(.addHabit) }
         )
         .tourTarget("home.addHabit")
     }
@@ -130,7 +111,7 @@ struct HomeView: View {
             title: "add_family_event",
             subtitle: "add_family_event_subtitle",
             buttonLabel: "add_event",
-            action: { showAddEvent = true }
+            action: { router.present(.addEvent) }
         )
         .tourTarget("home.addEvent")
     }
@@ -139,30 +120,16 @@ struct HomeView: View {
     
     var body: some View {
         mainContent
-            .applyNavigationDestinations(
-                showTodayTasks: $showTodayTasks,
-                showTaskGroup: $showTaskGroup
+            .searchable(
+                text: Binding(
+                    get: { derived.searchText },
+                    set: { derived.searchText = $0 }
+                ),
+                placement: .navigationBarDrawer(displayMode: .automatic),
+                prompt: "search_tasks_events"
             )
-            .applySheets(
-                showNotifications: $showNotifications,
-                selectedTask: $selectedTask,
-                showAddTask: $showAddTask,
-                showAddHabit: $showAddHabit,
-                showAddEvent: $showAddEvent
-            )
-            // P-2 FIX: Single fingerprint observer replaces 9 separate .onChange handlers.
-            // SwiftUI compares one Int instead of 9 separate Equatable checks per render pass.
             .task { await loadData() }
-            .onChange(of: resetTrigger) { _, _ in
-                showTodayTasks = false
-                showTaskGroup = nil
-                selectedTask = nil
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .dismissTaskSheets)) { _ in
-                selectedTask = nil
-            }
             .onChange(of: dataFingerprint) { _, _ in
-                // Coalesce rapid changes into a single rebuild after 150ms of quiet
                 scheduleRebuild(recomputeEvents: true)
             }
     }
@@ -181,9 +148,6 @@ struct HomeView: View {
                 layoutContent
             }
         }
-        // P-4 FIX: Removed .id(habitVM.habits.count) — it was destroying the entire
-        // HomeView subtree (scroll positions, navigation state, animations) every time
-        // a habit was added or deleted. @Observable handles habit list updates correctly.
     }
     
     private var loadingView: some View {
@@ -223,8 +187,8 @@ struct HomeView: View {
             
             Spacer()
             
-            // Notification button
-            Button(action: { showNotifications = true }) {
+            // Notification button → router
+            Button(action: { router.present(.notifications) }) {
                 ZStack(alignment: .topTrailing) {
                     Image(systemName: "bell")
                         .font(DS.Typography.heading())
@@ -260,11 +224,6 @@ struct HomeView: View {
     // MARK: - Data Methods
     
     /// Debounced rebuild: cancels pending work, waits 150ms, then executes once.
-    /// Accumulates the `recomputeEvents` flag across coalesced calls so event
-    /// recomputation isn't lost when a non-event call arrives first.
-    ///
-    /// Before: 9 rebuilds per Firestore snapshot (3 VMs × isLoading + data + isLoading)
-    /// After:  1 rebuild per snapshot, 150ms after the last mutation
     func scheduleRebuild(recomputeEvents: Bool = false) {
         if recomputeEvents { pendingEventRecompute = true }
         rebuildTask?.cancel()
@@ -328,7 +287,6 @@ struct HomeView: View {
         
         guard !logs.isEmpty else { return 0 }
         
-        // Check each habit for a streak ending today, return the longest
         var longestStreak = 0
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -360,7 +318,6 @@ struct HomeView: View {
         let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: .now)?.start ?? .now
         let userId = authVM.currentUser?.id ?? ""
         
-        // Sum completed tasks with rewards this week assigned to this user
         return taskVM.allTasks
             .filter { task in
                 task.status == .completed &&
@@ -418,59 +375,6 @@ struct CircularProgressView: View {
     }
 }
 
-// MARK: - HomeView Modifier Extensions
-// These extensions break up the massive modifier chain in HomeView.body
-// to prevent Swift compiler type-check timeout errors.
-
-extension View {
-    /// Applies navigation destinations for HomeView
-    func applyNavigationDestinations(
-        showTodayTasks: Binding<Bool>,
-        showTaskGroup: Binding<TaskGroup?>
-    ) -> some View {
-        self
-            .navigationDestination(isPresented: showTodayTasks) {
-                TodayTasksView()
-            }
-            .navigationDestination(item: showTaskGroup) { group in
-                TaskGroupDetailView(taskGroup: group)
-            }
-    }
-    
-    /// Applies sheet presentations for HomeView
-    func applySheets(
-        showNotifications: Binding<Bool>,
-        selectedTask: Binding<FamilyTask?>,
-        showAddTask: Binding<Bool>,
-        showAddHabit: Binding<Bool>,
-        showAddEvent: Binding<Bool>
-    ) -> some View {
-        self
-            .sheet(isPresented: showNotifications) {
-                NotificationsView()
-            }
-            .sheet(item: selectedTask) { task in
-                TaskDetailView(task: task)
-            }
-            .sheet(isPresented: showAddTask) {
-                AddTaskView()
-                    .presentationBackground(Color.themeSurfacePrimary)
-            }
-            .sheet(isPresented: showAddHabit) {
-                AddHabitView()
-                    .presentationBackground(Color.themeSurfacePrimary)
-            }
-            .sheet(isPresented: showAddEvent) {
-                AddEventView()
-                    .presentationBackground(Color.themeSurfacePrimary)
-            }
-    }
-    
-    // P-2 FIX: applyDataObservers removed — replaced by single .onChange(of: dataFingerprint)
-    // in HomeView.body. The 9 separate onChange handlers that each allocated a Task
-    // are now replaced by one Int comparison per render pass.
-}
-
 // MARK: - Previews
 
 #Preview("iPhone") {
@@ -478,7 +382,6 @@ extension View {
     let familyVM = FamilyViewModel()
     return NavigationStack {
         HomeView(
-            resetTrigger: UUID(),
             authVM: authVM,
             familyVM: familyVM,
             taskVM: familyVM.taskVM,
@@ -488,4 +391,5 @@ extension View {
     }
     .environment(ThemeManager.shared)
     .environment(TourManager.shared)
+    .environment(NavigationRouter())
 }

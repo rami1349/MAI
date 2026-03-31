@@ -49,7 +49,7 @@ final class HomeworkVerificationViewModel {
     ) async {
         // Check cache (skip re-verification if same task/image)
         if !forceRefresh,
-           let cached = verificationResult,
+           verificationResult != nil,
            lastVerifiedTaskId == taskId,
            lastVerifiedImageUrl == imageUrl {
             showResults = true

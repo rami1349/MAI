@@ -18,7 +18,7 @@ struct MemberDetailView: View {
     @Environment(HabitViewModel.self) var habitVM
     let member: FamilyUser
     
-    @State private var heatmapMonth: Date = Date()
+    @State private var heatmapMonth: Date = Date.now
     
     /// All tasks belonging to this member (for stats / heatmap).
     private var allMemberTasks: [FamilyTask] {
@@ -40,7 +40,7 @@ struct MemberDetailView: View {
     private var currentYear: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
-        return formatter.string(from: Date())
+        return formatter.string(from: Date.now)
     }
     
     private var memberHabitLogs: [String: Set<String>] {

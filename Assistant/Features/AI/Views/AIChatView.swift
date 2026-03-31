@@ -479,7 +479,7 @@ struct AIChatView: View {
                     Button {
                         store.showCreditsPurchase = true
                     } label: {
-                        Text("getMore")
+                        Text("get_more")
                             .font(.caption)
                             .foregroundStyle(.accentPrimary)
                     }
@@ -496,7 +496,7 @@ struct AIChatView: View {
                         .font(DS.Typography.body())
                         .foregroundStyle(.statusWarning)
                     
-                    Text("dailyLimitResets")
+                    Text("daily_limit_resets")
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                     
@@ -541,7 +541,7 @@ struct AIChatView: View {
             } else {
                 // Normal input
                 HStack(alignment: .bottom, spacing: DS.Spacing.sm) {
-                    TextField("messagePlaceholder", text: $inputText, axis: .vertical)
+                    TextField("message_placeholder", text: $inputText, axis: .vertical)
                         .font(DS.Typography.body())
                         .lineLimit(1...5)
                         .padding(.horizontal, DS.Spacing.md)

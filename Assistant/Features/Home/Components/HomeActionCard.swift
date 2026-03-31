@@ -1,11 +1,3 @@
-//
-//  ActionCardData.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/23/26.
-//
-
-
 // ============================================================================
 // HomeActionCard.swift
 //

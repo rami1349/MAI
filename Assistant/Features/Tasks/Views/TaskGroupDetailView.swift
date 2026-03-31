@@ -14,6 +14,7 @@ struct TaskGroupDetailView: View {
     
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(TaskViewModel.self) var taskVM
+    @Environment(NavigationRouter.self) var router
     let taskGroup: TaskGroup
     
     @State private var showDeleteConfirm = false
@@ -40,7 +41,7 @@ struct TaskGroupDetailView: View {
     
     var body: some View {
         ZStack {
-            AdaptiveBackgroundView()
+            Color.themeSurfacePrimary
                 .ignoresSafeArea()
             
             ScrollView(showsIndicators: false) {
@@ -51,8 +52,8 @@ struct TaskGroupDetailView: View {
                     if tasksInGroup.isEmpty {
                         EmptyStateView(
                             icon: "checklist",
-                            title: "no_Tasks_In_Group",
-                            message: "add_Tasks_To_Start"
+                            title: "no_tasks_in_group",
+                            message: "add_tasks_to_start"
                         )
                         .padding(.top, 40)
                     } else {
@@ -66,16 +67,40 @@ struct TaskGroupDetailView: View {
         .navigationTitle(taskGroup.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .destructiveAction) {
-                Menu {
-                    Button(role: .destructive, action: { showDeleteConfirm = true }) {
-                        Label("delete_Group", systemImage: "trash")
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: DS.Spacing.sm) {
+                    // Create task in this folder
+                    Button(action: {
+                        DS.Haptics.light()
+                        router.present(.addTask(groupId: taskGroup.id))
+                    }) {
+                        Image(systemName: "plus")
+                            .font(DS.Typography.body())
+                            .foregroundStyle(.accentPrimary)
                     }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
+                    
+                    // Overflow menu
+                    Menu {
+                        Button(role: .destructive, action: { showDeleteConfirm = true }) {
+                            Label("delete_group", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                    }
+                    .disabled(isDeleting)
                 }
-                .disabled(isDeleting)
             }
+        }
+        // Drop target: drag tasks here to add to this folder
+        .dropDestination(for: String.self) { stableIds, _ in
+            guard let stableId = stableIds.first,
+                  let task = taskVM.task(byStableId: stableId)
+                        ?? taskVM.allTasks.first(where: { $0.stableId == stableId }),
+                  let gid = taskGroup.id
+            else { return false }
+            Task { await familyViewModel.moveTaskToGroup(task, groupId: gid) }
+            DS.Haptics.success()
+            return true
         }
         .sheet(item: $selectedTask) { task in
             TaskDetailView(task: task)
@@ -88,7 +113,7 @@ struct TaskGroupDetailView: View {
             // Clear when leaving the group
             familyViewModel.currentViewingGroupId = nil
         }
-        .alert("delete_TaskGroup", isPresented: $showDeleteConfirm) {
+        .alert("delete_task_group", isPresented: $showDeleteConfirm) {
             Button("cancel", role: .cancel) {}
             Button("delete", role: .destructive) {
                 guard !isDeleting else { return }
@@ -101,7 +126,7 @@ struct TaskGroupDetailView: View {
             }
         } message: {
             if tasksInGroup.isEmpty {
-                Text("action_cannot_ne_undone")
+                Text("action_cannot_be_undone")
             } else {
                 Text(AppStrings.deleteGroupWarning(tasksInGroup.count))
             }
@@ -136,7 +161,7 @@ struct TaskGroupDetailView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(24)
-        .background(RoundedRectangle(cornerRadius: 20).fill(Color.backgroundCard))
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color.themeCardBackground))
         .elevation1()
     }
     
@@ -183,7 +208,7 @@ struct TaskGroupDetailView: View {
             .frame(maxWidth: .infinity)
         }
         .padding(20)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color.backgroundCard))
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color.themeCardBackground))
         .elevation1()
     }
     
@@ -199,6 +224,21 @@ struct TaskGroupDetailView: View {
                     TaskRowCard(task: task, groupColor: groupColor)
                         .onTapGesture {
                             selectedTask = task
+                        }
+                        .draggable(task)
+                        .contextMenu {
+                            Button {
+                                selectedTask = task
+                            } label: {
+                                Label("view_details", systemImage: "eye")
+                            }
+                            
+                            MoveToFolderMenu(
+                                task: task,
+                                groups: familyMemberVM.taskGroups
+                            ) { task, groupId in
+                                await familyViewModel.moveTaskToGroup(task, groupId: groupId)
+                            }
                         }
                 }
             }
@@ -268,7 +308,7 @@ struct TaskRowCard: View {
                 .foregroundStyle(.textSecondary)
         }
         .padding(12)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
+        .background(RoundedRectangle(cornerRadius: 12).fill(Color.themeCardBackground))
     }
 }
 
@@ -282,13 +322,14 @@ struct TaskRowCard: View {
                 icon: "book.fill",
                 color: "7C3AED",
                 createdBy: "test",
-                createdAt: Date()
+                createdAt: Date.now
             )
         )
         .environment(AuthViewModel())
         .environment(familyVM)
         .environment(familyVM.familyMemberVM)
         .environment(familyVM.taskVM)
+        .environment(NavigationRouter())
         .environment(familyVM.calendarVM)
         .environment(familyVM.habitVM)
         .environment(familyVM.notificationVM)

@@ -1,6 +1,17 @@
 //
 //  AddHabitView.swift
-//  F
+//
+//  CONSISTENCY FIX: Aligned with AddEventView/EditEventView pattern.
+//
+//  Changes:
+//  - AdaptiveBackgroundView → Color.themeSurfacePrimary
+//  - Color.backgroundCard → Color.themeCardBackground
+//  - Color.backgroundSecondary → Color.themeCardBackground
+//  - Raw .font(.caption/.headline/.title2) → DS.Typography tokens
+//  - DS.Spacing.xxl → DS.Spacing.xl for section spacing
+//  - Unstyled toolbar buttons → styled with DS.Typography
+//  - .navigationTitle → custom .principal toolbar item
+//
 
 import SwiftUI
 import UIKit
@@ -18,34 +29,52 @@ struct AddHabitView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: DS.Spacing.xxl) {
-                    previewSection
-                    nameSection
-                    iconSection
-                    colorSection
+            ZStack {
+                Color.themeSurfacePrimary
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: DS.Spacing.xl) {
+                        previewSection
+                        nameSection
+                        iconSection
+                        colorSection
+                    }
+                    .padding(.horizontal, DS.Spacing.screenH)
+                    .padding(.top, DS.Spacing.md)
+                    .constrainedWidth(.form)
                 }
-                .padding(DS.Layout.adaptiveScreenPadding)
-                .constrainedWidth(.form)
             }
-            .scrollContentBackground(.hidden)
-            .background(AdaptiveBackgroundView())
-            .navigationTitle("newHabit")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("cancel") { dismiss() }
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textSecondary)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("new_habit")
+                        .font(DS.Typography.subheading())
+                        .foregroundStyle(.textPrimary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("create") {
-                        createHabit()
+                    Button(action: createHabit) {
+                        if isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Text("create")
+                                .font(DS.Typography.label())
+                                .fontWeight(.semibold)
+                        }
                     }
+                    .foregroundStyle(name.isEmpty ? .textTertiary : .accentPrimary)
                     .disabled(name.isEmpty || isLoading)
                 }
             }
             .overlay {
                 if showSuccess {
-                    SuccessDismissOverlay(message: "Habit Created!") {
+                    SuccessDismissOverlay(message: "habit_created") {
                         dismiss()
                     }
                 }
@@ -63,16 +92,16 @@ struct AddHabitView: View {
                     .frame(width: DS.IconSize.jumbo, height: DS.IconSize.jumbo)
                 
                 Image(systemName: selectedIcon)
-                    .font(.title2)
+                    .font(DS.Typography.heading())
                     .foregroundStyle(Color(hex: selectedColor))
             }
             
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 Text(name.isEmpty ? "Habit Name" : name)
-                    .font(.headline)
+                    .font(DS.Typography.subheading())
                     .foregroundStyle(name.isEmpty ? .textTertiary : .textPrimary)
-                Text("trackDaily")
-                    .font(.caption)
+                Text("track_daily")
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }
             
@@ -88,15 +117,30 @@ struct AddHabitView: View {
             }
         }
         .padding(DS.Spacing.lg)
-        .background(RoundedRectangle(cornerRadius: DS.Radius.xl).fill(Color.backgroundCard))
+        .background(
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
+                .fill(Color.themeCardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Radius.xl)
+                .stroke(Color.themeCardBorder, lineWidth: 0.5)
+        )
     }
     
     // MARK: - Name Section
     private var nameSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-            TextField("habitPlaceholder", text: $name)
-                .padding(DS.Spacing.lg)
-                .background(RoundedRectangle(cornerRadius: DS.Radius.card).fill(Color.backgroundCard))
+            TextField("habit_place_holder", text: $name)
+                .font(DS.Typography.body())
+                .padding(DS.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .fill(Color.themeCardBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .stroke(Color.themeCardBorder, lineWidth: 1)
+                )
         }
     }
     
@@ -104,7 +148,7 @@ struct AddHabitView: View {
     private var iconSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text("icon")
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {
@@ -116,7 +160,7 @@ struct AddHabitView: View {
                             RoundedRectangle(cornerRadius: DS.Radius.md)
                                 .fill(selectedIcon == item.icon ?
                                       Color(hex: selectedColor).opacity(0.2) :
-                                        Color.backgroundSecondary)
+                                        Color.themeCardBackground)
                                 .frame(width: DS.Control.large, height: DS.Control.large)
                             
                             Image(systemName: item.icon)
@@ -134,7 +178,7 @@ struct AddHabitView: View {
     private var colorSection: some View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             Text("color")
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: DS.Spacing.md) {

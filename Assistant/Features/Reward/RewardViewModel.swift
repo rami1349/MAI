@@ -1,6 +1,6 @@
 //
 //  RewardViewModel.swift
-//  
+//
 //
 //  Manages reward transactions (ledger) and withdrawal requests.
 //  Handles: transaction history, manual rewards, withdrawal lifecycle.
@@ -144,7 +144,7 @@ final class RewardViewModel {
         guard let memberId = member.id else { return }
         
         do {
-            let _ = try await functions.httpsCallable("payOutMember").call([
+            let _ = try await functions.httpsCallable("pay_out_member").call([
                 "memberId": memberId,
                 "amount": amount,
                 "note": note ?? "Paid out by \(paidByName)"
@@ -202,7 +202,7 @@ final class RewardViewModel {
         guard let id = request.id else { return }
         
         do {
-            let _ = try await functions.httpsCallable("approveWithdrawal").call([
+            let _ = try await functions.httpsCallable("approve_withdrawal").call([
                 "requestId": id
             ])
             
@@ -227,7 +227,7 @@ final class RewardViewModel {
         guard let id = request.id else { return }
         
         do {
-            let _ = try await functions.httpsCallable("rejectWithdrawal").call([
+            let _ = try await functions.httpsCallable("reject_withdrawal").call([
                 "requestId": id,
                 "reason": reason ?? ""
             ] as [String: Any])

@@ -1,8 +1,5 @@
-//
-//  CapabilityPresetPicker.swift
-//  Assistant
-//
-//  Created by Ramiro  on 3/23/26.
+// ============================================================================
+// CapabilityPresetPicker.swift
 //
 // PURPOSE:
 //   Reusable view for selecting capability presets and customizing granular

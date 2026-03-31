@@ -1,32 +1,25 @@
 // ============================================================================
 // HomeGreetingSection.swift
 //
-// SLOT 1: Greeting + Personal Stat
+// SLOT 1: Greeting + Daily Progress Ring + Stat
 //
-// Always visible. Shows the user's name + one contextual stat line.
-// The stat is capability-driven, first match wins — zero role branching.
-//
-// Priority order:
-//   1. canVerifyHomework AND pendingReviewCount > 0 → "X tasks waiting for review"
-//   2. rewardEarnedThisWeek > 0 → "You earned $X this week!"
-//   3. habitStreakDays > 0 → "X-day habit streak going strong"
-//   4. Fallback → "Here's what's on your plate today"
+// ADHD UPGRADES (v3):
+//   - Daily progress ring: visible dopamine target ("3 of 7 done")
+//   - Streak flame: loss aversion motivator
+//   - Relative stat line kept from v2
 //
 // ============================================================================
 
 import SwiftUI
 
-// MARK: - Personal Stat Model
+// MARK: - Personal Stat Model (unchanged)
 
-/// Data-driven personal stat — computed once per rebuild, displayed in the greeting.
 enum PersonalStat: Equatable, Sendable {
     case pendingReviews(count: Int)
     case earnedThisWeek(amount: Double)
     case habitStreak(days: Int)
     case fallback
 
-    /// Resolve the most relevant stat for this user.
-    /// First match wins — no role checks, just data + capabilities.
     static func resolve(
         capabilities: MemberCapabilities,
         pendingReviewCount: Int,
@@ -71,6 +64,10 @@ struct HomeGreetingSection: View {
     let stat: PersonalStat
     let unreadNotificationCount: Int
     let onNotificationsTapped: () -> Void
+    
+    // ADHD: daily progress
+    var todayCompleted: Int = 0
+    var todayTotal: Int = 0
 
     var body: some View {
         HStack(alignment: .top) {
@@ -81,9 +78,16 @@ struct HomeGreetingSection: View {
                     .foregroundStyle(.textTertiary)
 
                 // Greeting + name
-                Text("\(greetingKey), \(userName)!")
-                    .font(DS.Typography.displayMedium())
-                    .foregroundStyle(.textPrimary)
+                HStack(spacing: DS.Spacing.md) {
+                    Text("\(greetingText), \(userName)!")
+                        .font(DS.Typography.displayMedium())
+                        .foregroundStyle(.textPrimary)
+                    
+                    // ADHD: Daily progress ring
+                    if todayTotal > 0 {
+                        dailyProgressRing
+                    }
+                }
 
                 // Personal stat
                 statLine
@@ -114,6 +118,38 @@ struct HomeGreetingSection: View {
             }
         }
         .padding(.horizontal, DS.Spacing.screenH)
+    }
+    
+    // MARK: - Daily Progress Ring (ADHD)
+    
+    private var dailyProgressRing: some View {
+        let progress = todayTotal > 0 ? Double(todayCompleted) / Double(todayTotal) : 0
+        let allDone = todayCompleted >= todayTotal && todayTotal > 0
+        let ringColor: Color = allDone ? .accentGreen : .accentPrimary
+        
+        return HStack(spacing: DS.Spacing.xs) {
+            ZStack {
+                Circle()
+                    .stroke(ringColor.opacity(0.15), lineWidth: 3)
+                    .frame(width: 28, height: 28)
+                
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(ringColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 28, height: 28)
+                    .rotationEffect(.degrees(-90))
+                
+                if allDone {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(ringColor)
+                }
+            }
+            
+            Text("\(todayCompleted)/\(todayTotal)")
+                .font(DS.Typography.captionMedium())
+                .foregroundStyle(allDone ? .accentGreen : .textSecondary)
+        }
     }
 
     // MARK: - Stat Line
@@ -152,7 +188,7 @@ struct HomeGreetingSection: View {
 
     // MARK: - Greeting
 
-    private var greetingKey: String {
+    private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: .now)
         switch hour {
         case 0..<12:  return AppStrings.localized("good_morning")

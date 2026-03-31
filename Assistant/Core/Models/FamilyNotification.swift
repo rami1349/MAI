@@ -27,6 +27,7 @@ struct FamilyNotification: Identifiable, Codable {
         case rewardReceived
         case reminder
         case familyInvite
+        case memberJoined
         case eventCreated
         case eventUpdated
         case eventCanceled

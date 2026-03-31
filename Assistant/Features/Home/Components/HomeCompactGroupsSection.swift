@@ -1,4 +1,3 @@
-//
 //  HomeCompactGroupsSection.swift
 
 
@@ -29,7 +28,7 @@ struct HomeCompactGroupsSection: View {
                                 .fill(Color.accentPrimary.opacity(0.1))
                         )
                     
-                    Text("task_Groups")
+                    Text("task_groups")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                     
@@ -157,13 +156,13 @@ struct CompactGroupRow: View {
     HomeCompactGroupsSection(
         groups: [
             {
-                var g = TaskGroup(familyId: "t", name: "Daily Chores", icon: "house.fill", color: "7C3AED", createdBy: "u1", createdAt: Date())
+                var g = TaskGroup(familyId: "t", name: "Daily Chores", icon: "house.fill", color: "7C3AED", createdBy: "u1", createdAt: Date.now)
                 g.taskCount = 5
                 g.completionPercentage = 60
                 return g
             }(),
             {
-                var g = TaskGroup(familyId: "t", name: "Homework", icon: "book.fill", color: "3B82F6", createdBy: "u1", createdAt: Date())
+                var g = TaskGroup(familyId: "t", name: "Homework", icon: "book.fill", color: "3B82F6", createdBy: "u1", createdAt: Date.now)
                 g.taskCount = 3
                 g.completionPercentage = 33
                 return g

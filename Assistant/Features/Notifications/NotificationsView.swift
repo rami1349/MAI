@@ -38,13 +38,13 @@ struct NotificationsView: View {
                             Button {
                                 Task { await notificationVM.markAllAsRead() }
                             } label: {
-                                Label("markAllRead", systemImage: "checkmark.circle")
+                                Label("mark_all_read", systemImage: "checkmark.circle")
                             }
                             
                             Button(role: .destructive) {
                                 Task { await notificationVM.deleteAll() }
                             } label: {
-                                Label("deleteAll", systemImage: "trash")
+                                Label("delete_all", systemImage: "trash")
                             }
                         } label: {
                             Image(systemName: "ellipsis.circle")
@@ -102,6 +102,7 @@ struct NotificationCardView: View {
         case .dailySummary: return "chart.bar.doc.horizontal"
         case .eventUpdated: return "pencil"
         case .eventCanceled: return "trash"
+
         }
     }
     
@@ -120,6 +121,7 @@ struct NotificationCardView: View {
         case .dailySummary: return Color.accentTertiary
         case .eventUpdated: return Color.accentPrimary
         case .eventCanceled: return Color.accentRed
+
         }
     }
     

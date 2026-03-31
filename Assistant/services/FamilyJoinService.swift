@@ -48,7 +48,7 @@ struct FamilyJoinService {
     @discardableResult
     func joinFamily(inviteCode: String, userId: String, isAdult: Bool) async throws -> String {
         let snapshot = try await db.collection("families")
-            .whereField("inviteCode", isEqualTo: inviteCode)
+            .whereField("invite_code", isEqualTo: inviteCode)
             .limit(to: 1)
             .getDocuments()
         
@@ -76,7 +76,7 @@ struct FamilyJoinService {
     
     func completeOnboarding(userId: String) async throws {
         try await db.collection("users").document(userId).updateData([
-            "hasCompletedOnboarding": true
+            "has_completed_onboarding": true
         ])
     }
     
@@ -84,14 +84,6 @@ struct FamilyJoinService {
     func resetOnboarding(userId: String) async throws {
         try await db.collection("users").document(userId).updateData([
             "hasCompletedOnboarding": false
-        ])
-    }
-    
-    // MARK: - Balance
-    
-    func updateUserBalance(userId: String, amount: Double) async throws {
-        try await db.collection("users").document(userId).updateData([
-            "balance": FieldValue.increment(amount)
         ])
     }
     
@@ -112,7 +104,7 @@ enum FamilyJoinError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidInviteCode:
-            return "invalidInviteCode"
+            return "invalid_invite_code"
         }
     }
 }

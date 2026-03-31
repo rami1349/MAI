@@ -2,8 +2,18 @@
 //  EditTaskView.swift
 //  Assistant
 //
-//  Created by Ramiro  on 2/10/26.
-
+//  CONSISTENCY FIX: Converted from Form to ScrollView layout to match
+//  AddTaskView, AddEventView, EditEventView pattern.
+//
+//  Changes:
+//  - Form → ScrollView + VStack(spacing: DS.Spacing.xl)
+//  - AdaptiveBackgroundView → Color.themeSurfacePrimary
+//  - Color.backgroundCard → Color.themeCardBackground
+//  - Unstyled toolbar buttons → styled with DS.Typography
+//  - .navigationTitle → custom .principal toolbar item
+//  - System Form sections → manual card-styled sections
+//  - Added .constrainedWidth(.form) for iPad
+//
 
 import SwiftUI
 
@@ -11,7 +21,6 @@ struct EditTaskView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(AuthViewModel.self) var authViewModel
     @Environment(FamilyViewModel.self) var familyViewModel
-
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     
     let task: FamilyTask
@@ -69,219 +78,437 @@ struct EditTaskView: View {
     
     private var isValid: Bool { !title.trimmingCharacters(in: .whitespaces).isEmpty }
     
+    // MARK: - Body
+    
     var body: some View {
         NavigationStack {
-            Form {
-                // MARK: - Task Type
-                Section {
-                    HStack(spacing: DS.Spacing.md) {
-                        ForEach(FamilyTask.TaskType.allCases, id: \.self) { type in
-                            Button {
-                                withAnimation { taskType = type }
-                                DS.Haptics.light()
-                            } label: {
-                                VStack(spacing: DS.Spacing.xs) {
-                                    Image(systemName: type.icon)
-                                        .font(DS.Typography.heading())
-                                    Text(type.displayName)
-                                        .font(DS.Typography.bodySmall())
-                                }
-                                .foregroundStyle(taskType == type ? .textOnAccent : .textPrimary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, DS.Spacing.md)
-                                .background(
-                                    RoundedRectangle(cornerRadius: DS.Radius.md)
-                                        .fill(taskType == type ? Color.accentPrimary : Color.themeCardBackground)
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: DS.Radius.md)
-                                        .stroke(taskType == type ? Color.clear : Color.themeCardBorder, lineWidth: 1)
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                } header: {
-                    Text("type")
-                }
-                .listRowBackground(Color.backgroundCard)
+            ZStack {
+                Color.themeSurfacePrimary
+                    .ignoresSafeArea()
                 
-                // MARK: - Basics
-                Section {
-                    TextField("task_title", text: $title)
-                        .focused($focusedField, equals: .title)
-                    
-                    TextField("description_optional", text: $description, axis: .vertical)
-                        .lineLimit(2...5)
-                        .focused($focusedField, equals: .description)
+                ScrollView {
+                    VStack(spacing: DS.Spacing.xl) {
+                        taskTypeSection
+                        basicsSection
+                        assignmentSection
+                        dateSection
+                        prioritySection
+                        incentiveSection
+                        
+                        Spacer(minLength: 80)
+                    }
+                    .padding(.horizontal, DS.Spacing.screenH)
+                    .padding(.top, DS.Spacing.md)
+                    .constrainedWidth(.form)
                 }
-                .listRowBackground(Color.backgroundCard)
-                
-                // MARK: - Assignment
-                Section {
-                    Button {
-                        activeSheet = .assignee
-                    } label: {
-                        HStack {
-                            Label("assigned_to", systemImage: "person")
-                                .foregroundStyle(.textPrimary)
-                            Spacer()
-                            if let assignedTo, let member = familyMemberVM.getMember(by: assignedTo) {
-                                HStack(spacing: DS.Spacing.xs) {
-                                    AvatarView(user: member, size: 24)
-                                    Text(member.displayName)
-                                        .foregroundStyle(.textSecondary)
-                                }
-                            } else {
-                                Text("unassigned")
-                                    .foregroundStyle(.textTertiary)
-                            }
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.textTertiary)
-                        }
-                    }
-                    
-                    Button {
-                        activeSheet = .group
-                    } label: {
-                        HStack {
-                            Label("task_group", systemImage: "folder")
-                                .foregroundStyle(.textPrimary)
-                            Spacer()
-                            if let groupId = selectedGroupId,
-                               let group = familyMemberVM.getTaskGroup(by: groupId) {
-                                HStack(spacing: DS.Spacing.xs) {
-                                    Image(systemName: group.icon)
-                                        .foregroundStyle(Color(hex: group.color))
-                                    Text(group.name)
-                                        .foregroundStyle(.textSecondary)
-                                }
-                            } else {
-                                Text("no_group")
-                                    .foregroundStyle(.textTertiary)
-                            }
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(.textTertiary)
-                        }
-                    }
-                }
-                .listRowBackground(Color.backgroundCard)
-                
-                // MARK: - Dates
-                Section {
-                    DatePicker("Due Date", selection: $dueDate, displayedComponents: .date)
-                    
-                    Toggle("Scheduled Time", isOn: $hasScheduledTime)
-                    
-                    if hasScheduledTime {
-                        DatePicker("time", selection: $scheduledTime, displayedComponents: .hourAndMinute)
-                    }
-                }
-                .listRowBackground(Color.backgroundCard)
-                
-                // MARK: - Priority
-                Section {
-                    Picker("priority", selection: $priority) {
-                        ForEach(FamilyTask.TaskPriority.allCases, id: \.self) { p in
-                            Text(p.rawValue).tag(p)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .listRowBackground(Color.backgroundCard)
-                
-                // MARK: - Reward & Proof
-                Section {
-                    // Reward input
-                    HStack {
-                        Image(systemName: "dollarsign.circle.fill")
-                            .font(DS.Typography.heading())
-                            .foregroundStyle(.accentGreen)
-                        
-                        Text("reward")
-                            .foregroundStyle(.textPrimary)
-                        
-                        Spacer()
-                        
-                        HStack(spacing: 4) {
-                            Text("$")
-                                .foregroundStyle(.textSecondary)
-                            
-                            TextField("0", text: $rewardAmount)
-                                .keyboardType(.numberPad)
-                                .font(DS.Typography.heading()) // was .rounded
-                                .foregroundStyle(parsedReward > 0 ? .accentGreen : .textTertiary)
-                                .frame(width: 70)
-                                .multilineTextAlignment(.trailing)
-                                .onChange(of: rewardAmount) { _, newValue in
-                                    let filtered = newValue.filter { $0.isNumber }
-                                    if filtered != newValue { rewardAmount = filtered }
-                                    if parsedReward >= 5 && !requiresProof {
-                                        requiresProof = true
-                                    }
-                                }
-                        }
-                    }
-                    
-                    // Proof toggle
-                    HStack {
-                        Image(systemName: "camera.fill")
-                            .font(DS.Typography.body())
-                            .foregroundStyle(.accentTertiary)
-                        
-                        Text("require_proof")
-                            .foregroundStyle(.textPrimary)
-                        
-                        Spacer()
-                        
-                        Toggle("", isOn: $requiresProof)
-                            .labelsHidden()
-                            .tint(Color.accentPrimary)
-                    }
-                } header: {
-                    Text("incentives")
-                }
-                .listRowBackground(Color.backgroundCard)
             }
-            .scrollContentBackground(.hidden)
-            .background(AdaptiveBackgroundView())
-            .animation(.spring(response: 0.3), value: taskType)
-            .navigationTitle("edit_task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("cancel") { dismiss() }
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textSecondary)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("edit_task")
+                        .font(DS.Typography.subheading())
+                        .foregroundStyle(.textPrimary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("save") { saveTask() }
-                        .fontWeight(.semibold)
-                        .disabled(!isValid || isLoading)
+                    Button(action: saveTask) {
+                        if isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Text("save")
+                                .font(DS.Typography.label())
+                                .fontWeight(.semibold)
+                        }
+                    }
+                    .foregroundStyle(isValid ? .accentPrimary : .textTertiary)
+                    .disabled(!isValid || isLoading)
                 }
                 ToolbarItem(placement: .keyboard) {
                     Button("done") { focusedField = nil }
                 }
             }
+            .animation(.spring(response: 0.3), value: taskType)
             .sheet(item: $activeSheet) { sheet in
                 switch sheet {
                 case .assignee:
                     MemberPicker(selectedMemberId: $assignedTo)
-                        .presentationBackground(Color.backgroundPrimary)
+                        .presentationBackground(Color.themeSurfacePrimary)
                 case .group:
                     TaskGroupPicker(selectedGroupId: $selectedGroupId)
-                        .presentationBackground(Color.backgroundPrimary)
+                        .presentationBackground(Color.themeSurfacePrimary)
                 }
             }
             .overlay {
                 if showSuccess {
-                    SuccessDismissOverlay(message: "Task Updated!") {
+                    SuccessDismissOverlay(message: "task_updated") {
                         dismiss()
                     }
                 }
             }
             .globalErrorBanner(errorMessage: $saveError)
+        }
+    }
+    
+    // MARK: - Task Type Section
+    
+    private var taskTypeSection: some View {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+            Text("type")
+                .font(DS.Typography.caption())
+                .foregroundStyle(.textSecondary)
+            
+            HStack(spacing: DS.Spacing.md) {
+                ForEach(FamilyTask.TaskType.allCases, id: \.self) { type in
+                    Button {
+                        withAnimation { taskType = type }
+                        DS.Haptics.light()
+                    } label: {
+                        VStack(spacing: DS.Spacing.xs) {
+                            Image(systemName: type.icon)
+                                .font(DS.Typography.displayMedium())
+                            Text(type.displayName)
+                                .font(DS.Typography.label())
+                        }
+                        .foregroundStyle(taskType == type ? .textOnAccent : .textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DS.Spacing.lg)
+                        .background(
+                            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                                .fill(taskType == type ? Color.accentPrimary : Color.themeCardBackground)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                                .stroke(taskType == type ? Color.clear : Color.themeCardBorder, lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Basics Section (Title + Description)
+    
+    private var basicsSection: some View {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+            TextField("task_title", text: $title)
+                .font(DS.Typography.body())
+                .focused($focusedField, equals: .title)
+                .padding(DS.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .fill(Color.themeCardBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .stroke(focusedField == .title ? Color.accentPrimary : Color.themeCardBorder,
+                                lineWidth: focusedField == .title ? 2 : 1)
+                )
+            
+            // Hint for homework
+            if taskType == .homework {
+                HStack(spacing: DS.Spacing.xxs) {
+                    Image("samy")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
+                    Text("ai_will_identify_subject")
+                        .font(DS.Typography.caption())
+                }
+                .foregroundStyle(.accentPrimary)
+            }
+            
+            TextField("description_optional", text: $description, axis: .vertical)
+                .font(DS.Typography.body())
+                .lineLimit(2...5)
+                .focused($focusedField, equals: .description)
+                .padding(DS.Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .fill(Color.themeCardBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: DS.Radius.md)
+                        .stroke(focusedField == .description ? Color.accentPrimary : Color.themeCardBorder,
+                                lineWidth: focusedField == .description ? 2 : 1)
+                )
+        }
+    }
+    
+    // MARK: - Assignment Section
+    
+    private var assignmentSection: some View {
+        VStack(spacing: 0) {
+            // Assignee row
+            Button {
+                activeSheet = .assignee
+            } label: {
+                HStack {
+                    Image(systemName: "person")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentPrimary)
+                        .frame(width: 24)
+                    
+                    Text("assigned_to")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
+                    
+                    if let assignedTo, let member = familyMemberVM.getMember(by: assignedTo) {
+                        HStack(spacing: DS.Spacing.xs) {
+                            AvatarView(user: member, size: 24)
+                            Text(member.displayName)
+                                .font(DS.Typography.body())
+                                .foregroundStyle(.textSecondary)
+                        }
+                    } else {
+                        Text("unassigned")
+                            .font(DS.Typography.body())
+                            .foregroundStyle(.textTertiary)
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(DS.Typography.caption())
+                        .foregroundStyle(.textTertiary)
+                }
+                .padding(DS.Spacing.md)
+            }
+            .buttonStyle(.plain)
+            
+            Divider().padding(.leading, 48)
+            
+            // Task group row
+            Button {
+                activeSheet = .group
+            } label: {
+                HStack {
+                    Image(systemName: "folder")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentPrimary)
+                        .frame(width: 24)
+                    
+                    Text("task_group")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
+                    
+                    if let groupId = selectedGroupId,
+                       let group = familyMemberVM.getTaskGroup(by: groupId) {
+                        HStack(spacing: DS.Spacing.xs) {
+                            Image(systemName: group.icon)
+                                .foregroundStyle(Color(hex: group.color))
+                            Text(group.name)
+                                .font(DS.Typography.body())
+                                .foregroundStyle(.textSecondary)
+                        }
+                    } else {
+                        Text("no_group")
+                            .font(DS.Typography.body())
+                            .foregroundStyle(.textTertiary)
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(DS.Typography.caption())
+                        .foregroundStyle(.textTertiary)
+                }
+                .padding(DS.Spacing.md)
+            }
+            .buttonStyle(.plain)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .fill(Color.themeCardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .stroke(Color.themeCardBorder, lineWidth: 0.5)
+        )
+    }
+    
+    // MARK: - Date Section
+    
+    private var dateSection: some View {
+        VStack(spacing: 0) {
+            // Due date
+            HStack {
+                Image(systemName: "calendar")
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.accentPrimary)
+                    .frame(width: 24)
+                
+                Text("due_date")
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.textPrimary)
+                
+                Spacer()
+                
+                DatePicker("", selection: $dueDate, displayedComponents: .date)
+                    .labelsHidden()
+            }
+            .padding(DS.Spacing.md)
+            
+            Divider().padding(.leading, 48)
+            
+            // Scheduled time toggle
+            HStack {
+                Image(systemName: "clock")
+                    .font(DS.Typography.body())
+                    .foregroundStyle(hasScheduledTime ? .accentPrimary : .textTertiary)
+                    .frame(width: 24)
+                
+                Toggle("scheduled_time", isOn: $hasScheduledTime)
+                    .font(DS.Typography.body())
+                    .foregroundStyle(.textPrimary)
+                    .tint(Color.accentPrimary)
+            }
+            .padding(DS.Spacing.md)
+            
+            // Time picker (when toggled on)
+            if hasScheduledTime {
+                Divider().padding(.leading, 48)
+                
+                HStack {
+                    Image(systemName: "clock.fill")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentPrimary)
+                        .frame(width: 24)
+                    
+                    Text("time")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
+                    
+                    DatePicker("", selection: $scheduledTime, displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                }
+                .padding(DS.Spacing.md)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .fill(Color.themeCardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DS.Radius.lg)
+                .stroke(Color.themeCardBorder, lineWidth: 0.5)
+        )
+        .animation(.spring(response: 0.3), value: hasScheduledTime)
+    }
+    
+    // MARK: - Priority Section
+    
+    private var prioritySection: some View {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+            Text("priority")
+                .font(DS.Typography.caption())
+                .foregroundStyle(.textSecondary)
+            
+            Picker("priority", selection: $priority) {
+                ForEach(FamilyTask.TaskPriority.allCases, id: \.self) { p in
+                    Text(p.rawValue).tag(p)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+    
+    // MARK: - Incentive Section (Reward + Proof)
+    
+    private var incentiveSection: some View {
+        VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+            HStack {
+                Text("incentives")
+                    .font(DS.Typography.caption())
+                    .foregroundStyle(.textSecondary)
+                
+                Spacer()
+                
+                Text("optional")
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textTertiary)
+            }
+            
+            VStack(spacing: 0) {
+                // Reward input
+                HStack {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .font(DS.Typography.heading())
+                        .foregroundStyle(.accentGreen)
+                    
+                    Text("reward")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 4) {
+                        Text("$")
+                            .font(DS.Typography.body())
+                            .foregroundStyle(.textSecondary)
+                        
+                        TextField("0", text: $rewardAmount)
+                            .keyboardType(.numberPad)
+                            .font(DS.Typography.heading())
+                            .foregroundStyle(parsedReward > 0 ? .accentGreen : .textTertiary)
+                            .frame(width: 70)
+                            .multilineTextAlignment(.trailing)
+                            .onChange(of: rewardAmount) { _, newValue in
+                                let filtered = newValue.filter { $0.isNumber }
+                                if filtered != newValue { rewardAmount = filtered }
+                                if parsedReward >= 5 && !requiresProof {
+                                    requiresProof = true
+                                }
+                            }
+                    }
+                }
+                .padding(DS.Spacing.md)
+                
+                Divider().padding(.leading, 48)
+                
+                // Proof toggle
+                HStack {
+                    Image(systemName: "camera.fill")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.accentTertiary)
+                    
+                    Text("require_proof")
+                        .font(DS.Typography.body())
+                        .foregroundStyle(.textPrimary)
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $requiresProof)
+                        .labelsHidden()
+                        .tint(Color.accentPrimary)
+                }
+                .padding(DS.Spacing.md)
+            }
+            .background(
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
+                    .fill(Color.themeCardBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DS.Radius.lg)
+                    .stroke(Color.themeCardBorder, lineWidth: 0.5)
+            )
+            
+            if parsedReward >= 5 && requiresProof {
+                HStack(spacing: DS.Spacing.xxs) {
+                    Image(systemName: "lightbulb")
+                        .font(DS.Typography.bodySmall())
+                    Text("proof_auto_enabled_hint")
+                        .font(DS.Typography.caption())
+                }
+                .foregroundStyle(.textTertiary)
+            }
         }
     }
     

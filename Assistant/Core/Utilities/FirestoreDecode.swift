@@ -97,24 +97,3 @@ enum FirestoreDecode {
         }
     }
 }
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — Silent decode failures are unobservable:
-//   `try?` swallows all decode errors. In development builds, consider logging
-//   failures to track schema mismatches:
-//     #if DEBUG
-//     do { return try doc.data(as: T.self) }
-//     catch { print("Decode failed for \(doc.documentID): \(error)"); return nil }
-//     #else
-//     return try? doc.data(as: T.self)
-//     #endif
-//
-// SUGGESTION 2 — No progress reporting:
-//   For very large document arrays (approaching the 200-document limit),
-//   there is no way for the caller to observe partial progress.
-//   An AsyncStream variant could enable progressive loading.
-//
-// SUGGESTION 3 — documents() could be made generic over any Sequence:
-//   The `[QueryDocumentSnapshot]` constraint ties this to Firestore's API.
-//   A more generic signature would be easier to unit test:
-//   `static func decode<T: Decodable>(_ data: [Data]) async -> [T]`

@@ -1,33 +1,15 @@
-// ============================================================================
 // MeView.swift
 //
 // ME TAB: Personal Hub
-//
-// Replaces FamilyView. Top-to-bottom narrative:
-//   who I am → what I've earned → what I've done → my habits →
-//   my family → my settings
-//
-// ┌─────────────────────────────────────────────┐
-// │ 1. Family Banner (hero image)               │
-// ├─────────────────────────────────────────────┤
-// │ 2. My Profile (avatar, name, preset badge)  │
-// ├─────────────────────────────────────────────┤
-// │ 3. My Goal (year goal card)                 │
-// ├─────────────────────────────────────────────┤
-// │ 4. My Wallet (inline balance + actions)     │
-// ├─────────────────────────────────────────────┤
-// │ 5. My Activity (heatmap)                    │
-// ├─────────────────────────────────────────────┤
-// │ 6. My Habits (week/month/year analytics)    │
-// ├─────────────────────────────────────────────┤
-// │ 7. My Family (inline member list + invite)  │
-// ├─────────────────────────────────────────────┤
-// │ 8. Settings (inline at bottom)              │
-// └─────────────────────────────────────────────┘
-//
-// ZERO FEATURES LOST from FamilyView — every item has a documented home.
-//
-// ============================================================================
+// │ 1. Family Banner (hero image)
+// │ 2. My Profile (avatar, name, preset badge)
+// │ 3. My Goal (year goal card)
+// │ 4. My Wallet (inline balance + actions)
+// │ 5. My Activity (heatmap)
+// │ 6. My Habits (week/month/year analytics)
+// │ 7. My Family (inline member list + invite)
+// │ 8. Settings (inline at bottom)
+
 
 import SwiftUI
 import PhotosUI
@@ -95,7 +77,7 @@ struct MeView: View {
                     isUploading: isUploadingBanner
                 )
 
-                VStack(spacing: DS.Spacing.xxl) {
+                VStack(spacing: DS.Spacing.lg) {
 
                     // ── 2. My Profile ────────────────────────
                     if let user = currentUser {
@@ -148,10 +130,10 @@ struct MeView: View {
                     // ── 8. Settings ──────────────────────────
                     MeSettingsSection()
 
-                    Spacer().frame(height: 120)
+                    Spacer().frame(height: 60)
                 }
                 .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
-                .padding(.top, DS.Spacing.xl)
+                .padding(.top, DS.Spacing.md)
             }
         }
         .background(Color.themeSurfacePrimary.ignoresSafeArea())

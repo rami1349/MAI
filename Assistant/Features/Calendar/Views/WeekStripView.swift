@@ -1,12 +1,6 @@
 //
 //  WeekStripView.swift
-//
-//  LUXURY CALM REDESIGN
-//  - Elegant day cells with soft selection
-//  - Refined typography and spacing
-//  - Subtle shadows and interactions
-//  - Clean indicator dots
-//
+
 
 import SwiftUI
 

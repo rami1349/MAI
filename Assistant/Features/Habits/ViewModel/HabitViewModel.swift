@@ -1,6 +1,6 @@
 // ============================================================================
 // HabitViewModel.swift
-// 
+//
 //
 // PURPOSE:
 //   Manages habit definitions and daily completion logs for a single user.
@@ -302,9 +302,24 @@ final class HabitViewModel {
         let originalHabits = habits
         let originalLogs   = habitLogs
         habits.removeAll { $0.id == id }
-        habitLogs.removeValue(forKey: id) // Clear cached logs for this habit
+        habitLogs.removeValue(forKey: id)
 
         do {
+            // 1. Batch-delete all habitLog documents for this habit
+            let logsSnap = try await db.collection(FirestoreCollections.habitLogs)
+                .whereField("habitId", isEqualTo: id)
+                .getDocuments()
+
+            if !logsSnap.documents.isEmpty {
+                // Firestore batch limit is 500 — safe for habits (max ~365 logs/year)
+                let batch = db.batch()
+                for doc in logsSnap.documents {
+                    batch.deleteDocument(doc.reference)
+                }
+                try await batch.commit()
+            }
+
+            // 2. Delete the habit document itself
             try await db.collection(FirestoreCollections.habits).document(id).delete()
         } catch {
             // ROLLBACK: Restore state on failure
@@ -417,29 +432,3 @@ final class HabitViewModel {
     }
 }
 
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — toggleHabitCompletion lacks rollback on failure:
-//   Unlike deleteHabit(), the optimistic update in toggleHabitCompletion() does not
-//   roll back if the Firestore write fails. Add a rollback pattern:
-//     let originalLogs = habitLogs
-//     ... (update)
-//     if writeFails { habitLogs = originalLogs }
-//
-// SUGGESTION 2 — deleteHabit performs a hard delete, not soft-delete:
-//   The comment says "soft-delete" but the code calls `.delete()`.
-//   If preserving log history is important, update isActive to false instead:
-//     db.collection("habits").document(id).updateData(["isActive": false])
-//
-// SUGGESTION 3 — loadHabitLogs overwrites all existing logs:
-//   Calling loadHabitLogs() for a new date range replaces `habitLogs` entirely.
-//   If the user navigates back and forth between months, previously loaded months
-//   must be re-fetched. Consider merging ranges:
-//     for (id, dates) in newHabitLogs { habitLogs[id, default: []].formUnion(dates) }
-//
-// SUGGESTION 4 — Orphaned HabitLog documents after deleteHabit():
-//   Deleting a habit leaves its log documents in Firestore. Add a Cloud Function
-//   trigger on habit deletion to clean up orphaned logs.
-//
-// SUGGESTION 5 — Magic collection string "habitLogs":
-//   Extract to a FirestoreCollections constants enum to prevent typos across files.

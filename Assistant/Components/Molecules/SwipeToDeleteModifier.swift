@@ -190,20 +190,20 @@ extension View {
 #Preview {
     VStack(spacing: 16) {
         // Delete only
-        Text("swipeDeleteHint")
+        Text("swipe_delete")
             .frame(maxWidth: .infinity)
             .padding()
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
-            .swipeToDelete { print("Deleted") }
+            .swipeToDelete { print("deleted") }
         
         // Complete and delete
-        Text("swipeCompleteDeleteHint")
+        Text("swipe_complete_delete")
             .frame(maxWidth: .infinity)
             .padding()
             .background(RoundedRectangle(cornerRadius: 12).fill(Color.backgroundCard))
             .swipeToCompleteOrDelete(
-                onComplete: { print("Completed") },
-                onDelete: { print("Deleted") }
+                onComplete: { print("completed") },
+                onDelete: { print("deleted") }
             )
     }
     .padding()

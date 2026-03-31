@@ -1,14 +1,5 @@
 //
 //  AddEventView.swift
-//
-//
-//  UNICORN REDESIGN - Progressive Disclosure Pattern
-//  - Hero title input with large font
-//  - Smart time selection with quick chips
-//  - Collapsible optional fields
-//  - Natural language parsing
-//  - Minimal cognitive load
-//
 
 import SwiftUI
 import UIKit
@@ -253,7 +244,7 @@ struct AddEventView: View {
                     startDate = calendar.startOfDay(for: startDate)
                     endDate = calendar.date(byAdding: .day, value: 1, to: startDate)!
                 } else {
-                    let hour = calendar.component(.hour, from: Date())
+                    let hour = calendar.component(.hour, from: Date.now)
                     startDate = calendar.date(bySettingHour: max(hour + 1, 9), minute: 0, second: 0, of: startDate) ?? startDate
                     endDate = calendar.date(byAdding: .hour, value: 1, to: startDate)!
                 }
@@ -416,7 +407,7 @@ struct AddEventView: View {
                         .foregroundStyle(.textSecondary)
                 }
                 
-                TextField("addNotes", text: $notes, axis: .vertical)
+                TextField("add_notes", text: $notes, axis: .vertical)
                     .font(DS.Typography.body())
                     .lineLimit(2...4)
                     .focused($isNotesFocused)
@@ -520,7 +511,7 @@ struct AddEventView: View {
     }
     
     private var nextSaturday: Date {
-        let weekday = calendar.component(.weekday, from: Date())
+        let weekday = calendar.component(.weekday, from: Date.now)
         let daysUntilSaturday = (7 - weekday + 7) % 7
         return calendar.date(byAdding: .day, value: daysUntilSaturday == 0 ? 7 : daysUntilSaturday, to: Date())!
     }
@@ -636,7 +627,7 @@ struct AddEventView: View {
     
     private static func smartDefaultStartDate() -> Date {
         let calendar = Calendar.current
-        let now = Date()
+        let now = Date.now
         let hour = calendar.component(.hour, from: now)
         
         // Round up to next hour, minimum 9 AM

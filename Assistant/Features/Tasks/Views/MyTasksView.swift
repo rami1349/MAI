@@ -33,6 +33,8 @@ struct MyTasksView: View {
     @State private var focusTask: FamilyTask? = nil
     @State private var inFlightActions: Set<String> = []
     @State private var toast: ToastMessage? = nil
+    @State private var showCreateGroup = false
+    @State private var showGroupDetail: TaskGroup? = nil
 
     // MARK: - Status Filter (3-state)
 
@@ -77,10 +79,13 @@ struct MyTasksView: View {
         taskVM.tasksFor(userId: userId)
     }
 
-    /// Task groups visible to this user.
+    /// Task groups visible to this user (created by me OR containing my tasks).
     private var visibleGroups: [TaskGroup] {
-        familyMemberVM.taskGroups.filter { group in
-            allMyTasks.contains { $0.groupId == group.id }
+        let userId = self.userId
+        let myGroupIds = Set(allMyTasks.compactMap { $0.groupId })
+        return familyMemberVM.taskGroups.filter { group in
+            guard let gid = group.id else { return false }
+            return group.createdBy == userId || myGroupIds.contains(gid)
         }
     }
 
@@ -130,24 +135,12 @@ struct MyTasksView: View {
         }
     }
 
-    // Stat counts
-    private var todoCount: Int {
-        allMyTasks.filter { $0.status == .todo || $0.status == .pendingVerification }.count
-    }
-    private var inProgressCount: Int {
-        allMyTasks.filter { $0.status == .inProgress }.count
-    }
-    private var doneCount: Int {
-        allMyTasks.filter { $0.status == .completed }.count
-    }
-
     // MARK: - Body
 
     var body: some View {
         VStack(spacing: 0) {
             searchBar
             statusFilterSection
-            statsSection
             filterChipsSection
 
             if taskVM.isLoading {
@@ -166,6 +159,16 @@ struct MyTasksView: View {
         }
         .sheet(item: $selectedTask) { task in
             TaskDetailView(task: task)
+        }
+        .sheet(isPresented: $showCreateGroup) {
+            CreateTaskGroupView()
+                .presentationBackground(Color.themeSurfacePrimary)
+        }
+        .sheet(item: $showGroupDetail) { group in
+            NavigationStack {
+                TaskGroupDetailView(taskGroup: group)
+            }
+            .presentationBackground(Color.themeSurfacePrimary)
         }
         .toastBanner(item: $toast)
     }
@@ -236,40 +239,6 @@ struct MyTasksView: View {
         .padding(.bottom, DS.Spacing.md)
     }
 
-    // MARK: - Stats
-
-    private var statsSection: some View {
-        Group {
-            if taskVM.isLoading {
-                HStack(spacing: DS.Spacing.md) {
-                    StatCardSkeleton()
-                    StatCardSkeleton()
-                    StatCardSkeleton()
-                }
-            } else {
-                HStack(spacing: DS.Spacing.md) {
-                    StatCard(
-                        title: AppStrings.localized("todo"),
-                        count: todoCount,
-                        color: Color.statusTodo
-                    )
-                    StatCard(
-                        title: AppStrings.localized("in_progress"),
-                        count: inProgressCount,
-                        color: Color.statusInProgress
-                    )
-                    StatCard(
-                        title: AppStrings.localized("done"),
-                        count: doneCount,
-                        color: Color.statusCompleted
-                    )
-                }
-            }
-        }
-        .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
-        .padding(.bottom, DS.Spacing.md)
-    }
-
     // MARK: - Filter Chips (Ownership + Groups)
 
     private var filterChipsSection: some View {
@@ -287,7 +256,7 @@ struct MyTasksView: View {
                     }
                 }
 
-                // Group chips
+                // Group chips (tap = filter, long-press = view/delete)
                 if !visibleGroups.isEmpty {
                     Circle()
                         .fill(Color.textTertiary.opacity(0.3))
@@ -303,8 +272,41 @@ struct MyTasksView: View {
                                 selectedGroupId = selectedGroupId == group.id ? nil : group.id
                             }
                         }
+                        .contextMenu {
+                            Button {
+                                showGroupDetail = group
+                            } label: {
+                                Label("view_group", systemImage: "folder")
+                            }
+                            Button(role: .destructive) {
+                                Task { await familyViewModel.deleteTaskGroup(group) }
+                            } label: {
+                                Label("delete", systemImage: "trash")
+                            }
+                        }
                     }
                 }
+
+                // Create group chip
+                Button(action: { showCreateGroup = true }) {
+                    HStack(spacing: DS.Spacing.xs) {
+                        Image(systemName: "plus")
+                            .font(DS.Typography.caption())
+                        Text("new_group")
+                            .font(DS.Typography.captionMedium())
+                    }
+                    .foregroundStyle(.accentPrimary)
+                    .padding(.horizontal, DS.Spacing.md)
+                    .padding(.vertical, DS.Spacing.sm)
+                    .background(
+                        Capsule()
+                            .strokeBorder(
+                                Color.accentPrimary.opacity(0.3),
+                                style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
         }
@@ -407,33 +409,6 @@ struct MyTasksView: View {
     private func groupName(for task: FamilyTask) -> String {
         guard let id = task.groupId else { return "" }
         return familyMemberVM.getTaskGroup(by: id)?.name ?? ""
-    }
-}
-
-// MARK: - Stat Card
-
-struct StatCard: View {
-    let title: String
-    let count: Int
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: DS.Spacing.sm) {
-            Text("\(count)")
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundStyle(color)
-
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, DS.Spacing.lg)
-        .background(
-            RoundedRectangle(cornerRadius: DS.Radius.card)
-                .fill(color.opacity(0.1))
-        )
     }
 }
 

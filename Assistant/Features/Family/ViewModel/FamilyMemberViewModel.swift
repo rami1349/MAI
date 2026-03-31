@@ -1,6 +1,6 @@
 //
 //  FamilyMemberViewModel.swift
-//  
+//
 //
 //  ViewModel for family and member management - uses Firestore directly
 //
@@ -13,6 +13,7 @@ import Foundation
 import Observation
 import FirebaseFirestore
 import FirebaseStorage
+import FirebaseFunctions
 
 @MainActor
 @Observable
@@ -342,10 +343,12 @@ final class FamilyMemberViewModel {
     
     // MARK: - Capabilities
     
-    /// Persist updated capabilities and preset to a member's Firestore document.
+    /// Persist updated capabilities via server-side Cloud Function.
     ///
-    /// Uses `merge: true` to update only capability fields without
-    /// overwriting the rest of the document.
+    /// The Cloud Function validates:
+    /// - Caller has canManageFamily or is admin/adult
+    /// - Caller is in the same family as the target
+    /// - Cannot modify own capabilities (prevents self-escalation)
     func saveCapabilities(
         _ capabilities: MemberCapabilities,
         preset: CapabilityPreset,
@@ -361,13 +364,13 @@ final class FamilyMemberViewModel {
                 "canManageFamily":  capabilities.canManageFamily,
             ]
 
-            try await Firestore.firestore()
-                .collection("users")
-                .document(memberId)
-                .setData([
+            let _ = try await Functions.functions(region: "us-west1")
+                .httpsCallable("updateCapabilities")
+                .call([
+                    "memberId": memberId,
                     "capabilities": capsData,
-                    "capabilityPreset": preset.rawValue,
-                ], merge: true)
+                    "preset": preset.rawValue,
+                ] as [String: Any])
 
             // Update local array so UI reflects immediately
             if let idx = familyMembers.firstIndex(where: { $0.id == memberId }) {
@@ -386,4 +389,3 @@ final class FamilyMemberViewModel {
         groupCache = taskGroups.reduce(into: [:]) { $0[$1.id ?? ""] = $1 }
     }
 }
-

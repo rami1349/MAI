@@ -71,9 +71,9 @@ struct HabitTrackerView: View {
                 Spacer()
                 EmptyStateView(
                     icon: "repeat.circle",
-                    title: "noHabitsYet",
-                    message: "noHabitsMessage",
-                    buttonTitle: "addHabit",
+                    title: "no_habits_yet",
+                    message: "no_habits_message",
+                    buttonTitle: "add_habit",
                     buttonAction: { showAddHabit = true }
                 )
                 Spacer()
@@ -93,7 +93,7 @@ struct HabitTrackerView: View {
             }
             Task { await loadLogsForCurrentPeriodIfNeeded() }
         }
-        .alert("deleteHabit", isPresented: $showDeleteConfirm) {
+        .alert("delete_habit", isPresented: $showDeleteConfirm) {
             Button("cancel", role: .cancel) { }
             Button("delete", role: .destructive) {
                 if let habit = habitToDelete {
@@ -101,7 +101,7 @@ struct HabitTrackerView: View {
                 }
             }
         } message: {
-            Text("deleteHabitConfirmation")
+            Text("delete_habit_confirmation")
         }
     }
     

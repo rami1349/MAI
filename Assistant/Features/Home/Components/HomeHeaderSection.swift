@@ -3,7 +3,6 @@
 //  
 //
 
-
 import SwiftUI
 import UIKit
 import os
@@ -26,7 +25,7 @@ struct HomePendingVerificationSection: View {
                             .fill(Color.accentPrimary.opacity(0.1))
                     )
                 
-                Text("awaitingVerification")
+                Text("awaiting_verification")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 Circle()
@@ -68,11 +67,11 @@ struct CalendarPermissionPrompt: View {
             
             // Text
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                Text("calendarAccess")
+                Text("calendar_access")
                     .font(DS.Typography.label())
                     .foregroundStyle(.textPrimary)
                 
-                Text("enableCalendarMessage")
+                Text("enable_calendar_message")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }
@@ -141,7 +140,7 @@ struct PendingVerificationCard: View {
                             .font(DS.Typography.label())
                             .foregroundStyle(.textPrimary)
                         
-                        Text("submittedProof")
+                        Text("submitted_proof")
                             .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                     }
@@ -168,7 +167,7 @@ struct PendingVerificationCard: View {
                         Image(systemName: task.proofType == .video ? "play.circle.fill" : "doc.fill")
                             .font(DS.Typography.body())
                         
-                        Text("viewProof")
+                        Text("view_proof")
                             .font(DS.Typography.captionMedium())
                         
                         // Show count if multiple proofs

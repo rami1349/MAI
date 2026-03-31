@@ -168,7 +168,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// - Parameter familyMembers: All members in the family (all birthdays are checked).
     func scheduleCountdownNotifications(familyMembers: [FamilyUser]) {
         let calendar = Calendar.current
-        let today = Date()
+        let today = Date.now
 
         for member in familyMembers {
             let birthday = member.dateOfBirth
@@ -255,7 +255,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
             .removePendingNotificationRequests(withIdentifiers: dueIdentifiers + tomorrowIdentifiers)
 
         let calendar = Calendar.current
-        let now = Date()
+        let now = Date.now
 
         for task in tasks {
             // Skip: task not assigned to this user (v1 only — doesn't check v2 assignees ⚠️)
@@ -277,17 +277,17 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
                 if let triggerDate = calendar.date(from: tomorrowComponents), triggerDate > now {
                     let content = UNMutableNotificationContent()
-                    content.title    = "task_Due_Tomorrow"
+                    content.title    = "task_due_tomorrow"
                     content.body     = AppStrings.taskDueTomorrowBody(task.title)
                     content.sound    = .default
-                    content.userInfo = ["type": "taskDueTomorrow", "taskId": taskId]
+                    content.userInfo = ["type": "task_due_tomorrow", "taskId": taskId]
 
                     let trigger = UNCalendarNotificationTrigger(
                         dateMatching: tomorrowComponents, repeats: false
                     )
                     UNUserNotificationCenter.current().add(
                         UNNotificationRequest(
-                            identifier: "due_tomorrow_\(taskId)",
+                            identifier: "duetomorrow_\(taskId)",
                             content: content,
                             trigger: trigger
                         )
@@ -299,7 +299,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
             if let reminderDate = calendar.date(byAdding: .hour, value: -1, to: dueDate),
                reminderDate > now {
                 let content = UNMutableNotificationContent()
-                content.title    = "task_Due_Soon"
+                content.title    = "task_due_soon"
                 content.body     = AppStrings.taskDueSoonBody(task.title)
                 content.sound    = .default
                 content.userInfo = ["type": "taskDue", "taskId": taskId]
@@ -345,12 +345,12 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
         // Remove existing event reminders before re-scheduling
         let reminderIds = events.compactMap { event -> [String]? in
             guard let id = event.id else { return nil }
-            return ["event_tomorrow_\(id)", "event_soon_\(id)"]
+            return ["eventtomorrow_\(id)", "eventsoon_\(id)"]
         }.flatMap { $0 }
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: reminderIds)
 
         let calendar = Calendar.current
-        let now = Date()
+        let now = Date.now
 
         for event in events {
             guard event.createdBy == userId || event.participants.contains(userId) else { continue }
@@ -366,14 +366,14 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
                 if let triggerDate = calendar.date(from: tomorrowComponents), triggerDate > now {
                     let content = UNMutableNotificationContent()
-                    content.title    = "event_Tomorrow"
+                    content.title    = "event_tomorrow"
                     content.body     = AppStrings.eventTomorrowBody(event.title)
                     content.sound    = .default
-                    content.userInfo = ["type": "event_Tomorrow", "eventId": eventId]
+                    content.userInfo = ["type": "event_tomorrow", "eventId": eventId]
 
                     UNUserNotificationCenter.current().add(
                         UNNotificationRequest(
-                            identifier: "event_tomorrow_\(eventId)",
+                            identifier: "eventtomorrow_\(eventId)",
                             content: content,
                             trigger: UNCalendarNotificationTrigger(
                                 dateMatching: tomorrowComponents, repeats: false
@@ -387,7 +387,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
             if let reminderDate = calendar.date(byAdding: .hour, value: -1, to: event.startDate),
                reminderDate > now {
                 let content = UNMutableNotificationContent()
-                content.title    = "event_Starting_Soon"
+                content.title    = "event_starting_soon"
                 content.body     = AppStrings.eventStartingSoonBody(event.title)
                 content.sound    = .default
                 content.userInfo = ["type": "eventSoon", "eventId": eventId]
@@ -397,7 +397,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
                 )
                 UNUserNotificationCenter.current().add(
                     UNNotificationRequest(
-                        identifier: "event_soon_\(eventId)",
+                        identifier: "eventsoon_\(eventId)",
                         content: content,
                         trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
                     )
@@ -413,7 +413,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
     /// - Parameter eventId: Firestore document ID of the event.
     func cancelEventReminders(eventId: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(
-            withIdentifiers: ["event_tomorrow_\(eventId)", "event_soon_\(eventId)"]
+            withIdentifiers: ["eventtomorrow_\(eventId)", "eventsoon_\(eventId)"]
         )
     }
 
@@ -440,13 +440,13 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
         switch newStatus {
         case .inProgress:
-            content.title = "task_Started"
+            content.title = "task_started"
             content.body  = AppStrings.taskStartedBody(performerName, task.title)
         case .pendingVerification:
-            content.title = "proof_Submitted"
+            content.title = "proof_submitted"
             content.body  = AppStrings.proofSubmittedBody(performerName, task.title)
         case .completed:
-            content.title = "task_Completed"
+            content.title = "task_completed"
             content.body  = AppStrings.taskCompletedBody(performerName, task.title)
         case .todo:
             return // No notification for status regression to todo
@@ -454,7 +454,7 @@ class LocalNotificationService: NSObject, UNUserNotificationCenterDelegate {
 
         content.sound    = .default
         content.userInfo = [
-            "type": "task_Status",
+            "type": "taskStatus",
             "taskId": task.id ?? "",
             "status": newStatus.rawValue
         ]
@@ -568,30 +568,3 @@ extension Notification.Name {
     /// Observed by `TaskDetailView` and `ProofCaptureView` to pop back to the task list.
     static let dismissTaskSheets = Notification.Name("dismissTaskSheets")
 }
-
-// MARK: - Improvements & Code Quality Notes
-//
-// SUGGESTION 1 — scheduleTaskDueDateNotifications only checks v1 assignedTo:
-//   Line: `guard task.assignedTo == nil || task.assignedTo == userId else { continue }`
-//   This skips multi-assignee tasks where this user is in `assignees` but not `assignedTo`.
-//   Fix: Change to `guard task.isAssigned(to: userId) || task.assignedTo == nil else { continue }`
-//
-// SUGGESTION 2 — Notification budget not enforced:
-//   iOS allows up to 64 pending local notifications per app. Large families with many tasks
-//   can easily exceed this. Add a priority-based scheduling limit that keeps only the
-//   N most urgent notifications (e.g., top 60 by due date).
-//
-// SUGGESTION 3 — Birthday notifications not cleared on member removal:
-//   If a member leaves the family, their birthday notification remains pending.
-//   Add `cancelBirthdayNotification(memberId:)` and call it from FamilyViewModel.removeMember().
-//
-// SUGGESTION 4 — sendTaskStatusNotification identifier not stable:
-//   The status notification identifier includes `UUID().uuidString` when `task.id` is nil.
-//   This means it can't be cancelled programmatically. Always ensure task.id is non-nil
-//   before calling this function, or handle the nil case with a stable fallback.
-//
-// SUGGESTION 5 — FCM token multi-device handling:
-//   `saveFCMToken` stores a single `fcmToken` field. A user with multiple devices
-//   (iPad + iPhone) will have the token overwritten by whichever device last signed in.
-//   Upgrade to `fcmTokens: [String]` (array) with `FieldValue.arrayUnion` to support
-//   multi-device push delivery.

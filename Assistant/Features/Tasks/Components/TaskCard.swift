@@ -1,6 +1,6 @@
 //
 //  TaskCard.swift
-//  
+//
 //
 //  Reusable task card component with inline actions
 //  UPDATED: Priority left border visualization (4px)
@@ -13,6 +13,7 @@ import SwiftUI
 struct TaskCard: View {
     let task: FamilyTask
     let groupName: String?
+    var assigneeName: String?
     var onTap: (() -> Void)?
     var onStartTask: (() -> Void)?
     var onStartFocus: (() -> Void)?
@@ -91,8 +92,19 @@ struct TaskCard: View {
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     
-                    // Metadata row (recurring + task type)
+                    // Metadata row (assignee + type + recurring)
                     HStack(spacing: DS.Spacing.sm) {
+                        // Assignee
+                        if let name = assigneeName {
+                            HStack(spacing: DS.Spacing.xxs) {
+                                Image(systemName: "person.fill")
+                                    .font(DS.Typography.micro())
+                                Text(name)
+                                    .font(DS.Typography.micro())
+                            }
+                            .foregroundStyle(.textSecondary)
+                        }
+
                         // Task type badge (Chore/Homework)
                         if let taskType = task.taskType {
                             HStack(spacing: DS.Spacing.xxs) {
