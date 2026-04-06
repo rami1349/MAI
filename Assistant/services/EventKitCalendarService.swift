@@ -222,7 +222,7 @@ final class EventKitCalendarService {
                 
                 let event = ExternalCalendarEvent(
                     id: ekEvent.eventIdentifier ?? UUID().uuidString,
-                    title: ekEvent.title ?? "Untitled",
+                    title: ekEvent.title ?? String(localized: "untitled"),
                     startDate: ekEvent.startDate,
                     endDate: ekEvent.endDate,
                     isAllDay: ekEvent.isAllDay,
@@ -306,7 +306,7 @@ final class EventKitCalendarService {
         calendarIdentifier: String? = nil
     ) async -> String? {
         guard authStatus == .authorized else {
-            errorMessage = "Calendar access not authorized"
+            errorMessage = String(localized: "error_calendar_access")
             return nil
         }
         
@@ -462,7 +462,7 @@ enum UpcomingEventsBuilder {
                 items.append(UpcomingItem(
                     id: "firestore_event_\(event.id ?? UUID().uuidString)",
                     title: event.title,
-                    subtitle: event.isAllDay ? "All Day" : event.startDate.formattedTime,
+                    subtitle: event.isAllDay ? String(localized: "all_day") : event.startDate.formattedTime,
                     date: event.startDate,
                     daysUntil: daysUntil,
                     icon: "calendar.badge.clock",
@@ -611,7 +611,7 @@ enum UpcomingEventsBuilder {
                 events.append(UpcomingEvent(
                     id: "firestore_event_\(event.id ?? UUID().uuidString)",
                     title: event.title,
-                    subtitle: event.isAllDay ? "allDay" : event.startDate.formattedTime,
+                    subtitle: event.isAllDay ? String(localized: "all_day") : event.startDate.formattedTime,
                     date: event.startDate,
                     daysUntil: daysUntil,
                     icon: "calendar.badge.clock",

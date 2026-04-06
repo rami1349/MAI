@@ -83,21 +83,21 @@ extension Date {
             return months == 1 ? "1 month ago" : "\(months) months ago"
         }
         if let weeks = components.weekOfYear, weeks > 0 {
-            return weeks == 1 ? "1 week ago" : "\(weeks) weeks ago"
+            return weeks == 1 ? String(localized: "one_week_ago") : String(format: String(localized: "weeks_ago"), weeks)
         }
         if let days = components.day, days > 0 {
-            return days == 1 ? "1 day ago" : "\(days) days ago"
+            return days == 1 ? String(localized: "one_day_ago") : String(format: String(localized: "days_ago"), days)
         }
         if let hours = components.hour, hours > 0 {
-            return hours == 1 ? "1 hour ago" : "\(hours) hours ago"
+            return hours == 1 ? String(localized: "one_hour_ago") : String(format: String(localized: "hours_ago"), hours)
         }
         if let minutes = components.minute, minutes > 0 {
-            return minutes == 1 ? "1 minute ago" : "\(minutes) minutes ago"
+            return minutes == 1 ? String(localized: "one_minute_ago") : String(format: String(localized: "minutes_ago"), minutes)
         }
         if let seconds = components.second, seconds > 5 {
-            return "\(seconds) seconds ago"
+            return String(format: String(localized: "seconds_ago"), seconds)
         }
-        return "Just now"
+        return String(localized: "just_now")
     }
     
     // ═══════════════════════════════════════════════════════════════════════

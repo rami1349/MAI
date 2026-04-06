@@ -191,7 +191,7 @@ final class TaskViewModel {
         isLoading = true
         
         // Only load tasks from last 30 days + future tasks
-        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: .now) ?? .now
         
         do {
             let snapshot = try await db.collection("tasks")
@@ -221,7 +221,7 @@ final class TaskViewModel {
         
         // Only listen to tasks from last 30 days + future tasks
         // This prevents loading thousands of historical completed tasks
-        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: .now) ?? .now
         
         listener = db.collection("tasks")
             .whereField("familyId", isEqualTo: familyId)
@@ -316,7 +316,7 @@ final class TaskViewModel {
             familyId: familyId, groupId: groupId, title: title, description: description,
             assignedTo: primaryAssignee, assignees: assignees, assignedBy: userId,
             dueDate: dueDate, scheduledTime: scheduledTime,
-            status: .todo, priority: priority, createdAt: Date(), completedAt: nil,
+            status: .todo, priority: priority, createdAt: .now, completedAt: nil,
             hasReward: hasReward, rewardAmount: rewardAmount, requiresProof: requiresProof, proofType: proofType,
             proofURL: nil, proofURLs: nil, proofVerifiedBy: nil, proofVerifiedAt: nil, rewardPaid: false,
             isRecurring: isRecurring, recurrenceRule: recurrenceRule
@@ -337,7 +337,7 @@ final class TaskViewModel {
                 familyId: familyId, groupId: groupId, title: title, description: description,
                 assignedTo: primaryAssignee, assignees: assignees, assignedBy: userId,
                 dueDate: dueDate, scheduledTime: scheduledTime,
-                status: .todo, priority: priority, createdAt: Date(), completedAt: nil,
+                status: .todo, priority: priority, createdAt: .now, completedAt: nil,
                 hasReward: hasReward, rewardAmount: rewardAmount, requiresProof: requiresProof, proofType: proofType,
                 proofURL: nil, proofURLs: nil, proofVerifiedBy: nil, proofVerifiedAt: nil, rewardPaid: false,
                 isRecurring: isRecurring, recurrenceRule: recurrenceRule
@@ -403,7 +403,7 @@ final class TaskViewModel {
         updated.status = status
         
         if status == .completed {
-            updated.completedAt = Date()
+            updated.completedAt = .now
             
             // FIX-REWARD: Mark reward as paid when completing task without proof requirement
             if task.hasReward && !task.requiresProof {
@@ -445,7 +445,7 @@ final class TaskViewModel {
             // Send notification to task assigner/creator about status change
             let assignerId = task.assignedBy
             if assignerId != currentUserId {
-                let performerName = currentUserId.flatMap { getMemberName?($0) } ?? "Someone"
+                let performerName = currentUserId.flatMap { getMemberName?($0) } ?? String(localized: "someone")
                 LocalNotificationService.shared.sendTaskStatusNotification(
                     task: task,
                     newStatus: status,
@@ -738,7 +738,7 @@ final class TaskViewModel {
         
         // Only the task creator can verify proof
         guard task.assignedBy == verifierId else {
-            errorMessage = "Only the task creator can verify proof"
+            errorMessage = String(localized: "error_only_creator_can_verify")
             print(" verifyProof: assignedBy (\(task.assignedBy)) != verifierId (\(verifierId))")
             return
         }
@@ -747,9 +747,9 @@ final class TaskViewModel {
         
         if approved {
             updated.status = .completed
-            updated.completedAt = Date()
+            updated.completedAt = .now
             updated.proofVerifiedBy = verifierId
-            updated.proofVerifiedAt = Date()
+            updated.proofVerifiedAt = .now
             updated.rewardPaid = task.hasReward
             
             // PHASE 1 FIX: Transaction-safe reward payment for proof approval
@@ -943,8 +943,8 @@ final class TaskViewModel {
     /// P-6 FIX: overdueTasks, tasksDueSoon, and tasksNeedingAttention are now cached
     /// here instead of being computed properties. Views get O(1) reads.
     private func recomputeDerivedCaches() {
-        let todayKey = Self.dateFormatter.string(from: Date())
-        let now = Date()
+        let todayKey = Self.dateFormatter.string(from: Date.now)
+        let now = Date.now
         
         // Today's visible tasks - sorted by implicit priority
         let todayRaw = activeTasksByDate[todayKey] ?? []
@@ -1005,5 +1005,3 @@ private struct TaskSnapshot {
     let rewardPaid: Bool
     let assignees: [String]
 }
-
-

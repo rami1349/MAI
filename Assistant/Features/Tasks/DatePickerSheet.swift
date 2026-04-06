@@ -65,7 +65,7 @@ struct TimePickerSheet: View {
         NavigationStack {
             VStack {
                 DatePicker(
-                    "Time",
+                    "time",
                     selection: $tempTime,
                     displayedComponents: .hourAndMinute
                 )

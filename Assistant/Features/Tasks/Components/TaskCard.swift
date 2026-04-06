@@ -178,7 +178,7 @@ struct TaskCard: View {
                     }
                     Image(systemName: "play.fill")
                         .font(DS.Typography.micro())
-                    Text("startTask")
+                    Text("start_task")
                         .font(DS.Typography.captionMedium())
                 }
                 .foregroundStyle(.textOnAccent)
@@ -241,7 +241,7 @@ struct TaskCard: View {
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "clock.badge.checkmark")
                     .font(DS.Typography.bodySmall())
-                Text("awaitingVerification")
+                Text("awaiting_verification")
                     .font(DS.Typography.caption())
             }
             .foregroundStyle(.statusPending)

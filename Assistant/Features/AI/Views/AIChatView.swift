@@ -12,6 +12,22 @@
 //  5. inputBar allows sending with credits + shows credit indicator
 //  6. canSend checks credits as fallback
 //
+//
+//
+//  PURPOSE:
+//    Full-screen AI chat interface (MAI). Handles message input,
+//    streaming responses, daily limit tracking, credit usage display,
+//    and action confirmation sheets for tool-use results.
+//
+//  ARCHITECTURE ROLE:
+//    Feature screen — presented from MAI tab or navigation.
+//    Owns ChatViewModel for message state and streaming.
+//
+//  DATA FLOW:
+//    ChatViewModel → messages, sendMessage(), streaming state
+//    SubscriptionManager → daily limits, credits
+//    ActionConfirmationSheet → tool-use confirmation
+//
 
 import SwiftUI
 
@@ -117,7 +133,7 @@ struct AIChatView: View {
             // Center: assistant info
             VStack(spacing: 1) {
                 HStack(spacing: DS.Spacing.xs) {
-                    Text("MAI")
+                    Text("mai")
                         .font(DS.Typography.heading())
                         .foregroundStyle(.textPrimary)
                     
@@ -165,7 +181,7 @@ struct AIChatView: View {
         
         return Group {
             if remaining <= 0 && credits > 0 {
-                Text("\(credits) credits left")
+                Text(AppStrings.creditsLeft(credits))
                     .font(DS.Typography.captionMedium()) // was .rounded
                     .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, 8)
@@ -289,9 +305,9 @@ struct AIChatView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "crown.fill")
-                                    .font(.caption2)
+                                    .font(DS.Typography.micro())
                                 Text("upgrade")
-                                    .font(.caption)
+                                    .font(DS.Typography.caption())
                                     .fontWeight(.semibold)
                             }
                             .foregroundStyle(.textOnAccent)
@@ -306,9 +322,9 @@ struct AIChatView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "bolt.fill")
-                                .font(.caption2)
+                                .font(DS.Typography.micro())
                             Text("buy_credits")
-                                .font(.caption)
+                                .font(DS.Typography.caption())
                                 .fontWeight(.semibold)
                         }
                         .foregroundStyle(.accentPrimary)
@@ -367,17 +383,17 @@ struct AIChatView: View {
             }
             
             VStack(spacing: DS.Spacing.sm) {
-                Text("MAI")
+                Text("mai")
                     .font(DS.Typography.displayMedium())
                     .foregroundStyle(.textPrimary)
             }
             
             VStack(spacing: DS.Spacing.sm) {
-                suggestionChip("What are my tasks for today?", icon: "checkmark.circle")
+                suggestionChip(String(localized: "suggestion_tasks_today"), icon: "checkmark.circle")
             }
             .padding(.top, DS.Spacing.sm)
             
-            Text("\(remaining) of \(limit) messages remaining today")
+            Text(AppStrings.messagesRemaining(remaining, limit))
                 .font(DS.Typography.badge())
                 .foregroundStyle(.textTertiary)
         }
@@ -480,7 +496,7 @@ struct AIChatView: View {
                         store.showCreditsPurchase = true
                     } label: {
                         Text("get_more")
-                            .font(.caption)
+                            .font(DS.Typography.caption())
                             .foregroundStyle(.accentPrimary)
                     }
                 }
@@ -508,7 +524,7 @@ struct AIChatView: View {
                                 store.showPaywall = true
                             } label: {
                                 Text("upgrade")
-                                    .font(.caption2)
+                                    .font(DS.Typography.micro())
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.textOnAccent)
                                     .padding(.horizontal, 10)
@@ -524,7 +540,7 @@ struct AIChatView: View {
                                 Image(systemName: "bolt.fill")
                                     .font(DS.Typography.micro())
                                 Text("credits")
-                                    .font(.caption2)
+                                    .font(DS.Typography.micro())
                                     .fontWeight(.semibold)
                             }
                             .foregroundStyle(.accentPrimary)

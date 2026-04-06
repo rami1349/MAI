@@ -1,4 +1,3 @@
-// ============================================================================
 // NotificationViewModel.swift
 //
 //
@@ -23,7 +22,7 @@
 //   - Proof verified: notify assignee(s) only.
 //   - Event created/updated/deleted: notify all participants except the actor.
 //
-// ============================================================================
+
 
 import Foundation
 import Observation
@@ -338,7 +337,7 @@ final class NotificationViewModel {
         
         write(.init(
             userId: creatorId, familyId: familyId, type: .taskCompleted,
-            title: "taskCompletedNotification",
+            title: "task_completed_notification",
             message: AppStrings.taskCompletedNotifBody(performerName, title),
             relatedTaskId: taskId, isRead: false, createdAt: Date.now
         ))
@@ -377,7 +376,7 @@ final class NotificationViewModel {
         if let oldAssigneeId, oldAssigneeId != assigneeId, oldAssigneeId != editorId {
             write(.init(
                 userId: oldAssigneeId, familyId: familyId, type: .taskAssigned,
-                title: "taskReassignedNotificaation",
+                title: "task_reassigned_notification",
                 message: AppStrings.taskReassignedNotifBody(title),
                 relatedTaskId: taskId, isRead: false, createdAt: Date.now
             ))
@@ -457,7 +456,7 @@ final class NotificationViewModel {
         for pid in participantIds where pid != updatedBy {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventUpdated,  // FIXED: was .eventCreated
-                title: "eventUpdatedNotification",
+                title: "event_updated_notification",
                 message: AppStrings.eventUpdatedNotifBody(title),
                 relatedTaskId: nil, relatedEventId: eventId,
                 isRead: false, createdAt: Date.now
@@ -475,7 +474,7 @@ final class NotificationViewModel {
         for pid in participantIds where pid != deletedBy {
             write(.init(
                 userId: pid, familyId: familyId, type: .eventCanceled,  // FIXED: was .eventCreated
-                title: "eventCanceledNotification",
+                title: "event_canceled_notification",
                 message: AppStrings.eventCanceledNotifBody(title, deleterName),
                 relatedTaskId: nil, isRead: false, createdAt: Date.now
             ))

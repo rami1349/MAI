@@ -16,32 +16,32 @@
 import SwiftUI
 
 struct MainTabiPadContent: View {
-
+    
     // ── Router (owned by AssistantApp, injected via .environment) ──
     @Environment(NavigationRouter.self) private var router
-
+    
     // ── Environment ──
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(FamilyViewModel.self) private var familyViewModel
     @Environment(FamilyMemberViewModel.self) private var familyMemberVM
     @Environment(TaskViewModel.self) private var taskVM
     @Environment(NotificationViewModel.self) private var notificationVM
-
+    
     // ── iPad-only state ──
     @State private var sidebarExpanded = false
     @State private var showAIChat = false
-
+    
     // MARK: - Constants
-
+    
     private let collapsedWidth: CGFloat = 64
     private let expandedWidth: CGFloat = 240
-
+    
     private var sidebarWidth: CGFloat {
         sidebarExpanded ? expandedWidth : collapsedWidth
     }
-
+    
     // MARK: - Body
-
+    
     var body: some View {
         @Bindable var router = router
         
@@ -50,7 +50,7 @@ struct MainTabiPadContent: View {
             detailNavigationContent
                 .padding(.leading, collapsedWidth)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            
             // Scrim when sidebar expanded
             if sidebarExpanded {
                 Color.black.opacity(0.2)
@@ -64,11 +64,11 @@ struct MainTabiPadContent: View {
                     .transition(.opacity)
                     .zIndex(1)
             }
-
+            
             // Sidebar panel
             sidebarPanel
                 .zIndex(2)
-
+            
             // MAI floating button (bottom-right)
             VStack {
                 Spacer()
@@ -92,9 +92,9 @@ struct MainTabiPadContent: View {
             .presentationBackground(Color.themeSurfacePrimary)
         }
     }
-
+    
     // MARK: - Detail Navigation Content (per-tab NavigationStack)
-
+    
     @ViewBuilder
     private var detailNavigationContent: some View {
         @Bindable var router = router
@@ -179,9 +179,9 @@ struct MainTabiPadContent: View {
             }
         }
     }
-
+    
     // MARK: - MAI Floating Button
-
+    
     private var iPadMAIButton: some View {
         Button(action: { showAIChat = true }) {
             ZStack {
@@ -195,7 +195,7 @@ struct MainTabiPadContent: View {
                     )
                     .frame(width: DS.Control.fab, height: DS.Control.fab)
                     .shadow(color: Color.accentPrimary.opacity(0.35), radius: DS.Spacing.sm, y: DS.Spacing.xs)
-
+                
                 Image("samy")
                     .resizable()
                     .scaledToFit()
@@ -207,9 +207,9 @@ struct MainTabiPadContent: View {
         .help(AppStrings.localized("mai"))
         .accessibilityLabel("mai")
     }
-
+    
     // MARK: - Sidebar Panel
-
+    
     private var sidebarPanel: some View {
         ZStack(alignment: .top) {
             Color.themeSurfacePrimary
@@ -219,7 +219,7 @@ struct MainTabiPadContent: View {
                     x: 3, y: 0
                 )
                 .ignoresSafeArea()
-
+            
             VStack(spacing: 0) {
                 sidebarToggleButton
                 sidebarDivider
@@ -234,9 +234,9 @@ struct MainTabiPadContent: View {
         .frame(width: sidebarWidth, alignment: .leading)
         .frame(maxHeight: .infinity)
     }
-
+    
     // MARK: - Sidebar Toggle
-
+    
     private var sidebarToggleButton: some View {
         Button(action: {
             withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
@@ -249,7 +249,7 @@ struct MainTabiPadContent: View {
                     .foregroundStyle(.textSecondary)
                     .frame(width: 28, height: 28)
                     .frame(width: 32)
-
+                
                 if sidebarExpanded {
                     Text("menu")
                         .font(DS.Typography.label())
@@ -267,9 +267,9 @@ struct MainTabiPadContent: View {
         .padding(.top, DS.Spacing.lg)
         .padding(.bottom, DS.Spacing.xs)
     }
-
+    
     // MARK: - Sidebar Navigation (3 items)
-
+    
     private var sidebarNavigation: some View {
         VStack(spacing: DS.Spacing.xxs) {
             ForEach(NavigationItem.sidebarTabs) { item in
@@ -278,11 +278,11 @@ struct MainTabiPadContent: View {
         }
         .padding(.vertical, DS.Spacing.xs)
     }
-
+    
     private func sidebarNavItem(_ item: NavigationItem) -> some View {
         let isSelected = router.selectedTab == item
         let badge = badgeCount(for: item)
-
+        
         return Button(action: {
             if router.selectedTab == item {
                 router.popToRoot(tab: item)
@@ -299,7 +299,7 @@ struct MainTabiPadContent: View {
                         .fontWeight(isSelected ? .semibold : .regular)
                         .foregroundStyle(isSelected ? .accentPrimary : .textSecondary)
                         .frame(width: 28, height: 28)
-
+                    
                     if badge > 0 && !sidebarExpanded {
                         Circle()
                             .fill(Color.red)
@@ -308,15 +308,15 @@ struct MainTabiPadContent: View {
                     }
                 }
                 .frame(width: 32)
-
+                
                 if sidebarExpanded {
                     Text(LocalizedStringKey(item.localizationKey))
                         .font(DS.Typography.label())
                         .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                         .lineLimit(1)
-
+                    
                     Spacer()
-
+                    
                     if badge > 0 {
                         Text("\(min(badge, 99))")
                             .font(DS.Typography.micro())
@@ -340,12 +340,12 @@ struct MainTabiPadContent: View {
         .hoverEffect(.highlight)
         .help(item.title)
     }
-
+    
     // MARK: - Sidebar Me Button (bottom)
-
+    
     private var sidebarMeButton: some View {
         let isSelected = router.selectedTab == .me
-
+        
         return Button(action: {
             if router.selectedTab == .me {
                 router.popToRoot(tab: .me)
@@ -366,21 +366,21 @@ struct MainTabiPadContent: View {
                         .frame(width: 28, height: 28)
                         .frame(width: 32)
                 }
-
+                
                 if sidebarExpanded {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(authViewModel.currentUser?.displayName ?? "me_tab")
                             .font(DS.Typography.label())
                             .foregroundStyle(isSelected ? .textPrimary : .textSecondary)
                             .lineLimit(1)
-
+                        
                         if let preset = authViewModel.currentUser?.resolvedPreset {
                             Text(LocalizedStringKey(preset.localizationKey))
                                 .font(DS.Typography.micro())
                                 .foregroundStyle(.textTertiary)
                         }
                     }
-
+                    
                     Spacer()
                 }
             }
@@ -397,9 +397,9 @@ struct MainTabiPadContent: View {
         .hoverEffect(.highlight)
         .help(AppStrings.localized("me_tab"))
     }
-
+    
     // MARK: - Sidebar Divider
-
+    
     private var sidebarDivider: some View {
         Rectangle()
             .fill(Color.textTertiary.opacity(0.2))
@@ -407,9 +407,9 @@ struct MainTabiPadContent: View {
             .padding(.horizontal, sidebarExpanded ? DS.Spacing.lg : DS.Spacing.sm)
             .padding(.vertical, DS.Spacing.xs)
     }
-
+    
     // MARK: - Home "+" Menu
-
+    
     private var homeCreateMenu: some View {
         Menu {
             Button(action: { router.present(.addTask()) }) {
@@ -431,9 +431,9 @@ struct MainTabiPadContent: View {
                 .foregroundStyle(.accentPrimary)
         }
     }
-
+    
     // MARK: - Context "+" Button
-
+    
     private func contextPlusButton(action: @escaping () -> Void) -> some View {
         Button(action: {
             DS.Haptics.light()
@@ -444,9 +444,9 @@ struct MainTabiPadContent: View {
                 .foregroundStyle(.accentPrimary)
         }
     }
-
+    
     // MARK: - Helpers
-
+    
     private func badgeCount(for item: NavigationItem) -> Int {
         switch item {
         case .home:  notificationVM.unreadCount

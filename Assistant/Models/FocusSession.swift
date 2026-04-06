@@ -22,7 +22,7 @@ struct FocusSession: Identifiable, Codable, Hashable {
     init(
         id: String = UUID().uuidString,
         taskId: String,
-        startedAt: Date = Date(),
+        startedAt: Date = .now,
         endedAt: Date? = nil,
         plannedDurationSeconds: Int,
         actualDurationSeconds: Int = 0,
@@ -99,7 +99,7 @@ struct TaskFocusData: Codable, Hashable {
     mutating func addSession(_ session: FocusSession) {
         focusSessionHistory.append(session)
         totalFocusedSeconds += session.actualDurationSeconds
-        lastFocusDate = session.endedAt ?? Date()
+        lastFocusDate = session.endedAt ?? .now
     }
 }
 

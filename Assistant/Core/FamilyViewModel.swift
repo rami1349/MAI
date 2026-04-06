@@ -1,4 +1,3 @@
-// ============================================================================
 // FamilyViewModel.swift
 //
 //
@@ -51,9 +50,7 @@
 //  - Data reads: taskVM.allTasks, habitVM.habits, notificationVM.notifications, etc.
 //  - Notification ops: notificationVM.markAsRead(), .delete(), .deleteAll()
 //  - Simple ops: habitVM.deleteHabit(), habitVM.isHabitCompleted()
-//
-//  UPDATED: Multi-assignee support for tasks
-//
+
 
 import Foundation
 import SwiftUI
@@ -117,8 +114,8 @@ final class FamilyViewModel {
     // MARK: - Private Helpers
     
     private func memberName(_ id: String?) -> String {
-        guard let id else { return "Someone" }
-        return familyMemberVM.getMember(by: id)?.displayName ?? "Someone"
+        guard let id else { return String(localized: "someone") }
+        return familyMemberVM.getMember(by: id)?.displayName ?? String(localized: "someone")
     }
     
     // MARK: - Load Data
@@ -139,6 +136,16 @@ final class FamilyViewModel {
         notificationVM.setupListener(userId: userId)
         habitVM.setupListener(userId: userId)
         rewardVM.setupListeners(familyId: familyId)
+        
+        // FIX: Set up calendar listener with a 3-month window (prev/current/next)
+        // so Home, Calendar, and TodayTasks all have overlapping event data.
+        // CalendarView month navigation expands the range further if needed.
+        let cal = Calendar.current
+        let monthStart = cal.date(from: cal.dateComponents([.year, .month], from: .now))!
+        let prevMonthStart = cal.date(byAdding: .month, value: -1, to: monthStart)!
+        let nextMonthEnd = cal.date(byAdding: .month, value: 2, to: monthStart)!
+        calendarVM.setupListener(familyId: familyId, from: prevMonthStart, to: nextMonthEnd)
+        
         LocalNotificationService.shared.scheduleTaskDueDateNotifications(tasks: taskVM.allTasks, userId: userId)
         
         isLoading = false
@@ -175,7 +182,7 @@ final class FamilyViewModel {
             hasReward: hasReward, rewardAmount: rewardAmount,
             requiresProof: requiresProof, proofType: proofType,
             isRecurring: isRecurring, recurrenceRule: recurrenceRule,
-            getMemberName: { [weak self] id in self?.memberName(id) ?? "Someone" }
+            getMemberName: { [weak self] id in self?.memberName(id) ?? String(localized: "someone") }
         )
         
         guard let taskId else { return }
@@ -212,7 +219,7 @@ final class FamilyViewModel {
         
         await taskVM.updateTaskStatus(
             task, to: status, currentUserId: currentUserId,
-            getMemberName: { [weak self] id in self?.memberName(id) ?? "Someone" }
+            getMemberName: { [weak self] id in self?.memberName(id) ?? String(localized: "someone") }
         )
         
         if status == .completed, let fid = currentFamilyId, let uid = currentUserId {
@@ -408,7 +415,11 @@ final class FamilyViewModel {
         // Chores: No AI call - parent will manually approve/reject (saves $$$)
     }
     
-    /// Trigger background AI verification for homework
+    /// Trigger background AI verification for homework.
+    ///
+    /// Routes through the existing `confirmAction` callable with `verify_task`
+    /// action type. Previously called a non-existent `startBackgroundVerification`
+    /// callable which silently failed every time.
     private func triggerBackgroundVerification(
         taskId: String,
         imageUrl: String,
@@ -422,20 +433,22 @@ final class FamilyViewModel {
             "aiVerificationStatus": "processing"
         ])
         
-        // Fire and forget - don't block the UI
+        // Fire and forget — don't block the UI
         Task {
             do {
                 let functions = Functions.functions()
-                let _ = try await functions.httpsCallable("startBackgroundVerification").call([
-                    "taskId": taskId,
-                    "imageUrl": imageUrl,
-                    "taskTitle": task.title,
-                    "taskDescription": task.description ?? "",
-                    "homeworkSubject": task.homeworkSubject?.rawValue ?? "other"
-                ])
+                let actionPayload: [String: Any] = [
+                    "action": [
+                        "type": "verify_task",
+                        "data": [
+                            "taskId": taskId,
+                            "imageUrl": imageUrl
+                        ]
+                    ]
+                ]
+                let _ = try await functions.httpsCallable("confirm_action").call(actionPayload)
             } catch {
                 Log.verification.error("Background verification failed: \(error, privacy: .public)")
-                // Mark as failed so UI shows appropriate state
                 try? await db.collection("tasks").document(taskId).updateData([
                     "aiVerificationStatus": "failed"
                 ])
@@ -457,7 +470,7 @@ final class FamilyViewModel {
         }
         
         let storage = Storage.storage()
-        let timestamp = Int(Date().timeIntervalSince1970)
+        let timestamp = Int(Date.now.timeIntervalSince1970)
         let ext = fileType == "image" ? "jpg" : fileType
         
         // CHANGED: Use proofs/{familyId}/ to match your existing rules
@@ -709,4 +722,3 @@ extension View {
             .environment(vm.notificationVM)
     }
 }
-

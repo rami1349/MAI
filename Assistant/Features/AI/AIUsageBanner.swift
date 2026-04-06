@@ -39,7 +39,7 @@ struct AIUsageBanner: View {
                 Image(systemName: "exclamationmark.circle.fill")
                     .foregroundStyle(.statusWarning)
                 
-                Text("You've used all \(dailyLimit) daily AI actions")
+                Text(AppStrings.usedAllDailyAiActions(dailyLimit))
                     .font(.caption)
                     .foregroundStyle(.textPrimary)
             }
@@ -51,7 +51,7 @@ struct AIUsageBanner: View {
                     HStack(spacing: 4) {
                         Image(systemName: "bolt.fill")
                             .font(.caption2)
-                        Text("Get Credits")
+                        Text("get_credits")
                             .font(.caption)
                             .fontWeight(.semibold)
                     }
@@ -70,7 +70,7 @@ struct AIUsageBanner: View {
                         HStack(spacing: 4) {
                             Image(systemName: "crown.fill")
                                 .font(.caption2)
-                            Text("Upgrade")
+                            Text("upgrade")
                                 .font(.caption)
                                 .fontWeight(.semibold)
                         }
@@ -105,7 +105,7 @@ struct AIUsageBanner: View {
                 .font(.caption2)
                 .foregroundStyle(.accentPrimary)
             
-            Text("Using credits · \(store.aiCredits) remaining")
+            Text(AppStrings.usingCreditsRemaining(store.aiCredits))
                 .font(.caption)
                 .foregroundStyle(.textSecondary)
             
@@ -114,7 +114,7 @@ struct AIUsageBanner: View {
             Button {
                 store.showCreditsPurchase = true
             } label: {
-                Text("Get more")
+                Text("get_more")
                     .font(.caption)
                     .foregroundStyle(.accentPrimary)
             }
@@ -131,7 +131,7 @@ struct AIUsageBanner: View {
                 .font(.caption)
                 .foregroundStyle(.statusWarning)
             
-            Text("\(remainingDaily) actions left today")
+            Text(AppStrings.actionsLeftToday(remainingDaily))
                 .font(.caption)
                 .foregroundStyle(.textSecondary)
             
@@ -141,7 +141,7 @@ struct AIUsageBanner: View {
                 Button {
                     store.showPaywall = true
                 } label: {
-                    Text("Upgrade")
+                    Text("upgrade")
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundStyle(.accentPrimary)

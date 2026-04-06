@@ -59,7 +59,7 @@ struct AccessibleCustomTabBar: View {
 
         return Button(action: {
             onTabSelected(.mai)
-            AccessibilityAnnouncer.shared.announce("MAI assistant", haptic: .medium)
+            AccessibilityAnnouncer.shared.announce(String(localized: "mai_assistant"), haptic: .medium)
         }) {
             ZStack {
                 Circle()
@@ -89,8 +89,8 @@ struct AccessibleCustomTabBar: View {
             }
         }
         .offset(y: -16)
-        .accessibilityLabel("MAI assistant")
-        .accessibilityHint("Double tap to open MAI")
+        .accessibilityLabel(String(localized: "mai_assistant_label"))
+        .accessibilityHint(String(localized: "double_tap_open_mai"))
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }
 

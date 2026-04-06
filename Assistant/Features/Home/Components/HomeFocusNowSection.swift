@@ -1,6 +1,6 @@
 //
 //  HomeFocusNowSection.swift
-//  
+//
 //
 //  "Focus Now" section: Top 5 highest-priority tasks needing attention.
 //  Shows overdue, due today, urgent/high priority tasks.
@@ -21,15 +21,6 @@ struct HomeFocusNowSection: View {
         VStack(alignment: .leading, spacing: DS.Spacing.md) {
             // Header
             HStack(spacing: DS.Spacing.sm) {
-                Image(systemName: "target")
-                    .font(DS.Typography.label())
-                    .foregroundStyle(.accentPrimary)
-                    .frame(width: 28, height: 28)
-                    .background(
-                        Circle()
-                            .fill(Color.accentPrimary.opacity(0.1))
-                    )
-                
                 Text("focus_now")
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
@@ -121,11 +112,11 @@ struct FocusTaskRow: View {
     
     private var dueBadgeText: String {
         if task.isOverdue {
-            return "Overdue"
+            return String(localized: "overdue")
         } else if Calendar.current.isDateInToday(task.dueDate) {
-            return "Today"
+            return String(localized: "today")
         } else if Calendar.current.isDateInTomorrow(task.dueDate) {
-            return "Tomorrow"
+            return String(localized: "tomorrow")
         } else {
             return task.dueDate.formatted(.dateTime.weekday(.abbreviated))
         }

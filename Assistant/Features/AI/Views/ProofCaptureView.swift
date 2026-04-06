@@ -1,11 +1,23 @@
 //
 //  ProofCaptureView.swift
-//
-//
-//  ENHANCED: Vision preprocessing + Smart auto-verify (homework only)
-//
 //  - Chores: Upload → Parent manually approves (no AI cost)
 //  - Homework: Upload → AI auto-verifies → Parent sees result
+//
+//
+//
+//  PURPOSE:
+//    Camera/photo/file picker for submitting task completion proof.
+//    Supports multi-file upload, image optimization for MAI,
+//    quality scoring, and upload progress tracking.
+//
+//  ARCHITECTURE ROLE:
+//    Modal capture flow — presented from TaskDetailView.
+//    Handles camera, photo library, and file picker sources.
+//
+//  DATA FLOW:
+//    ImagePreprocessor → optimization pipeline
+//    TaskViewModel → uploadProof()
+//    HomeworkVerificationViewModel → triggerVerification()
 //
 
 import SwiftUI
@@ -42,6 +54,15 @@ enum ProofItemType: String, Codable {
         case .document: return .orange
         }
     }
+    
+    var localizedName: String {
+        switch self {
+        case .image: return String(localized: "proof_type_image")
+        case .video: return String(localized: "proof_type_video")
+        case .pdf: return String(localized: "proof_type_pdf")
+        case .document: return String(localized: "proof_type_document")
+        }
+    }
 }
 
 struct ProofItem: Identifiable {
@@ -58,7 +79,7 @@ struct ProofItem: Identifiable {
     var hasTextDetected: Bool = true
     
     var displayName: String {
-        fileName ?? "\(type.rawValue.capitalized) \(id.uuidString.prefix(4))"
+        fileName ?? "\(type.localizedName) \(id.uuidString.prefix(4))"
     }
     
     var fileSizeString: String {
@@ -214,7 +235,7 @@ struct ProofCaptureView: View {
             }
             .alert("no_text_detected", isPresented: $showNoTextWarning) {
                 Button("use_anyway") { }
-                Button("Retake", role: .cancel) {
+                Button("retake", role: .cancel) {
                     if let lastItem = proofItems.last {
                         proofItems.removeAll { $0.id == lastItem.id }
                     }
@@ -232,9 +253,9 @@ struct ProofCaptureView: View {
             // Task type badge
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: task.taskType?.icon ?? "checklist")
-                Text(task.taskType?.displayName ?? "Task")
+                Text(task.taskType?.displayName ?? String(localized: "task"))
             }
-            .font(.caption)
+            .font(DS.Typography.caption())
             .fontWeight(.medium)
             .foregroundStyle(task.taskType == .homework ? .accentPrimary : .textSecondary)
             .padding(.horizontal, DS.Spacing.md)
@@ -248,7 +269,7 @@ struct ProofCaptureView: View {
             )
             
             Text(task.title)
-                .font(.title3)
+                .font(DS.Typography.heading())
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
             
@@ -259,7 +280,7 @@ struct ProofCaptureView: View {
                     Text(AppStrings.earnAmount(amount.currencyString))
                         .fontWeight(.medium)
                 }
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.accentGreen)
             }
             
@@ -268,9 +289,9 @@ struct ProofCaptureView: View {
             
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "paperclip")
-                Text("\(proofItems.count) file\(proofItems.count == 1 ? "" : "s") · \(formatBytes(currentTotalBytes)) / \(formatBytes(maxTotalBytes))")
+                Text(AppStrings.filesCountSize(proofItems.count, formatBytes(currentTotalBytes), formatBytes(maxTotalBytes)))
             }
-            .font(.caption)
+            .font(DS.Typography.caption())
             .foregroundStyle(.textSecondary)
         }
         .padding(.horizontal)
@@ -291,7 +312,7 @@ struct ProofCaptureView: View {
                 Text("parent_will_review")
             }
         }
-        .font(.caption)
+        .font(DS.Typography.caption())
         .foregroundStyle(willAutoVerify ? .purple : .textSecondary)
         .padding(.horizontal, DS.Spacing.md)
         .padding(.vertical, DS.Spacing.xs)
@@ -320,10 +341,10 @@ struct ProofCaptureView: View {
             
             VStack(spacing: DS.Spacing.xs) {
                 Text("add_proof_of_completion")
-                    .font(.headline)
+                    .font(DS.Typography.subheading())
                 
                 Text("upload_files")
-                    .font(.subheadline)
+                    .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -332,14 +353,14 @@ struct ProofCaptureView: View {
             if task.taskType == .homework {
                 VStack(spacing: DS.Spacing.xs) {
                     Text("tips_for_homework_photos")
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .fontWeight(.semibold)
                         .foregroundStyle(.textSecondary)
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        tipRow("Good lighting – avoid shadows")
-                        tipRow("Flat surface – lay paper flat")
-                        tipRow("Full page – capture all work")
+                        tipRow(String(localized: "tip_good_lighting"))
+                        tipRow(String(localized: "tip_flat_surface"))
+                        tipRow(String(localized: "tip_full_page"))
                     }
                 }
                 .padding()
@@ -354,10 +375,10 @@ struct ProofCaptureView: View {
                 ForEach([ProofItemType.image, .video, .pdf, .document], id: \.self) { type in
                     VStack(spacing: 4) {
                         Image(systemName: type.icon)
-                            .font(.title3)
+                            .font(DS.Typography.heading())
                             .foregroundStyle(type.color)
-                        Text(type.rawValue.capitalized)
-                            .font(.caption2)
+                        Text(type.localizedName)
+                            .font(DS.Typography.micro())
                             .foregroundStyle(.textSecondary)
                     }
                 }
@@ -377,10 +398,10 @@ struct ProofCaptureView: View {
     private func tipRow(_ text: String) -> some View {
         HStack(spacing: DS.Spacing.xs) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.caption2)
+                .font(DS.Typography.micro())
                 .foregroundStyle(.accentGreen)
             Text(text)
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
         }
     }
@@ -413,7 +434,7 @@ struct ProofCaptureView: View {
     private var addProofSection: some View {
         VStack(spacing: DS.Spacing.md) {
             Text("add_more")
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.textSecondary)
             
             HStack(spacing: DS.Spacing.lg) {
@@ -421,7 +442,7 @@ struct ProofCaptureView: View {
                 Button { showCamera = true } label: {
                     ProofActionButtonContent(
                         icon: "camera.fill",
-                        title: "Camera",
+                        title: String(localized: "camera"),
                         color: .blue
                     )
                 }
@@ -434,7 +455,7 @@ struct ProofCaptureView: View {
                 ) {
                     ProofActionButtonContent(
                         icon: "photo.on.rectangle",
-                        title: "Photos",
+                        title: String(localized: "photos"),
                         color: .green
                     )
                 }
@@ -443,15 +464,15 @@ struct ProofCaptureView: View {
                 Button { showDocumentPicker = true } label: {
                     ProofActionButtonContent(
                         icon: "folder.fill",
-                        title: "Files",
+                        title: String(localized: "files"),
                         color: .orange
                     )
                 }
             }
             
             // Size budget indicator
-            Text("\(formatBytes(remainingBytes)) remaining")
-                .font(.caption2)
+            Text("\(formatBytes(remainingBytes)) \(String(localized: "remaining_label"))")
+                .font(DS.Typography.micro())
                 .foregroundStyle(.textTertiary)
         }
         .padding(.horizontal)
@@ -469,7 +490,7 @@ struct ProofCaptureView: View {
                 } else {
                     Image(systemName: "arrow.up.circle.fill")
                 }
-                Text(isUploading ? "Uploading..." : "Submit Proof")
+                Text(isUploading ? String(localized: "uploading") : String(localized: "submit_proof"))
                     .fontWeight(.semibold)
             }
             .frame(maxWidth: .infinity)
@@ -489,8 +510,8 @@ struct ProofCaptureView: View {
         VStack(spacing: DS.Spacing.sm) {
             ProgressView(value: uploadProgress)
                 .tint(Color.accentPrimary)
-            Text("\(Int(uploadProgress * 100))% uploaded")
-                .font(.caption)
+            Text("\(Int(uploadProgress * 100))% \(String(localized: "uploaded_label"))")
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
         }
     }
@@ -502,14 +523,14 @@ struct ProofCaptureView: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.statusError)
             Text(message)
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.statusError)
             Spacer()
             Button {
                 errorMessage = nil
             } label: {
                 Image(systemName: "xmark")
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.statusError)
             }
         }
@@ -754,7 +775,7 @@ struct ProofCaptureView: View {
             return false
         }
         if currentTotalBytes + item.data.count > maxTotalBytes {
-            errorMessage = "Adding this file would exceed the \(formatBytes(maxTotalBytes)) total budget. Remove some files first."
+            errorMessage = String(format: String(localized: "error_file_exceeds_budget"), formatBytes(maxTotalBytes))
             return false
         }
         proofItems.append(item)
@@ -776,11 +797,11 @@ struct ImageProcessingOverlay: View {
                     .tint(.white)
                 
                 Text(message)
-                    .font(.headline)
+                    .font(DS.Typography.subheading())
                     .foregroundStyle(.textOnAccent)
                 
                 Text("optimizing_for_mai")
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.textOnAccent.opacity(0.8))
             }
             .padding(32)
@@ -811,7 +832,7 @@ struct ProofPreviewCard: View {
                     ZStack {
                         Color.backgroundSecondary
                         Image(systemName: item.type.icon)
-                            .font(.title2)
+                            .font(DS.Typography.displayMedium())
                             .foregroundStyle(item.type.color)
                     }
                 }
@@ -823,7 +844,7 @@ struct ProofPreviewCard: View {
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
                 HStack(spacing: DS.Spacing.xs) {
                     Text(item.displayName)
-                        .font(.subheadline)
+                        .font(DS.Typography.bodySmall())
                         .fontWeight(.medium)
                         .lineLimit(1)
                     
@@ -834,7 +855,7 @@ struct ProofPreviewCard: View {
                 
                 HStack(spacing: DS.Spacing.sm) {
                     Text(item.fileSizeString)
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                     
                     if item.wasEnhanced {
@@ -842,7 +863,7 @@ struct ProofPreviewCard: View {
                             Image(systemName: "sparkles")
                             Text("enhanced")
                         }
-                        .font(.caption2)
+                        .font(DS.Typography.micro())
                         .foregroundStyle(.accentPrimary)
                     }
                 }
@@ -852,7 +873,7 @@ struct ProofPreviewCard: View {
             
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.title3)
+                    .font(DS.Typography.heading())
                     .foregroundStyle(.textTertiary)
             }
         }
@@ -882,9 +903,9 @@ struct ImageQualityBadge: View {
     }
     
     private var label: String {
-        if score >= 0.8 { return "Good" }
-        if score >= 0.6 { return "OK" }
-        return "Poor"
+        if score >= 0.8 { return String(localized: "quality_good") }
+        if score >= 0.6 { return String(localized: "quality_ok") }
+        return String(localized: "quality_poor")
     }
     
     var body: some View {
@@ -892,7 +913,7 @@ struct ImageQualityBadge: View {
             Image(systemName: icon)
             Text(label)
         }
-        .font(.caption2)
+        .font(DS.Typography.micro())
         .fontWeight(.medium)
         .foregroundStyle(.textOnAccent)
         .padding(.horizontal, 6)
@@ -917,12 +938,12 @@ struct ProofActionButtonContent: View {
                     .frame(width: 56, height: 56)
                 
                 Image(systemName: icon)
-                    .font(.title2)
+                    .font(DS.Typography.displayMedium())
                     .foregroundStyle(color)
             }
             
             Text(title)
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
         }
     }

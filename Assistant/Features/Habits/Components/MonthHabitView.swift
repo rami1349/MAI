@@ -1,6 +1,6 @@
 //
 //  MonthHabitView.swift
-//  
+//
 //
 //  Month view - Calendar grid cards for each habit
 //  Each card has: habit name + icon, calendar grid with squares, completion count
@@ -161,7 +161,7 @@ struct MonthHabitCard: View {
                     .font(DS.Typography.micro())
                     .foregroundStyle(habitColor)
                 
-                Text("\(completedCount) completed")
+                Text("\(completedCount) \(String(localized: "completed"))")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textSecondary)
                 

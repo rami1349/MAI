@@ -1,6 +1,5 @@
-
 //  FormValidation.swift
-//  
+//
 //
 //  Reusable inline validation components for form fields.
 //  Used by AuthenticationView but generic enough for any form.
@@ -84,7 +83,7 @@ struct FieldHint: View {
     private func hintRow(icon: String, text: String, color: Color) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-            Text(text)
+            Text(LocalizedStringKey(text))
         }
         .font(.caption)
         .foregroundStyle(color)

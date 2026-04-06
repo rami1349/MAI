@@ -55,25 +55,25 @@ struct AssistantApp: App {
         WindowGroup {
             ContentView()
                 .adaptiveLayout()
-                // Navigation router
+            // Navigation router
                 .environment(router)
-                // ViewModels
+            // ViewModels
                 .environment(authViewModel)
                 .environment(familyViewModel)
-                // PERF-5: Inject child VMs directly so views observe only what they need.
+            // PERF-5: Inject child VMs directly so views observe only what they need.
                 .environment(familyViewModel.familyMemberVM)
                 .environment(familyViewModel.taskVM)
                 .environment(familyViewModel.calendarVM)
                 .environment(familyViewModel.habitVM)
                 .environment(familyViewModel.notificationVM)
                 .environment(familyViewModel.rewardVM)
-                // Store: @Observable injected via .environment()
+            // Store: @Observable injected via .environment()
                 .environment(store)
-                // Feature flags: kill switches for AI, monetization, etc.
+            // Feature flags: kill switches for AI, monetization, etc.
                 .environment(FeatureFlagService.shared)
-                // DI: Injects ThemeManager, AppLanguage, TourManager
+            // DI: Injects ThemeManager, AppLanguage, TourManager
                 .withLiveDependencies()
-                // Locale: Drives all Text("key") resolution via Localizable.xcstrings
+            // Locale: Drives all Text("key") resolution via Localizable.xcstrings
                 .environment(\.locale, AppLanguage.shared.locale)
                 .preferredColorScheme(themeManager.colorScheme)
                 .onAppear {
@@ -88,7 +88,7 @@ struct AssistantApp: App {
                     await store.loadProducts()
                     await store.refreshEntitlementState()
                 }
-                // Set crash reporting + subscription context on auth changes
+            // Set crash reporting + subscription context on auth changes
                 .onChange(of: authViewModel.currentUser?.id) { _, newId in
                     if let user = authViewModel.currentUser, let id = newId {
                         // Crash reporting

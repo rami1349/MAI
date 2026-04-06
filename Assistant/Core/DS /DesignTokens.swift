@@ -1,6 +1,6 @@
 //
 //  DesignTokens.swift
-//  
+//
 //
 //  Single source of truth for all layout values.
 //  Every padding, spacing, corner radius, icon size, and control height
@@ -211,10 +211,10 @@ enum DS {
         
         // MARK: Headings
         
-        /// Screen/section title
-        static func heading() -> Font { .headline }
+        /// Screen/section title — visually distinct from body text
+        static func heading() -> Font { .title3.weight(.semibold) }
         /// Card title, list group header
-        static func subheading() -> Font { .subheadline.weight(.semibold) }
+        static func subheading() -> Font { .headline }
         
         // MARK: Body
         
@@ -468,7 +468,7 @@ extension View {
 
 extension View {
     
-    /// Standard card appearance: 12pt padding, 12pt radius, themed bg + border
+    /// Standard card appearance: 12pt padding, 12pt radius, themed bg + border + subtle lift
     func standardCard() -> some View {
         self
             .padding(DS.Spacing.cardPadding)
@@ -480,9 +480,10 @@ extension View {
                 RoundedRectangle(cornerRadius: DS.Radius.card)
                     .stroke(Color.themeCardBorder, lineWidth: DS.Border.hairline)
             )
+            .elevation1()
     }
     
-    /// Hero/feature card: 16pt padding, 16pt radius, themed bg + border
+    /// Hero/feature card: 16pt padding, 16pt radius, themed bg + border + medium depth
     func heroCard() -> some View {
         self
             .padding(DS.Spacing.lg)
@@ -494,6 +495,7 @@ extension View {
                 RoundedRectangle(cornerRadius: DS.Radius.xl)
                     .stroke(Color.themeCardBorder, lineWidth: DS.Border.hairline)
             )
+            .elevation2()
     }
 }
 

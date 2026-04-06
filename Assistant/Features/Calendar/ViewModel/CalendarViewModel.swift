@@ -1,6 +1,6 @@
 // ============================================================================
 // CalendarViewModel.swift
-// 
+//
 //
 // PURPOSE:
 //   Manages calendar events for the family — creation, editing, deletion, and
@@ -86,6 +86,10 @@ final class CalendarViewModel {
     @ObservationIgnored private var loadedStartDate: Date?
     @ObservationIgnored private var loadedEndDate: Date?
     
+    /// Tracks whether the last listener callback reported an error.
+    /// When `true`, the dedup guard allows re-setup on the next call.
+    @ObservationIgnored private var listenerDidError = false
+    
     /// Cached month/year string - recomputed only when currentMonth changes (FIX: SUGGESTION 2)
     @ObservationIgnored private var _cachedMonthYearString: String?
     
@@ -94,7 +98,7 @@ final class CalendarViewModel {
         eventsListener?.remove()
     }
     
-    // MARK: - Setup Listener (FIX: SUGGESTION 1)
+    // MARK: - Setup Listener
     
     /// Sets up a real-time Firestore listener for events in the date range.
     ///
@@ -106,17 +110,25 @@ final class CalendarViewModel {
     ///   - familyId: The family's Firestore document ID.
     ///   - start: Start of the date range (inclusive).
     ///   - end: End of the date range (exclusive).
-    func setupListener(familyId: String, from start: Date, to end: Date) {
-        // Skip if identical query is already active
-        if currentFamilyId == familyId,
+    ///   - force: If `true`, tears down and recreates the listener even if the
+    ///     range hasn't changed. Use after error recovery or reconnection.
+    func setupListener(familyId: String, from start: Date, to end: Date, force: Bool = false) {
+        // Skip only if the EXACT same query is already active AND not forced.
+        // Previously this guard also checked `eventsListener != nil` which prevented
+        // recovery when the listener silently disconnected.
+        if !force,
+           currentFamilyId == familyId,
            loadedStartDate == start,
            loadedEndDate == end,
-           eventsListener != nil {
+           eventsListener != nil,
+           !listenerDidError {
             return
         }
         
         // Remove existing listener before setting up new one
         eventsListener?.remove()
+        eventsListener = nil
+        listenerDidError = false
         
         currentFamilyId = familyId
         loadedStartDate = start
@@ -134,7 +146,9 @@ final class CalendarViewModel {
                     self.isLoading = false
                     
                     if let error = error {
-                        self.errorMessage = "Failed to sync events: \(error.localizedDescription)"
+                        self.listenerDidError = true
+                        self.errorMessage = String(localized: "error_sync_events")
+                        Log.calendar.error("Calendar listener error: \(error.localizedDescription)")
                         return
                     }
                     
@@ -408,5 +422,6 @@ final class CalendarViewModel {
         currentFamilyId = nil
         loadedStartDate = nil
         loadedEndDate = nil
+        listenerDidError = false
     }
 }

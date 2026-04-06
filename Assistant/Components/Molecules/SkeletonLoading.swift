@@ -1,6 +1,6 @@
 //
 //  SkeletonLoading.swift
-//  
+//
 //
 //  Shimmer skeleton placeholders for smooth loading states.
 //  Replaces jarring blank → content transitions.
@@ -431,16 +431,16 @@ struct CalendarViewSkeleton: View {
             Text("task").font(.caption).foregroundStyle(.textSecondary)
             TaskCardSkeleton()
             
-            Text("summaryLabel").font(.caption).foregroundStyle(.textSecondary)
+            Text("summary_label").font(.caption).foregroundStyle(.textSecondary)
             SummaryCardSkeleton()
             
-            Text("habitsLabel").font(.caption).foregroundStyle(.textSecondary)
+            Text("habits_label").font(.caption).foregroundStyle(.textSecondary)
             HabitWidgetSkeleton()
             
-            Text("taskGroup").font(.caption).foregroundStyle(.textSecondary)
+            Text("task_group").font(.caption).foregroundStyle(.textSecondary)
             GroupCardSkeleton()
             
-            Text("statusLabel").font(.caption).foregroundStyle(.textSecondary)
+            Text("status_label").font(.caption).foregroundStyle(.textSecondary)
             HStack(spacing: DS.Spacing.md) {
                 StatCardSkeleton()
                 StatCardSkeleton()

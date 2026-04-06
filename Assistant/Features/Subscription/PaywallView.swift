@@ -2,25 +2,30 @@
 //  PaywallView.swift
 //  Assistant
 //
-//  v3: Only real features, honest paywall
+//  PURPOSE:
+//    Subscription purchase screen. Displays the single real Premium benefit
+//    (300 AI messages/day vs 20 free), monthly and yearly plan cards,
+//    and handles the StoreKit purchase flow via SubscriptionManager.
 //
-//  WHAT CHANGED (v2 → v3):
-//    - Removed 5 fake features (analytics, support, AI model, family, tasks)
-//    - Only shows the one real Premium benefit: 300 AI messages/day
-//    - Cleaner hero with comparison callout
-//    - Both monthly ($9.99) + yearly ($79.99) plans
-//    - Auto-renewal disclosure (App Store requirement)
+//  ARCHITECTURE ROLE:
+//    Leaf modal — presented from SettingsView and anywhere the app
+//    gates a premium feature. Reads SubscriptionManager from
+//    the environment. Delegates all purchase logic to the store.
 //
-
+//  DATA FLOW:
+//    SubscriptionManager  → subscriptionProducts, isPurchasing,
+//                           purchaseSubscription(), restorePurchases()
+//
 import SwiftUI
 import StoreKit
 
 struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(SubscriptionManager.self) var store
-
+    
     @State private var selectedPlan: Product?
-
+    @State private var selectedLegalDocument: LegalDocument?
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -59,9 +64,9 @@ struct PaywallView: View {
             ))
         }
     }
-
+    
     // MARK: - Hero
-
+    
     private var heroSection: some View {
         VStack(spacing: DS.Spacing.md) {
             ZStack {
@@ -73,21 +78,21 @@ struct PaywallView: View {
                     .foregroundStyle(.accentPrimary)
             }
             .padding(.top, DS.Spacing.lg)
-
+            
             Text("unlock_full_mai")
                 .font(DS.Typography.heading())
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.textPrimary)
-
+            
             Text("premium_subtitle")
                 .font(DS.Typography.body())
                 .foregroundStyle(.textSecondary)
                 .multilineTextAlignment(.center)
         }
     }
-
+    
     // MARK: - Free vs Premium Comparison
-
+    
     private var comparisonCard: some View {
         VStack(spacing: 0) {
             // Free row
@@ -100,17 +105,17 @@ struct PaywallView: View {
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.textSecondary)
                 }
-
+                
                 Spacer()
-
+                
                 Text("messages_per_day")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }
             .padding(DS.Spacing.lg)
-
+            
             Divider()
-
+            
             // Premium row
             HStack {
                 VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
@@ -126,13 +131,13 @@ struct PaywallView: View {
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.accentPrimary)
                 }
-
+                
                 Spacer()
-
+                
                 Text("messages_per_day")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
-
+                
                 Text("15x")
                     .font(DS.Typography.label())
                     .foregroundStyle(.textOnAccent)
@@ -151,15 +156,15 @@ struct PaywallView: View {
                 .stroke(Color.accentPrimary.opacity(0.2), lineWidth: 1)
         )
     }
-
+    
     // MARK: - Plan Cards
-
+    
     private var planCards: some View {
         HStack(spacing: DS.Spacing.md) {
             ForEach(store.subscriptionProducts, id: \.id) { product in
                 let isSelected = selectedPlan?.id == product.id
                 let isYearly = product.id == StoreProduct.premiumYearly
-
+                
                 Button {
                     withAnimation(.spring(response: 0.3)) { selectedPlan = product }
                     DS.Haptics.light()
@@ -175,19 +180,19 @@ struct PaywallView: View {
                         } else {
                             Color.clear.frame(height: 18)
                         }
-
+                        
                         Text(isYearly ? "yearly" : "monthly")
                             .font(DS.Typography.label())
                             .foregroundStyle(.textPrimary)
-
+                        
                         Text(product.displayPrice)
                             .font(DS.Typography.displayMedium())
                             .foregroundStyle(isSelected ? .accentPrimary : .textPrimary)
-
+                        
                         Text(isYearly ? "per_year" : "per_month")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
-
+                        
                         if isYearly {
                             let monthly = product.price / 12
                             Text(monthly.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD")) + "/\(String(localized: "month_short"))")
@@ -211,9 +216,9 @@ struct PaywallView: View {
             }
         }
     }
-
+    
     // MARK: - Purchase Button
-
+    
     private var purchaseButton: some View {
         Button {
             guard let plan = selectedPlan else { return }
@@ -239,9 +244,9 @@ struct PaywallView: View {
         .disabled(selectedPlan == nil || store.isPurchasing)
         .opacity(selectedPlan == nil ? 0.5 : 1)
     }
-
+    
     // MARK: - Footer
-
+    
     private var footerSection: some View {
         VStack(spacing: DS.Spacing.md) {
             Button("restore_purchases") {
@@ -249,16 +254,43 @@ struct PaywallView: View {
             }
             .font(DS.Typography.bodySmall())
             .foregroundStyle(.accentPrimary)
-
+            
             Text("payment_apple_id")
                 .font(DS.Typography.micro())
                 .foregroundStyle(.textTertiary)
                 .multilineTextAlignment(.center)
-
+            
             Text("subscription_auto_renews")
                 .font(DS.Typography.micro())
                 .foregroundStyle(.textTertiary)
                 .multilineTextAlignment(.center)
+            
+            // Legal links — required by App Store Review Guidelines 3.1.2
+            HStack(spacing: DS.Spacing.lg) {
+                Button {
+                    selectedLegalDocument = .privacyPolicy
+                } label: {
+                    Text("privacy_policy")
+                        .font(DS.Typography.micro())
+                        .foregroundStyle(.accentPrimary)
+                }
+                
+                Text("·")
+                    .font(DS.Typography.micro())
+                    .foregroundStyle(.textTertiary)
+                
+                Button {
+                    selectedLegalDocument = .termsOfService
+                } label: {
+                    Text("terms_of_service")
+                        .font(DS.Typography.micro())
+                        .foregroundStyle(.accentPrimary)
+                }
+            }
+        }
+        .sheet(item: $selectedLegalDocument) { doc in
+            LegalView(document: doc)
+                .presentationBackground(Color.themeSurfacePrimary)
         }
     }
 }

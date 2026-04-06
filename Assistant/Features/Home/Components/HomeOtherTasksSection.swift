@@ -30,15 +30,6 @@ struct HomeOtherTasksSection: View {
             VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                 // Header
                 HStack(spacing: DS.Spacing.sm) {
-                    Image(systemName: "tray")
-                        .font(DS.Typography.label())
-                        .foregroundStyle(.textSecondary)
-                        .frame(width: 28, height: 28)
-                        .background(
-                            Circle()
-                                .fill(Color.textSecondary.opacity(0.1))
-                        )
-                    
                     Text("upcoming_tasks")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)

@@ -2,8 +2,28 @@
 //  SettingsView.swift
 //  Assistant
 //
-//  Created by Ramiro  on 2/9/26.
-//  App settings: account info, appearance, theme, language, sign-out, delete account
+//  PURPOSE:
+//    Central hub for user preferences and account management.
+//    Surfaces account info, subscription tier, AI credit balance,
+//    appearance / theme / language pickers, legal documents, and
+//    destructive actions (sign-out, delete account).
+//
+//  ARCHITECTURE ROLE:
+//    Leaf modal — presented from MeView or navigation sidebar.
+//    Reads SubscriptionManager, AuthViewModel, ThemeManager, and
+//    AppLanguage from the SwiftUI environment. Owns no domain logic;
+//    delegates every action to the appropriate environment object.
+//
+//  DATA FLOW:
+//    SubscriptionManager  → tier, aiCredits, restorePurchases()
+//    AuthViewModel        → currentUser, signOut()
+//    ThemeManager         → currentTheme, appearanceMode
+//    AppLanguage          → selectedLanguage, setLanguage()
+//
+//  APP STORE REQUIREMENTS:
+//    ✅  Restore Purchases button in Subscription section
+//    ✅  Manage Subscription deep-link to Apple settings
+//    ✅  Privacy Policy, Terms of Service, Parental Consent links
 //
 
 import SwiftUI
@@ -21,6 +41,7 @@ struct SettingsView: View {
     @State private var showDeleteAccountSheet = false
     @Environment(SubscriptionManager.self) var store
     @State private var showPaywall = false
+    @State private var selectedLegalDocument: LegalDocument?
 
     var body: some View {
         NavigationStack {
@@ -76,6 +97,10 @@ struct SettingsView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .environment(store)
+                .presentationBackground(Color.themeSurfacePrimary)
+        }
+        .sheet(item: $selectedLegalDocument) { doc in
+            LegalView(document: doc)
                 .presentationBackground(Color.themeSurfacePrimary)
         }
     }
@@ -248,6 +273,28 @@ struct SettingsView: View {
                 .listRowBackground(Color.themeCardBackground)
             }
             
+            // MARK: - Legal
+            Section("legal") {
+                ForEach(LegalDocument.allCases) { doc in
+                    Button {
+                        selectedLegalDocument = doc
+                    } label: {
+                        HStack {
+                            Image(systemName: doc.icon)
+                                .foregroundStyle(.accentPrimary)
+                                .frame(width: DS.IconContainer.sm)
+                            Text(doc.titleKey)
+                                .foregroundStyle(.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.textTertiary)
+                        }
+                    }
+                    .listRowBackground(Color.themeCardBackground)
+                }
+            }
+            
             Section {
                 Button(role: .destructive, action: {
                     showLogoutAlert = true
@@ -339,9 +386,9 @@ struct AppearancePickerView: View {
     
     private func modeDescription(_ mode: AppearanceMode) -> String {
         switch mode {
-        case .system: return "Match device settings"
-        case .light: return "Always use light mode"
-        case .dark: return "Always use dark mode"
+        case .system: return String(localized: "appearance_match_device")
+        case .light: return String(localized: "appearance_always_light")
+        case .dark: return String(localized: "appearance_always_dark")
         }
     }
 }

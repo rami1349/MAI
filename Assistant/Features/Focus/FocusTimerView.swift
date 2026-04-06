@@ -2,6 +2,19 @@
 //  FocusTimerView.swift
 //  Full-screen Pomodoro timer with animated progress ring
 //
+//  PURPOSE:
+//    Pomodoro-style focus timer. Shows dial for duration selection,
+//    animated countdown, break mode, and completion options
+//    (submit proof, complete task, continue later).
+//
+//  ARCHITECTURE ROLE:
+//    Feature modal — presented from task cards and detail views.
+//    Owns FocusTimerManager for timer state.
+//
+//  DATA FLOW:
+//    FocusTimerManager → timer state, start/pause/reset
+//    TaskViewModel → linked task for completion flow
+//
 
 import SwiftUI
 import UIKit
@@ -44,7 +57,7 @@ struct FocusTimerView: View {
                     timerActiveView
                 }
             }
-            .navigationTitle(showTimeDial ? "" : (timerManager.isBreakMode ? "Break Time" : "Focus Mode"))
+            .navigationTitle(showTimeDial ? "" : (timerManager.isBreakMode ? String(localized: "break_time") : String(localized: "focus_mode")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -117,7 +130,7 @@ struct FocusTimerView: View {
                 .disabled(selectedMinutes <= minTime)
                 
                 // Time display
-                Text("\(selectedMinutes) mins")
+                Text("\(selectedMinutes) \(String(localized: "min"))")
                     .font(DS.Typography.displayLarge()) // was .rounded
                     .foregroundStyle(.textPrimary)
                     .frame(minWidth: 140)
@@ -188,7 +201,7 @@ struct FocusTimerView: View {
             // Mode indicator
             HStack(spacing: DS.Spacing.sm) {
                 Image(systemName: timerManager.isBreakMode ? "cup.and.saucer.fill" : "brain.head.profile")
-                Text(timerManager.isBreakMode ? "Break Time" : "Deep Focus")
+                Text(timerManager.isBreakMode ? String(localized: "break_time") : String(localized: "deep_focus"))
             }
             .font(.subheadline)
             .fontWeight(.medium)
@@ -275,9 +288,9 @@ struct FocusTimerView: View {
     
     private var stateText: String {
         switch timerManager.state {
-        case .running: return "Focusing..."
-        case .paused: return "Paused"
-        case .completed: return "Complete!"
+        case .running: return String(localized: "focusing")
+        case .paused: return String(localized: "paused")
+        case .completed: return String(localized: "complete_exclamation")
         default: return ""
         }
     }
@@ -357,7 +370,7 @@ struct FocusTimerView: View {
                     .foregroundStyle(.textPrimary)
                 
                 if !timerManager.isBreakMode {
-                    Text("\(timerManager.totalSeconds / 60) minutes of focused work")
+                    Text(AppStrings.minutesFocusedWork(timerManager.totalSeconds / 60))
                         .font(.subheadline)
                         .foregroundStyle(.textSecondary)
                 }

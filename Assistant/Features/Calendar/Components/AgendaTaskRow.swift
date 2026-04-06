@@ -87,7 +87,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .stroke(Color.textTertiary.opacity(0.4), lineWidth: 1)
                     .frame(width: 10, height: 10)
-                Text("toDo")
+                Text("to_do")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.textTertiary)
             }
@@ -97,7 +97,7 @@ struct AgendaTaskRow: View {
                 Circle()
                     .fill(Color.statusInProgress)
                     .frame(width: 6, height: 6)
-                Text("inProgress")
+                Text("in_progress")
                     .font(DS.Typography.micro())
                     .foregroundStyle(.statusInProgress)
             }
@@ -162,7 +162,7 @@ struct AgendaEventRow: View {
                     .foregroundStyle(.textPrimary)
                     .lineLimit(1)
                 
-                Text(event.isAllDay ? "allDay" : timeRange)
+                Text(event.isAllDay ? "all_day" : timeRange)
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textSecondary)
             }

@@ -25,7 +25,7 @@ enum ActionCardData: Equatable, Identifiable {
     case reviewHomework(task: FamilyTask)
     case overdueTask(task: FamilyTask)
     case claimReward(amount: Double)
-
+    
     var id: String {
         switch self {
         case .reviewHomework(let t): "review_\(t.stableId)"
@@ -33,7 +33,7 @@ enum ActionCardData: Equatable, Identifiable {
         case .claimReward:           "claim_reward"
         }
     }
-
+    
     /// Resolve the highest-priority action card.
     /// Returns nil when nothing needs attention — slot 2 collapses.
     static func resolve(
@@ -64,7 +64,7 @@ enum ActionCardData: Equatable, Identifiable {
 struct HomeActionCard: View {
     let data: ActionCardData
     let onTap: () -> Void
-
+    
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: DS.Spacing.lg) {
@@ -73,26 +73,26 @@ struct HomeActionCard: View {
                     Circle()
                         .fill(iconColor.opacity(0.12))
                         .frame(width: 48, height: 48)
-
+                    
                     Image(systemName: iconName)
                         .font(DS.Typography.heading())
                         .foregroundStyle(iconColor)
                 }
-
+                
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(DS.Typography.label())
                         .foregroundStyle(.textPrimary)
-
+                    
                     Text(subtitle)
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                         .lineLimit(2)
                 }
-
+                
                 Spacer()
-
+                
                 // Action indicator
                 Image(systemName: "chevron.right")
                     .font(DS.Typography.body())
@@ -111,9 +111,9 @@ struct HomeActionCard: View {
         .buttonStyle(.plain)
         .padding(.horizontal, DS.Spacing.screenH)
     }
-
+    
     // MARK: - Computed Display Properties
-
+    
     private var iconName: String {
         switch data {
         case .reviewHomework: "checkmark.seal.fill"
@@ -121,7 +121,7 @@ struct HomeActionCard: View {
         case .claimReward:    "dollarsign.circle.fill"
         }
     }
-
+    
     private var iconColor: Color {
         switch data {
         case .reviewHomework: .accentOrange
@@ -129,7 +129,7 @@ struct HomeActionCard: View {
         case .claimReward:    .accentGreen
         }
     }
-
+    
     private var title: LocalizedStringKey {
         switch data {
         case .reviewHomework:
@@ -140,7 +140,7 @@ struct HomeActionCard: View {
             "reward_to_claim"
         }
     }
-
+    
     private var subtitle: String {
         switch data {
         case .reviewHomework(let task):

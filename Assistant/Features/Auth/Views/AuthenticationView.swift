@@ -1,12 +1,17 @@
 //
 //  AuthenticationView.swift
-//  
 //
-//  LUXURY CALM REDESIGN
-//  - Elegant, minimal authentication flow
-//  - Soft shadows, premium typography
-//  - FIXED: Removed toolbar Done button (tap outside to dismiss)
-//  - Uses existing FieldHint and PasswordStrengthBar
+//  PURPOSE:
+//    Sign-in / sign-up screen. Supports email+password, Google,
+//    and Apple Sign In. Includes forgot-password flow and
+//    account creation with date-of-birth for age verification.
+//
+//  ARCHITECTURE ROLE:
+//    Auth gate — shown by ContentView when user is not authenticated.
+//    Delegates all auth logic to AuthViewModel.
+//
+//  DATA FLOW:
+//    AuthViewModel → signIn(), signUp(), signInWithGoogle(), signInWithApple()
 //
 
 import SwiftUI
@@ -19,6 +24,7 @@ enum AuthMode {
 }
 
 struct AuthenticationView: View {
+    @Environment(AuthViewModel.self) var authViewModel
     @State private var isSignUp: Bool
     
     init(initialMode: AuthMode = .signIn) {
@@ -46,6 +52,10 @@ struct AuthenticationView: View {
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: isSignUp)
+        // Clear stale error when switching auth modes
+        .onChange(of: isSignUp) { _, _ in
+            authViewModel.errorMessage = nil
+        }
     }
 }
 
@@ -89,7 +99,7 @@ struct SocialLoginButtonsView: View {
                         .scaledToFit()
                         .frame(width: 20, height: 20)
                     
-                    Text("continueWithGoogle")
+                    Text("continue_with_google")
                         .font(DS.Typography.label())
                 }
                 .foregroundStyle(.textPrimary)
@@ -172,7 +182,7 @@ struct AppleSignInButtonRepresentable: UIViewRepresentable {
         func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first else {
-                return UIWindow()
+                return ASPresentationAnchor()
             }
             return window
         }
@@ -183,7 +193,7 @@ struct AppleSignInButtonRepresentable: UIViewRepresentable {
                   let appleIDToken = appleIDCredential.identityToken,
                   let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
                 Task { @MainActor in
-                    authViewModel.errorMessage = "Unable to get Apple ID credential"
+                    authViewModel.errorMessage = String(localized: "error_apple_credential")
                 }
                 return
             }
@@ -319,7 +329,7 @@ struct SignInView: View {
     }
     
     private var errorField: AuthErrorField? {
-        AuthErrorField.classify(authViewModel.errorMessage)
+        authViewModel.errorField
     }
     
     private var emailHasError: Bool {
@@ -337,9 +347,9 @@ struct SignInView: View {
         if emailHasError { return .idle }
         
         if FormValidator.isEmailPlausible(email) {
-            return .valid("validEmail")
+            return .valid("valid_email")
         } else {
-            return .invalid("invalidEmailFormat")
+            return .invalid("invalid_email_format")
         }
     }
     
@@ -355,11 +365,11 @@ struct SignInView: View {
                         .scaledToFit()
                         .frame(width: 140, height: 140)
                     
-                    Text("appTitle")
+                    Text("mai")
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.textPrimary)
                     
-                    Text("manageFamily")
+                    Text("manage_family")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
@@ -410,12 +420,14 @@ struct SignInView: View {
                         Spacer()
                         Button(action: {
                             focusedField = nil
+                            guard !email.isEmpty else { return }
                             Task { await authViewModel.resetPassword(email: email) }
                         }) {
-                            Text("forgotPassword")
+                            Text("forgot_password")
                                 .font(DS.Typography.captionMedium())
                                 .foregroundStyle(.accentPrimary)
                         }
+                        .disabled(email.isEmpty)
                     }
                 }
                 .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
@@ -430,16 +442,35 @@ struct SignInView: View {
                 
                 // Sign In Button
                 AuthButton(
-                    title: "signIn",
+                    title: "sign_in",
                     isLoading: authViewModel.isLoading,
                     isDisabled: email.isEmpty || password.isEmpty,
                     action: signIn
                 )
                 .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
                 
+                // Password reset confirmation
+                if authViewModel.resetPasswordSent {
+                    HStack(spacing: DS.Spacing.sm) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(DS.Typography.body())
+                        Text("reset_email_sent")
+                            .font(DS.Typography.caption())
+                    }
+                    .foregroundStyle(.accentGreen)
+                    .padding(DS.Spacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: DS.Radius.md)
+                            .fill(Color.accentGreen.opacity(0.08))
+                    )
+                    .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+                
                 // Sign Up Link
                 HStack(spacing: DS.Spacing.xs) {
-                    Text("dontHaveAccount")
+                    Text("dont_have_account")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -447,7 +478,7 @@ struct SignInView: View {
                         focusedField = nil
                         Task { @MainActor in switchToSignUp() }
                     }) {
-                        Text("signUp")
+                        Text("sign_up")
                             .font(DS.Typography.label())
                             .foregroundStyle(.accentPrimary)
                     }
@@ -459,7 +490,6 @@ struct SignInView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .onTapGesture { focusedField = nil }
-        // NO .toolbar - removed isolated Done button
         .onChange(of: focusedField) { oldValue, _ in
             if oldValue == .email && !email.isEmpty {
                 emailTouched = true
@@ -467,6 +497,7 @@ struct SignInView: View {
         }
         .onChange(of: email) { _, _ in
             if authViewModel.errorMessage != nil { authViewModel.errorMessage = nil }
+            if authViewModel.resetPasswordSent { authViewModel.resetPasswordSent = false }
         }
         .onChange(of: password) { _, _ in
             if authViewModel.errorMessage != nil { authViewModel.errorMessage = nil }
@@ -509,13 +540,13 @@ struct SignUpView: View {
     
     var isFormValid: Bool {
         !displayName.isEmpty &&
-        !email.isEmpty &&
+        FormValidator.isEmailPlausible(email) &&
         password.count >= 6 &&
         password == confirmPassword
     }
     
     private var errorField: AuthErrorField? {
-        AuthErrorField.classify(authViewModel.errorMessage)
+        authViewModel.errorField
     }
     
     private var emailHasError: Bool {
@@ -537,9 +568,9 @@ struct SignUpView: View {
         if emailHasError { return .idle }
         
         if FormValidator.isEmailPlausible(email) {
-            return .valid("validEmail")
+            return .valid("valid_email")
         } else {
-            return .invalid("invalidEmailFormat")
+            return .invalid("invalid_email_format")
         }
     }
     
@@ -551,9 +582,9 @@ struct SignUpView: View {
         case .empty:
             return .idle
         case .tooShort:
-            return .invalid("\(password.count)/6 " + "charactersMinimum")
+            return .invalid("\(password.count)/6 \(String(localized: "characters_minimum"))")
         case .weak, .fair, .strong:
-            return .valid("\(password.count) " + "characters")
+            return .valid("\(password.count) \(String(localized: "characters"))")
         }
     }
     
@@ -561,9 +592,9 @@ struct SignUpView: View {
         guard !confirmPassword.isEmpty else { return .idle }
         
         if password == confirmPassword {
-            return .valid("passwordMatch")
+            return .valid("password_match")
         } else {
-            return .invalid("passwordDontMatch")
+            return .invalid("password_dont_match")
         }
     }
     
@@ -579,11 +610,11 @@ struct SignUpView: View {
                         .scaledToFit()
                         .frame(width: 100, height: 100)
                     
-                    Text("createAccount")
+                    Text("create_account")
                         .font(DS.Typography.displayMedium())
                         .foregroundStyle(.textPrimary)
                     
-                    Text("joinFamily")
+                    Text("join_family")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                 }
@@ -600,7 +631,7 @@ struct SignUpView: View {
                 VStack(spacing: DS.Spacing.md) {
                     // Display Name
                     CustomTextField(
-                        placeholder: "displayName",
+                        placeholder: "display_name",
                         text: $displayName,
                         icon: "person",
                         submitLabel: .next,
@@ -688,7 +719,7 @@ struct SignUpView: View {
                     // Confirm Password
                     VStack(spacing: DS.Spacing.xs) {
                         CustomTextField(
-                            placeholder: "confirmPassword",
+                            placeholder: "confirm_password",
                             text: $confirmPassword,
                             isSecure: true,
                             icon: "lock.fill",
@@ -714,7 +745,7 @@ struct SignUpView: View {
                 
                 // Sign Up Button
                 AuthButton(
-                    title: "createAccount",
+                    title: "create_account",
                     isLoading: authViewModel.isLoading,
                     isDisabled: !isFormValid,
                     action: signUp
@@ -723,7 +754,7 @@ struct SignUpView: View {
                 
                 // Sign In Link
                 HStack(spacing: DS.Spacing.xs) {
-                    Text("alreadyHaveAccount")
+                    Text("already_have_account")
                         .font(DS.Typography.body())
                         .foregroundStyle(.textSecondary)
                     
@@ -731,7 +762,7 @@ struct SignUpView: View {
                         focusedField = nil
                         Task { @MainActor in switchToSignIn() }
                     }) {
-                        Text("signIn")
+                        Text("sign_in")
                             .font(DS.Typography.label())
                             .foregroundStyle(.accentPrimary)
                     }
@@ -747,7 +778,7 @@ struct SignUpView: View {
         .sheet(isPresented: $showDatePicker, onDismiss: {
             focusedField = .password
         }) {
-            DatePickerSheet(selectedDate: $dateOfBirth, title: "dateOfBirth")
+            DatePickerSheet(selectedDate: $dateOfBirth, title: "date_of_birth")
         }
         .onChange(of: focusedField) { oldValue, _ in
             if oldValue == .email && !email.isEmpty {

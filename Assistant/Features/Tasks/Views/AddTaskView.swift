@@ -2,7 +2,22 @@
 //  AddTaskView.swift
 //
 //
-
+//
+//
+//  PURPOSE:
+//    Modal form for creating a new task. Supports title, assignee,
+//    due date, priority, reward amount, proof requirements, task type
+//    (homework auto-enables AI verification), and group assignment.
+//
+//  ARCHITECTURE ROLE:
+//    Form modal — presented from FAB or navigation action.
+//    Calls FamilyViewModel.createTask() on submit.
+//
+//  DATA FLOW:
+//    FamilyMemberViewModel → member list for assignment
+//    TaskViewModel → task groups for picker
+//    FamilyViewModel → createTask() with all parameters
+//
 
 import SwiftUI
 
@@ -51,7 +66,7 @@ struct AddTaskView: View {
     
     private var currentUserCapabilities: MemberCapabilities {
         authViewModel.currentUser?.resolvedCapabilities
-            ?? CapabilityPreset.standard.capabilities()
+        ?? CapabilityPreset.standard.capabilities()
     }
     
     /// Only show incentives if user has canAttachRewards AND is assigning to others
@@ -231,19 +246,6 @@ struct AddTaskView: View {
                         .stroke(isTitleFocused ? Color.accentPrimary : Color.themeCardBorder,
                                 lineWidth: isTitleFocused ? 2 : 1)
                 )
-            
-            // Hint for homework - AI will identify subject
-            if taskType == .homework {
-                HStack(spacing: DS.Spacing.xxs) {
-                    Image("samy")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                    Text("ai_will_identify_subject")
-                        .font(DS.Typography.caption())
-                }
-                .foregroundStyle(.accentPrimary)
-            }
         }
     }
     
@@ -496,7 +498,9 @@ struct AddTaskView: View {
                     hasReward: hasRewardFinal,
                     rewardAmount: hasRewardFinal ? Double(parsedReward) : nil,
                     requiresProof: finalRequiresProof,
-                    proofType: nil,
+                    // FIX: Homework tasks need .photo proofType for AI verification.
+                    // Previously nil, which caused MAI to skip image analysis.
+                    proofType: finalRequiresProof ? .photo : nil,
                     proofURL: nil,
                     proofURLs: nil,
                     proofVerifiedBy: nil,
@@ -531,7 +535,7 @@ struct AddTaskView: View {
         components.day = (components.day ?? 1) + 1
         components.hour = 17
         components.minute = 0
-        return calendar.date(from: components) ?? Date()
+        return calendar.date(from: components) ?? .now
     }
 }
 

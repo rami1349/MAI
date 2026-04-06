@@ -1,6 +1,5 @@
-
 //  CalendarSearch.swift
-//  
+//
 //
 //  Search functionality for calendar events and tasks
 //
@@ -119,7 +118,7 @@ struct CalendarSearchSheet: View {
                         Image(systemName: "magnifyingglass")
                             .foregroundStyle(.textSecondary)
                         
-                        TextField("filterEventsTasks", text: $searchText)
+                        TextField("filter_events_tasks", text: $searchText)
                             .focused($isSearchFocused)
                             .submitLabel(.search)
                         
@@ -142,13 +141,13 @@ struct CalendarSearchSheet: View {
                 // Results count and filter status
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(searchText.isEmpty ? "Upcoming" : "Results")
+                        Text(searchText.isEmpty ? String(localized: "upcoming") : String(localized: "results"))
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.textPrimary)
                         
                         if searchText.isEmpty && hasResults {
-                            Text("eventsAndTasksToday")
+                            Text("events_and_tasks_today")
                                 .font(.caption2)
                                 .foregroundStyle(.textTertiary)
                         }
@@ -156,7 +155,7 @@ struct CalendarSearchSheet: View {
                     
                     Spacer()
                     
-                    Text("\(filteredEvents.count) events, \(filteredTasks.count) tasks")
+                    Text(AppStrings.eventsTasksCount(filteredEvents.count, filteredTasks.count))
                         .font(.caption)
                         .foregroundStyle(.textSecondary)
                 }

@@ -1,11 +1,17 @@
 //
 //  CalendarView.swift
 //
-//  LUXURY CALM REDESIGN
-//  - Clean, minimal navigation
-//  - Elegant week strip with soft interactions
-//  - Refined agenda display
-//  - Soft shadows and premium spacing
+//  PURPOSE:
+//    Full calendar tab with month grid, week strip, and agenda views.
+//    Supports member filtering, event creation, and date navigation.
+//
+//  ARCHITECTURE ROLE:
+//    Tab root — owns date selection state and switches between
+//    month grid overlay and day agenda views.
+//
+//  DATA FLOW:
+//    CalendarViewModel → events by date range
+//    TaskViewModel → tasks by date for combined agenda
 //
 
 import SwiftUI
@@ -31,7 +37,6 @@ struct CalendarView: View {
     @State private var showMemberFilter = false
     @State private var selectedMemberIds: Set<String> = []
     @State private var selectedTask: FamilyTask? = nil
-    @State private var selectedEvent: CalendarEvent? = nil
     @State private var showAddEvent = false
     
     // MARK: - Cache
@@ -66,7 +71,11 @@ struct CalendarView: View {
     
     private var eventsFingerprint: Int {
         var hasher = Hasher()
-        for e in calendarVM.events { hasher.combine(e.id); hasher.combine(e.startDate) }
+        for e in calendarVM.events {
+            hasher.combine(e.id)
+            hasher.combine(e.startDate)
+            hasher.combine(e.title)
+        }
         return hasher.finalize()
     }
     
@@ -313,7 +322,7 @@ struct CalendarView: View {
         VStack(spacing: DS.Spacing.sm) {
             // Day names header
             HStack(spacing: 0) {
-                ForEach(Array(["S", "M", "T", "W", "T", "F", "S"].enumerated()), id: \.offset) { _, day in
+                ForEach(Array(AppStrings.dayNames.dropFirst().enumerated()), id: \.offset) { _, day in
                     Text(day)
                         .font(DS.Typography.micro())
                         .fontWeight(.medium)

@@ -1,16 +1,6 @@
 //
 //  SubscriptionManager.swift
 //  Assistant
-//
-//  v3: Server-validated purchases
-//
-//  WHAT CHANGED (v2 → v3):
-//    - Purchases validated via validatePurchase Cloud Function (not client Firestore writes)
-//    - Subscription expiry handled via expireSubscription Cloud Function
-//    - Client CANNOT write subscription/aiCredits fields (Firestore rules block it)
-//    - Credits still decremented optimistically for UI, but server is source of truth
-//    - iOS 18.6 / Swift 6: Sendable, @MainActor, modern concurrency
-//
 //  PRODUCT IDS (must match App Store Connect + validatePurchase.js):
 //    Subscriptions (auto-renewable group "premium"):
 //      - premium_monthly   ($9.99/mo)
@@ -92,8 +82,8 @@ final class SubscriptionManager {
 
         var displayName: String {
             switch self {
-            case .free:    "Free"
-            case .premium: "Premium"
+            case .free:    String(localized: "free")
+            case .premium: String(localized: "premium")
             }
         }
 

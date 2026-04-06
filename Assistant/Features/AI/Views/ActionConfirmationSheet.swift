@@ -57,7 +57,7 @@ struct ActionConfirmationSheet: View {
             Spacer()
             
             Text("confirm_action")
-                .font(.headline)
+                .font(DS.Typography.subheading())
             
             Spacer()
         }
@@ -79,11 +79,11 @@ struct ActionConfirmationSheet: View {
             }
             
             Text(action.type.title)
-                .font(.title2)
+                .font(DS.Typography.displayMedium())
                 .fontWeight(.semibold)
             
             Text(action.summary)
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -94,7 +94,7 @@ struct ActionConfirmationSheet: View {
     private var detailsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("details")
-                .font(.headline)
+                .font(DS.Typography.subheading())
             
             VStack(spacing: 8) {
                 ForEach(displayItems, id: \.key) { item in
@@ -140,7 +140,7 @@ struct ActionConfirmationSheet: View {
         } else if let double = value.doubleValue {
             return String(format: "%.2f", double)
         } else if let bool = value.boolValue {
-            return bool ? "Yes" : "No"
+            return bool ? String(localized: "yes") : String(localized: "no")
         } else if let array = value.arrayValue as? [String] {
             return array.joined(separator: ", ")
         }
@@ -158,7 +158,7 @@ struct ActionConfirmationSheet: View {
             
             Spacer()
         }
-        .font(.subheadline)
+        .font(DS.Typography.bodySmall())
     }
     
     // MARK: - Disclaimer
@@ -169,7 +169,7 @@ struct ActionConfirmationSheet: View {
                 .foregroundStyle(.statusInfo)
             
             Text("this_action_will_be_performed_after_you_confirm")
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -185,7 +185,7 @@ struct ActionConfirmationSheet: View {
             // Result message
             if let result = result {
                 Text(result)
-                    .font(.subheadline)
+                    .font(DS.Typography.bodySmall())
                     .foregroundStyle(result.contains("✅") ? .green : .red)
                     .multilineTextAlignment(.center)
             }

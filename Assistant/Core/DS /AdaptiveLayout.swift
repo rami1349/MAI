@@ -307,7 +307,7 @@ struct TaskContextMenu: View {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("delete", systemImage: "trash")
             }
         }
     }
@@ -323,7 +323,7 @@ struct EventContextMenu: View {
             Button {
                 onEdit()
             } label: {
-                Label("Edit Event", systemImage: "pencil")
+                Label("edit_event", systemImage: "pencil")
             }
             
             Divider()
@@ -331,7 +331,7 @@ struct EventContextMenu: View {
             Button(role: .destructive) {
                 onDelete()
             } label: {
-                Label("Delete", systemImage: "trash")
+                Label("delete", systemImage: "trash")
             }
         }
     }

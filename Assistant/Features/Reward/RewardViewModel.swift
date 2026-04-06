@@ -1,10 +1,18 @@
 //
 //  RewardViewModel.swift
 //
+//  PURPOSE:
+//    Reward ledger and wallet manager. Tracks earnings from task
+//    completions, manages payout requests (create, approve, reject),
+//    and maintains per-member balance calculations.
 //
-//  Manages reward transactions (ledger) and withdrawal requests.
-//  Handles: transaction history, manual rewards, withdrawal lifecycle.
-//  #SOUND: Plays sounds on reward payouts and withdrawal approvals
+//  ARCHITECTURE ROLE:
+//    Domain ViewModel — child of FamilyViewModel.
+//    Injected via @Environment for wallet and balance views.
+//
+//  DATA FLOW:
+//    Firestore families/{id}/rewards → real-time listener
+//    Outbound: balance, transactions, pendingWithdrawals
 //
 
 import Foundation
@@ -173,7 +181,7 @@ final class RewardViewModel {
             amount: amount,
             note: note,
             status: .pending,
-            createdAt: Date()
+            createdAt: .now
         )
         
         do {

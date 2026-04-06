@@ -1,11 +1,20 @@
 // ============================================================================
 // HomeworkVerificationViewModel.swift
 //
+//  PURPOSE:
+//    AI homework verification orchestrator. Sends preprocessed proof
+//    images to the verification Cloud Function, parses structured
+//    results (per-question analysis, confidence, recommendation).
 //
-// ViewModel for AI Homework Verification
+//  ARCHITECTURE ROLE:
+//    Feature ViewModel — owned by ProofCaptureView flow.
+//    Stateless between verifications; results stored on task doc.
 //
-// IMPORTANT: AI provides RECOMMENDATIONS only — parent makes final decision
-// ============================================================================
+//  DATA FLOW:
+//    Cloud Function verifyHomework → structured analysis result
+//    ImagePreprocessor → optimized image data
+//    Outbound: VerificationResult consumed by HomeworkVerificationView
+//
 
 import SwiftUI
 import FirebaseFunctions
@@ -86,7 +95,7 @@ final class HomeworkVerificationViewModel {
             
             // Check for error in response
             if let errorFlag = responseData["error"] as? Bool, errorFlag {
-                let message = responseData["message"] as? String ?? "Verification failed"
+                let message = responseData["message"] as? String ?? String(localized: "verification_failed")
                 
                 // Check if retry is possible
                 if let retryAfter = responseData["retryAfter"] as? Int {

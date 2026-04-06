@@ -1,6 +1,6 @@
 //
 //  TodayTasksView.swift
-//  
+//
 //
 //  LUXURY CALM REDESIGN
 //  - Clean, minimal navigation (no gradient header)
@@ -9,6 +9,21 @@
 //  - Premium card styling
 //  - Refined typography and spacing
 //  - Calming, anxiety-free design
+//
+//
+//
+//  PURPOSE:
+//    Calendar-integrated task view. Shows tasks for a selected date
+//    with a horizontal week strip selector. Supports quick-start,
+//    focus mode, and completion actions inline.
+//
+//  ARCHITECTURE ROLE:
+//    Date-filtered list — used in Home tab and as standalone view.
+//    Week strip drives date selection; tasks filter accordingly.
+//
+//  DATA FLOW:
+//    TaskViewModel → tasks filtered by selectedDate
+//    FamilyViewModel → startTask(), completeTask()
 //
 
 import SwiftUI
@@ -19,8 +34,8 @@ struct TodayTasksView: View {
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
     @Environment(TaskViewModel.self) var taskVM
     
-    @State private var selectedDate = Date()
-    @State private var currentWeekStart = Date()
+    @State private var selectedDate = Date.now
+    @State private var currentWeekStart = Date.now
     @State private var selectedTask: FamilyTask?
     @State private var focusTask: FamilyTask?
     @State private var inFlightActions: Set<String> = []
@@ -130,7 +145,7 @@ struct TodayTasksView: View {
             Spacer()
             
             // Title
-            Text(" schedule")
+            Text(" \(String(localized: "schedule"))")
                 .font(DS.Typography.subheading())
                 .foregroundStyle(.textPrimary)
             
@@ -139,8 +154,8 @@ struct TodayTasksView: View {
             // Today button
             Button {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                    selectedDate = Date()
-                    currentWeekStart = Date().startOfWeek
+                    selectedDate = .now
+                    currentWeekStart = Date.now.startOfWeek
                 }
             } label: {
                 Text("today")
@@ -227,7 +242,7 @@ struct TodayTasksView: View {
                         .font(DS.Typography.body())
                         .foregroundStyle(.accentPrimary)
                     
-                    Text("\(taskCount) \(taskCount == 1 ? "task" : "tasks")")
+                    Text(AppStrings.xTasks(taskCount))
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                 }
@@ -236,7 +251,7 @@ struct TodayTasksView: View {
                     Text("•")
                         .foregroundStyle(.textTertiary)
                     
-                    Text("\(completedCount) done")
+                    Text(AppStrings.xDone(completedCount))
                         .font(DS.Typography.bodySmall())
                         .foregroundStyle(.accentGreen)
                 }
@@ -285,11 +300,11 @@ struct TodayTasksView: View {
             
             // Text
             VStack(spacing: DS.Spacing.xs) {
-                Text(isSelectedToday ? "Nothing scheduled" : "No tasks")
+                Text(isSelectedToday ? String(localized: "nothing_scheduled") : String(localized: "no_tasks"))
                     .font(DS.Typography.subheading())
                     .foregroundStyle(.textPrimary)
                 
-                Text(isSelectedToday ? "Enjoy your free time" : "This day is clear")
+                Text(isSelectedToday ? String(localized: "enjoy_your_free_time") : String(localized: "this_day_is_clear"))
                     .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textTertiary)
             }
@@ -334,7 +349,7 @@ struct TodayTasksView: View {
             await familyViewModel.updateTaskStatus(task, to: .inProgress)
             await MainActor.run {
                 inFlightActions.remove(id)
-                toast = ToastMessage(message: "Task started", style: .success)
+                toast = ToastMessage(message: AppStrings.localized("task_started_toast"), style: .success)
             }
         }
     }
@@ -347,7 +362,7 @@ struct TodayTasksView: View {
             await familyViewModel.updateTaskStatus(task, to: .completed)
             await MainActor.run {
                 inFlightActions.remove(id)
-                toast = ToastMessage(message: "Well done!", style: .success)
+                toast = ToastMessage(message: AppStrings.localized("well_done"), style: .success)
             }
         }
     }

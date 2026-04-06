@@ -40,20 +40,20 @@ enum TourStep: Int, CaseIterable, Identifiable {
     
     var title: String {
         switch self {
-        case .createTask:   return "Create a Task"
-        case .askMAI:       return "Meet MAI"
-        case .inviteFamily: return "Invite Family"
+        case .createTask:   return String(localized: "create_a_task")
+        case .askMAI:       return String(localized: "meet_mai")
+        case .inviteFamily: return String(localized: "invite_family")
         }
     }
     
     var message: String {
         switch self {
         case .createTask:
-            return "Start here — create a task for yourself or assign one to a family member."
+            return String(localized: "tour_create_task_message")
         case .askMAI:
-            return "Need help? Ask MAI to create tasks, check homework, or plan your week — just type what you need."
+            return String(localized: "tour_ask_mai_message")
         case .inviteFamily:
-            return "Invite your family to start collaborating. Share the code and everyone's connected."
+            return String(localized: "tour_invite_family_message")
         }
     }
     
@@ -209,31 +209,42 @@ struct TourOverlay: View {
             if tourManager.isActive, let step = tourManager.currentStep {
                 let targetRect = resolveTarget(step: step, in: geo)
                 
-                ZStack {
-                    // Dimmed backdrop with spotlight cutout
-                    SpotlightCutout(targetRect: targetRect, cornerRadius: 12)
-                        .fill(Color.black.opacity(colorScheme == .dark ? 0.7 : 0.55))
-                        .ignoresSafeArea()
-                        .onTapGesture { tourManager.next() }
-                    
-                    // Highlight border around target
-                    if let rect = targetRect {
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.accentPrimary, lineWidth: 2.5)
-                            .frame(width: rect.width + 12, height: rect.height + 12)
-                            .position(x: rect.midX, y: rect.midY)
+                // If the current step's target is gone (e.g., user created a task
+                // and the CTA disappeared), auto-advance to the next step.
+                if targetRect == nil {
+                    Color.clear.onAppear {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .seconds(0.3))
+                            tourManager.next()
+                        }
                     }
-                    
-                    // Tooltip card
-                    TourTooltip(
-                        step: step,
-                        targetRect: targetRect,
-                        containerSize: geo.size,
-                        safeArea: geo.safeAreaInsets
-                    )
-                    .environment(tourManager)
+                } else {
+                    ZStack {
+                        // Dimmed backdrop with spotlight cutout
+                        SpotlightCutout(targetRect: targetRect, cornerRadius: 12)
+                            .fill(Color.black.opacity(colorScheme == .dark ? 0.7 : 0.55))
+                            .ignoresSafeArea()
+                            .onTapGesture { tourManager.next() }
+                        
+                        // Highlight border around target
+                        if let rect = targetRect {
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.accentPrimary, lineWidth: 2.5)
+                                .frame(width: rect.width + 12, height: rect.height + 12)
+                                .position(x: rect.midX, y: rect.midY)
+                        }
+                        
+                        // Tooltip card
+                        TourTooltip(
+                            step: step,
+                            targetRect: targetRect,
+                            containerSize: geo.size,
+                            safeArea: geo.safeAreaInsets
+                        )
+                        .environment(tourManager)
+                    }
+                    .transition(.opacity)
                 }
-                .transition(.opacity)
             }
         }
     }
@@ -313,7 +324,7 @@ struct TourTooltip: View {
                 // Progress + buttons
                 HStack {
                     // Step counter
-                    Text("\(tourManager.stepIndex + 1) of \(tourManager.totalSteps)")
+                    Text(AppStrings.stepOfTotal(tourManager.stepIndex + 1, tourManager.totalSteps))
                         .font(DS.Typography.captionMedium())
                         .foregroundStyle(.textTertiary)
                     
@@ -329,7 +340,7 @@ struct TourTooltip: View {
                     
                     // Next / Done
                     Button(action: tourManager.next) {
-                        Text(tourManager.isLastStep ? "Done" : "Next")
+                        Text(tourManager.isLastStep ? String(localized: "done") : String(localized: "next"))
                             .font(DS.Typography.label())
                             .foregroundStyle(.textOnAccent)
                             .padding(.horizontal, DS.Spacing.lg)

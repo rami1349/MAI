@@ -1,8 +1,16 @@
 //
 //  NotificationsView.swift
-//  
+//  PURPOSE:
+//    In-app notification list. Shows task assignments, event updates,
+//    reward earnings, and system messages. Supports mark-all-read
+//    and delete-all actions.
 //
-//  Notifications list with swipe-to-delete
+//  ARCHITECTURE ROLE:
+//    Modal list — presented from notification bell badge.
+//    Reads NotificationViewModel from environment.
+//
+//  DATA FLOW:
+//    NotificationViewModel → notifications, markAllRead(), deleteAll()
 //
 
 import SwiftUI
@@ -58,8 +66,8 @@ struct NotificationsView: View {
     private var emptyState: some View {
         EmptyStateView(
             icon: "bell.slash",
-            title: "noNotifications",
-            message: "noNotificationsMessage"
+            title: "no_notifications",
+            message: "no_notifications_message"
         )
     }
     
@@ -102,7 +110,7 @@ struct NotificationCardView: View {
         case .dailySummary: return "chart.bar.doc.horizontal"
         case .eventUpdated: return "pencil"
         case .eventCanceled: return "trash"
-
+        case .memberJoined: return "person.2.badge.gearshape"
         }
     }
     
@@ -121,7 +129,7 @@ struct NotificationCardView: View {
         case .dailySummary: return Color.accentTertiary
         case .eventUpdated: return Color.accentPrimary
         case .eventCanceled: return Color.accentRed
-
+        case .memberJoined: return Color.accentPrimary
         }
     }
     

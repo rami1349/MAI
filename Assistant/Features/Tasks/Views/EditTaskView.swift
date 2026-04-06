@@ -2,17 +2,17 @@
 //  EditTaskView.swift
 //  Assistant
 //
-//  CONSISTENCY FIX: Converted from Form to ScrollView layout to match
-//  AddTaskView, AddEventView, EditEventView pattern.
+//  PURPOSE:
+//    Modal form for editing an existing task. Pre-populates all fields
+//    from the task model and saves changes via FamilyViewModel.
 //
-//  Changes:
-//  - Form → ScrollView + VStack(spacing: DS.Spacing.xl)
-//  - AdaptiveBackgroundView → Color.themeSurfacePrimary
-//  - Color.backgroundCard → Color.themeCardBackground
-//  - Unstyled toolbar buttons → styled with DS.Typography
-//  - .navigationTitle → custom .principal toolbar item
-//  - System Form sections → manual card-styled sections
-//  - Added .constrainedWidth(.form) for iPad
+//  ARCHITECTURE ROLE:
+//    Form modal — presented from TaskDetailView.
+//    Calls FamilyViewModel.updateTask() on save.
+//
+//  DATA FLOW:
+//    FamilyTask (input) → pre-filled fields
+//    FamilyViewModel → updateTask()
 //
 
 import SwiftUI
@@ -209,19 +209,6 @@ struct EditTaskView: View {
                         .stroke(focusedField == .title ? Color.accentPrimary : Color.themeCardBorder,
                                 lineWidth: focusedField == .title ? 2 : 1)
                 )
-            
-            // Hint for homework
-            if taskType == .homework {
-                HStack(spacing: DS.Spacing.xxs) {
-                    Image("samy")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
-                    Text("ai_will_identify_subject")
-                        .font(DS.Typography.caption())
-                }
-                .foregroundStyle(.accentPrimary)
-            }
             
             TextField("description_optional", text: $description, axis: .vertical)
                 .font(DS.Typography.body())
@@ -523,6 +510,9 @@ struct EditTaskView: View {
         updated.title = title.trimmingCharacters(in: .whitespaces)
         updated.description = description.isEmpty ? nil : description
         updated.assignedTo = assignedTo
+        // FIX: Sync assignees array with assignedTo to prevent multi-assignee data loss.
+        // Without this, editing a task with 3 assignees would silently drop all but one.
+        updated.assignees = [assignedTo].compactMap { $0 }
         updated.groupId = selectedGroupId
         updated.dueDate = dueDate
         updated.scheduledTime = hasScheduledTime ? scheduledTime : nil

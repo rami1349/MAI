@@ -1,4 +1,3 @@
-// ============================================================================
 // HabitViewModel.swift
 //
 //
@@ -35,7 +34,6 @@
 //   - FirebaseFirestore — habit and log persistence
 //   - FirestoreDecode   — off-main-thread Codable decoding helper
 //
-// ============================================================================
 
 import Foundation
 import Observation
@@ -431,4 +429,3 @@ final class HabitViewModel {
         }
     }
 }
-

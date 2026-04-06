@@ -168,8 +168,18 @@ final class HomeDerivedState {
         }
         let fp = hasher.finalize()
         
-        // Always rebuild events (they have their own data source)
+        // Always rebuild events (they have their own data source, not in fingerprint)
         rebuildWeekEvents(upcomingEvents)
+        
+        // FIX: todayTomorrowEvents was AFTER the fingerprint guard. Since the
+        // fingerprint only hashes tasks/members/groups (not events), new events
+        // never triggered a rebuild and the Home screen showed stale event data.
+        todayTomorrowEvents = Array(
+            upcomingEvents
+                .filter { $0.daysUntil <= 1 }
+                .sorted { $0.date < $1.date }
+                .prefix(5)
+        )
         
         guard fp != lastFingerprint else { return }
         lastFingerprint = fp
@@ -296,14 +306,6 @@ final class HomeDerivedState {
             pendingVerificationTasks: myPendingVerificationTasks,
             overdueTasks: overdueTasks,
             pendingPayoutAmount: pendingPayoutAmount
-        )
-        
-        // ── v2 Slot 5: Today/Tomorrow Events ─────────────────────────
-        todayTomorrowEvents = Array(
-            upcomingEvents
-                .filter { $0.daysUntil <= 1 }
-                .sorted { $0.date < $1.date }
-                .prefix(5)
         )
         
         // Build search index

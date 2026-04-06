@@ -97,7 +97,7 @@ struct AddHabitView: View {
             }
             
             VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-                Text(name.isEmpty ? "Habit Name" : name)
+                Text(name.isEmpty ? String(localized: "habit_name_placeholder") : name)
                     .font(DS.Typography.subheading())
                     .foregroundStyle(name.isEmpty ? .textTertiary : .textPrimary)
                 Text("track_daily")

@@ -1,8 +1,4 @@
-// ============================================================================
 // VerificationModels.swift
-// 
-//
-// UNIFIED AI VERIFICATION MODELS
 //
 // This file consolidates duplicate verification types that were in:
 // - ChatViewModel.swift (ChatVerificationResult, ChatAIRecommendation, etc.)
@@ -44,8 +40,8 @@ enum AIRecommendation: String, Codable {
     var title: String {
         switch self {
         case .approve: return "looksCorrect"
-        case .review: return "needsReviewLabel"
-        case .unclear: return "unclearLabel"
+        case .review: return "needs_review_label"
+        case .unclear: return "unclear_label"
         case .cannotVerify: return "cannotVerify"
         }
     }
@@ -90,10 +86,10 @@ enum QuestionAssessment: String, Codable {
     
     var accessibilityLabel: String {
         switch self {
-        case .likelyCorrect: return "likelyCorrectLabel"
-        case .likelyIncorrect: return "likelyIncorrectLabel"
-        case .uncertain: return "uncertainLabel"
-        case .needsReview: return "needsReviewLabel"
+        case .likelyCorrect: return "likely_correct_label"
+        case .likelyIncorrect: return "likely_incorrect_label"
+        case .uncertain: return "uncertain_label"
+        case .needsReview: return "needs_review_label"
         }
     }
 }
@@ -215,7 +211,7 @@ struct VerificationAnalysis: Codable, Hashable {
         if let estimate = scoreEstimate {
             return estimate
         }
-        guard totalQuestions > 0 else { return "N/A" }
+        guard totalQuestions > 0 else { return String(localized: "n_a") }
         return "\(likelyCorrect)/\(totalQuestions)"
     }
 }

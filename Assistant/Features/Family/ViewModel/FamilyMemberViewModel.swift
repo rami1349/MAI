@@ -1,12 +1,17 @@
 //
 //  FamilyMemberViewModel.swift
+//  PURPOSE:
+//    Family membership manager. Handles member list, profile updates,
+//    capability/permission changes, task group CRUD, and family
+//    metadata (name, invite code).
 //
+//  ARCHITECTURE ROLE:
+//    Domain ViewModel — child of FamilyViewModel.
+//    The "directory" VM — other VMs reference it for member names.
 //
-//  ViewModel for family and member management - uses Firestore directly
-//
-//  PATCHES APPLIED:
-//  - #PERF-1: Off-main-thread Firestore decoding via FirestoreDecode helper
-//  - #PERF-2: Batched updates to prevent re-render storms
+//  DATA FLOW:
+//    Firestore families/{id} + /members → real-time listeners
+//    Outbound: familyMembers, family, taskGroups
 //
 
 import Foundation
@@ -149,7 +154,7 @@ final class FamilyMemberViewModel {
     
     func deleteTaskGroup(_ group: TaskGroup, deleteRelatedTasks: Bool = true) async {
         guard let id = group.id else {
-            errorMessage = "Cannot delete group: invalid ID"
+            errorMessage = String(localized: "error_cannot_delete_group")
             return
         }
         

@@ -47,7 +47,7 @@ extension FamilyViewModel {
                 ])
             
         } catch {
-            errorMessage = "Failed to save focus session"
+            errorMessage = String(localized: "error_save_focus_session")
         }
     }
 }

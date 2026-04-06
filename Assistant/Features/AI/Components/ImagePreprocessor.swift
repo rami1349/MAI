@@ -1,6 +1,6 @@
 //
 //  ImagePreprocessor.swift
-//  
+//
 //
 //  Vision Framework preprocessing for homework verification photos.
 //  Improves AI accuracy by 10-15% on poor quality images.
@@ -357,11 +357,11 @@ enum PreprocessingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidImage:
-            return "Invalid image format"
+            return String(localized: "error_invalid_image")
         case .processingFailed:
-            return "Image processing failed"
+            return String(localized: "image_processing_failed")
         case .compressionFailed:
-            return "Image compression failed"
+            return String(localized: "image_compression_failed")
         }
     }
 }

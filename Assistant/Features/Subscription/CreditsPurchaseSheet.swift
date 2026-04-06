@@ -10,6 +10,19 @@
 //    - Hardcoded "$X.XX/credit" uses user's locale currency format
 //    - Modern Swift 6 concurrency patterns
 //
+//
+//
+//  PURPOSE:
+//    Credit purchase sheet. Shows available credit packages with
+//    prices and a buy button. Includes upgrade-to-premium upsell.
+//
+//  ARCHITECTURE ROLE:
+//    Modal sheet — presented when user needs more AI credits.
+//    Reads SubscriptionManager for packages and purchase flow.
+//
+//  DATA FLOW:
+//    SubscriptionManager → creditPackages, purchaseCredits()
+//
 
 import SwiftUI
 
@@ -51,7 +64,7 @@ struct CreditsPurchaseSheet: View {
                         Circle()
                             .fill(Color.accentGreen)
                             .frame(width: 6, height: 6)
-                        Text("credits_remaining \(store.aiCredits)")
+                        Text("\(store.aiCredits) \(String(localized: "credits_remaining"))")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
                     }
@@ -120,7 +133,7 @@ struct CreditsPurchaseSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.title3)
+                            .font(DS.Typography.heading())
                             .foregroundStyle(.textTertiary)
                     }
                 }
@@ -169,7 +182,7 @@ struct CreditsPurchaseSheet: View {
 
                     if pkg.credits > 0, let product = pkg.product {
                         let perCredit = product.price / Decimal(pkg.credits)
-                        Text("per_credit \(perCredit.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD")))")
+                        Text("\(perCredit.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD"))) / \(String(localized: "credit"))")
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textTertiary)
                     }

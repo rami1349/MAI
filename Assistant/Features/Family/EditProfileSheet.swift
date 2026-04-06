@@ -6,6 +6,20 @@
 //
 //  Profile editing sheet with avatar, name, DOB, and yearly goal
 //
+//
+//
+//  PURPOSE:
+//    Profile editing form. Supports avatar change, date of birth,
+//    yearly goal with preset suggestions, and display name.
+//
+//  ARCHITECTURE ROLE:
+//    Form modal — presented from FamilyView or MeView.
+//    Calls FamilyMemberViewModel.updateProfile().
+//
+//  DATA FLOW:
+//    AuthViewModel → currentUser
+//    FamilyMemberViewModel → updateProfile()
+//
 
 import SwiftUI
 import PhotosUI
@@ -18,16 +32,14 @@ struct EditProfileSheet: View {
     
     @State private var displayName: String = ""
     @State private var goal: String = ""
-    @State private var dateOfBirth: Date = Date()
+    @State private var dateOfBirth: Date = .now
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var avatarImage: UIImage?
     @State private var isLoading = false
     @State private var showDatePicker = false
     
     private var currentYear: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        return formatter.string(from: Date())
+        Date.now.formatted(.dateTime.year())
     }
     
     var body: some View {
@@ -50,7 +62,7 @@ struct EditProfileSheet: View {
                             
                             PhotosPicker(selection: $selectedPhoto, matching: .images) {
                                 Text("change_photo")
-                                    .font(.subheadline)
+                                    .font(DS.Typography.bodySmall())
                                     .foregroundStyle(.accentPrimary)
                             }
                         }
@@ -77,9 +89,9 @@ struct EditProfileSheet: View {
                     
                     if showDatePicker {
                         DatePicker(
-                            "Date of Birth",
+                            "date_of_birth",
                             selection: $dateOfBirth,
-                            in: ...Date(),
+                            in: ...Date.now,
                             displayedComponents: .date
                         )
                         .datePickerStyle(.wheel)
@@ -111,17 +123,17 @@ struct EditProfileSheet: View {
                 
                 // Goal Suggestions
                 Section("goal_ideas") {
-                    GoalSuggestionButton(text: "Exercise regularly and stay healthy") {
-                        goal = "Exercise regularly and stay healthy"
+                    GoalSuggestionButton(text: String(localized: "goal_exercise")) {
+                        goal = String(localized: "goal_exercise")
                     }
-                    GoalSuggestionButton(text: "Save money and be financially responsible") {
-                        goal = "Save money and be financially responsible"
+                    GoalSuggestionButton(text: String(localized: "goal_save_money")) {
+                        goal = String(localized: "goal_save_money")
                     }
-                    GoalSuggestionButton(text: "Complete all my assigned tasks on time") {
-                        goal = "Complete all my assigned tasks on time"
+                    GoalSuggestionButton(text: String(localized: "goal_complete_tasks")) {
+                        goal = String(localized: "goal_complete_tasks")
                     }
-                    GoalSuggestionButton(text: "Spend more quality time with family") {
-                        goal = "Spend more quality time with family"
+                    GoalSuggestionButton(text: String(localized: "goal_family_time")) {
+                        goal = String(localized: "goal_family_time")
                     }
                 }
             }
@@ -208,7 +220,7 @@ struct GoalSuggestionButton: View {
         Button(action: action) {
             HStack {
                 Text(text)
-                    .font(.subheadline)
+                    .font(DS.Typography.bodySmall())
                     .foregroundStyle(.textPrimary)
                     .multilineTextAlignment(.leading)
                 Spacer()

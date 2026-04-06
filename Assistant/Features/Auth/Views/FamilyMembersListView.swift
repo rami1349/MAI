@@ -31,11 +31,11 @@ struct FamilyMembersListView: View {
                             .font(.system(size: DS.IconSize.xxl)) // DT-exempt: decorative icon
                             .foregroundStyle(.accentPrimary)
                         
-                        Text("\(familyMemberVM.familyMembers.count) Members")
+                        Text(AppStrings.xMembers(familyMemberVM.familyMembers.count))
                             .font(.headline)
                             .foregroundStyle(.textPrimary)
                         
-                        Text(familyMemberVM.family?.name ?? "My Family")
+                        Text(familyMemberVM.family?.name ?? String(localized: "my_family"))
                             .font(.subheadline)
                             .foregroundStyle(.textSecondary)
                     }

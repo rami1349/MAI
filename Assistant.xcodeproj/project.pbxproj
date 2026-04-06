@@ -15,6 +15,7 @@
 		253ED1B12F55F35F003E1CEC /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 253ED1B02F55F35F003E1CEC /* FirebaseMessaging */; };
 		253ED1B32F55F35F003E1CEC /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 253ED1B22F55F35F003E1CEC /* FirebaseStorage */; };
 		253ED1B62F55F375003E1CEC /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 253ED1B52F55F375003E1CEC /* GoogleSignInSwift */; };
+		256AEF0A2F7DC52100555551 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 256AEF092F7DC52000555551 /* StoreKit.framework */; };
 		25989D502F6B265F00D6E12F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 25989D4F2F6B265F00D6E12F /* FirebaseCrashlytics */; };
 		25989D582F6B270400D6E12F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 25989D572F6B270400D6E12F /* FirebaseAnalytics */; };
 		25989D5A2F6B273600D6E12F /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 25989D592F6B273600D6E12F /* FirebaseRemoteConfig */; };
@@ -41,6 +42,7 @@
 		253EC9A62E4B352200A4A5A9 /* Assistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Assistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		253EC9B32E4B352300A4A5A9 /* AssistantTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AssistantTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		253EC9BD2E4B352300A4A5A9 /* AssistantUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AssistantUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		256AEF092F7DC52000555551 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +71,7 @@
 				25989D5A2F6B273600D6E12F /* FirebaseRemoteConfig in Frameworks */,
 				253ED1B12F55F35F003E1CEC /* FirebaseMessaging in Frameworks */,
 				253ED1AB2F55F35F003E1CEC /* FirebaseDatabase in Frameworks */,
+				256AEF0A2F7DC52100555551 /* StoreKit.framework in Frameworks */,
 				253ED1AD2F55F35F003E1CEC /* FirebaseFirestore in Frameworks */,
 				253ED1B62F55F375003E1CEC /* GoogleSignInSwift in Frameworks */,
 				253ED1AF2F55F35F003E1CEC /* FirebaseFunctions in Frameworks */,
@@ -121,6 +124,7 @@
 		25989D4E2F6B265F00D6E12F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				256AEF092F7DC52000555551 /* StoreKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

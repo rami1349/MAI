@@ -524,6 +524,58 @@ enum AppStrings {
         format("x_to_review", count)
     }
 
+    // ── AI Usage ─────────────────────────────────────────────
+
+    static func usedAllDailyAiActions(_ count: Int) -> String {
+        format("used_all_daily_ai_actions", count)
+    }
+
+    static func actionsLeftToday(_ count: Int) -> String {
+        format("actions_left_today", count)
+    }
+
+    // ── Feature Tour ─────────────────────────────────────────
+
+    static func stepOfTotal(_ step: Int, _ total: Int) -> String {
+        format("step_of_total", step, total)
+    }
+
+    // ── Credits & Chat ───────────────────────────────────────
+
+    static func creditsLeft(_ count: Int) -> String {
+        format("credits_left", count)
+    }
+
+    // ── Proof & Files ────────────────────────────────────────
+
+    static func filesCountSize(_ count: Int, _ current: String, _ max: String) -> String {
+        format("files_count_size", count, current, max)
+    }
+
+    // ── Task Stats ───────────────────────────────────────────
+
+    static func correctAnswersCount(_ count: Int) -> String {
+        format("correct_answers_count", count)
+    }
+
+    static func xTasks(_ count: Int) -> String {
+        format("x_tasks", count)
+    }
+
+    static func xDone(_ count: Int) -> String {
+        format("x_done", count)
+    }
+
+    // ── Accessibility ────────────────────────────────────────
+
+    static func addNewItem(_ item: String) -> String {
+        format("add_new_item", item)
+    }
+
+    static func doubleTapToCreate(_ item: String) -> String {
+        format("double_tap_to_create", item)
+    }
+
     // MARK: - Day Name Array Helper
 
     /// Day abbreviations indexed by Calendar weekday (1 = Sun … 7 = Sat).

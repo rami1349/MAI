@@ -1,11 +1,16 @@
 //
 //  HabitTrackerView.swift
-//  
+//  PURPOSE:
+//    Habit management and visualization screen. Shows daily toggle
+//    grid, week/month/year heat-map views, stats cards, and
+//    supports habit creation and deletion.
 //
-//  Adaptive habit tracker with iPad grid layout.
-//  - iPhone: Vertical list of habits
-//  - iPad: Grid layout with larger habit cards
-//  - Hover effects, context menus
+//  ARCHITECTURE ROLE:
+//    Feature screen — reached from MeView or Home habits widget.
+//    Reads HabitViewModel from environment.
+//
+//  DATA FLOW:
+//    HabitViewModel → habits, toggleCompletion(), addHabit(), deleteHabit()
 //
 
 import SwiftUI
@@ -307,21 +312,21 @@ struct HabitTrackerView: View {
         
         return HStack(spacing: DS.Spacing.lg) {
             iPadStatCard(
-                title: "Today",
+                title: String(localized: "today"),
                 value: "\(todayCompleted)/\(habitVM.habits.count)",
                 color: Color.accentPrimary,
                 icon: "checkmark.circle"
             )
             
             iPadStatCard(
-                title: "This Week",
+                title: String(localized: "this_week"),
                 value: "\(weekStreak) days",
                 color: Color.accentGreen,
                 icon: "flame"
             )
             
             iPadStatCard(
-                title: "Total Habits",
+                title: String(localized: "total_habits"),
                 value: "\(habitVM.habits.count)",
                 color: Color.accentTertiary,
                 icon: "repeat"
@@ -444,7 +449,7 @@ struct HabitTrackerView: View {
                     habitVM.isHabitCompleted(habitId: habit.id ?? "", date: date)
                 }.count
                 
-                Text("\(completedThisWeek)/\(weekDates.count) this week")
+                Text(AppStrings.thisWeekHabits(completedThisWeek, weekDates.count))
                     .font(.caption)
                     .foregroundStyle(.textSecondary)
                 
@@ -486,7 +491,7 @@ struct HabitTrackerView: View {
             habitToDelete = habit
             showDeleteConfirm = true
         } label: {
-            Label("deleteHabit", systemImage: "trash")
+            Label("delete_habit", systemImage: "trash")
         }
     }
     

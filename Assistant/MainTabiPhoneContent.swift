@@ -16,23 +16,23 @@
 import SwiftUI
 
 struct MainTabiPhoneContent: View {
-
+    
     // ── Router (owned by AssistantApp, injected via .environment) ──
     @Environment(NavigationRouter.self) private var router
-
+    
     // ── Environment ──
     @Environment(AuthViewModel.self) private var authViewModel
     @Environment(FamilyViewModel.self) private var familyViewModel
     @Environment(FamilyMemberViewModel.self) private var familyMemberVM
     @Environment(TaskViewModel.self) private var taskVM
     @Environment(NotificationViewModel.self) private var notificationVM
-
+    
     // MARK: - Derived
-
+    
     private var isMAIActive: Bool { router.selectedTab == .mai }
-
+    
     // MARK: - Body
-
+    
     var body: some View {
         @Bindable var router = router
         
@@ -40,7 +40,7 @@ struct MainTabiPhoneContent: View {
             // LAYER 1: Main content with tab bar
             mainTabContent
                 .opacity(isMAIActive ? 0 : 1)
-
+            
             // LAYER 2: Full-screen MAI (overlays when active)
             if isMAIActive {
                 maiFullScreen
@@ -49,9 +49,9 @@ struct MainTabiPhoneContent: View {
         }
         .animation(.easeInOut(duration: 0.2), value: isMAIActive)
     }
-
+    
     // MARK: - Main Tab Content
-
+    
     private var mainTabContent: some View {
         @Bindable var router = router
         
@@ -82,7 +82,7 @@ struct MainTabiPhoneContent: View {
                 }
             }
             .tag(NavigationItem.home)
-
+            
             // ── Calendar ─────────────────────────────────────
             NavigationStack(path: $router.calendarPath) {
                 CalendarView()
@@ -101,11 +101,11 @@ struct MainTabiPhoneContent: View {
                     }
             }
             .tag(NavigationItem.calendar)
-
+            
             // ── MAI (placeholder — actual UI is overlay) ─────
             Color.clear
                 .tag(NavigationItem.mai)
-
+            
             // ── Tasks (pure execution) ────────────────────────
             NavigationStack(path: $router.tasksPath) {
                 TasksView()
@@ -124,7 +124,7 @@ struct MainTabiPhoneContent: View {
                     }
             }
             .tag(NavigationItem.tasks)
-
+            
             // ── Me (personal hub) ─────────────────────────────
             NavigationStack(path: $router.mePath) {
                 MeView()
@@ -146,9 +146,9 @@ struct MainTabiPhoneContent: View {
             customTabBar
         }
     }
-
+    
     // MARK: - MAI Full Screen
-
+    
     private var maiFullScreen: some View {
         NavigationStack {
             AIChatView(onBack: {
@@ -160,9 +160,9 @@ struct MainTabiPhoneContent: View {
         }
         .background(Color(.systemBackground))
     }
-
+    
     // MARK: - Home "+" Menu (all creation options)
-
+    
     private var homeCreateMenu: some View {
         Menu {
             Button(action: { router.present(.addTask()) }) {
@@ -184,9 +184,9 @@ struct MainTabiPhoneContent: View {
                 .foregroundStyle(.accentPrimary)
         }
     }
-
+    
     // MARK: - Context "+" Button
-
+    
     private func contextPlusButton(action: @escaping () -> Void) -> some View {
         Button(action: {
             DS.Haptics.light()
@@ -197,9 +197,9 @@ struct MainTabiPhoneContent: View {
                 .foregroundStyle(.accentPrimary)
         }
     }
-
+    
     // MARK: - Custom Tab Bar
-
+    
     private var customTabBar: some View {
         HStack(spacing: 0) {
             ForEach(NavigationItem.phoneTabs) { item in
@@ -234,12 +234,12 @@ struct MainTabiPhoneContent: View {
                 .ignoresSafeArea(edges: .bottom)
         )
     }
-
+    
     // MARK: - MAI Tab Button (Raised Center)
-
+    
     private var maiTabButton: some View {
         let isSelected = router.selectedTab == .mai
-
+        
         return Button(action: {
             DS.Haptics.selection()
             withAnimation(.easeInOut(duration: 0.15)) {
@@ -252,8 +252,8 @@ struct MainTabiPhoneContent: View {
                         .fill(
                             LinearGradient(
                                 colors: isSelected
-                                    ? [Color.accentPrimary, .purple]
-                                    : [Color.accentPrimary.opacity(0.8), Color.purple.opacity(0.6)],
+                                ? [Color.accentPrimary, .purple]
+                                : [Color.accentPrimary.opacity(0.8), Color.purple.opacity(0.6)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -264,14 +264,14 @@ struct MainTabiPhoneContent: View {
                             radius: isSelected ? 8 : 4,
                             y: isSelected ? 3 : 2
                         )
-
+                    
                     Image("samy")
                         .resizable()
                         .scaledToFit()
                         .frame(width: DS.IconSize.xl, height: DS.IconSize.xl)
                 }
                 .offset(y: -8)
-
+                
                 Text("mai")
                     .font(DS.Typography.micro())
                     .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
@@ -282,9 +282,9 @@ struct MainTabiPhoneContent: View {
         }
         .buttonStyle(.plain)
     }
-
+    
     // MARK: - Helpers
-
+    
     private func badgeCount(for item: NavigationItem) -> Int {
         switch item {
         case .home:  notificationVM.unreadCount
@@ -301,7 +301,7 @@ struct TabBarButton: View {
     let isSelected: Bool
     let badge: Int
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: {
             DS.Haptics.selection()
@@ -313,7 +313,7 @@ struct TabBarButton: View {
                         .font(DS.Typography.body())
                         .fontWeight(isSelected ? .semibold : .regular)
                         .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)
-
+                    
                     if badge > 0 {
                         Circle()
                             .fill(Color.red)
@@ -321,7 +321,7 @@ struct TabBarButton: View {
                             .offset(x: 3, y: -2)
                     }
                 }
-
+                
                 Text(LocalizedStringKey(item.localizationKey))
                     .font(DS.Typography.micro())
                     .foregroundStyle(isSelected ? .accentPrimary : .textTertiary)

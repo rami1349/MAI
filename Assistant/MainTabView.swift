@@ -23,18 +23,18 @@ struct MainTabView: View {
     @Environment(NotificationViewModel.self) var notificationVM
     @Environment(TourManager.self) var tourManager
     @Environment(NavigationRouter.self) var router
-
+    
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
+    
     // State restoration: persist selected tab across launches
     @SceneStorage("selectedTab") private var persistedTab: String = NavigationItem.home.rawValue
-
+    
     private var isRegularWidth: Bool {
         horizontalSizeClass == .regular
     }
-
+    
     // MARK: - Body
-
+    
     var body: some View {
         @Bindable var familyViewModel = familyViewModel
         @Bindable var router = router
@@ -57,7 +57,7 @@ struct MainTabView: View {
         .onReceive(NotificationCenter.default.publisher(for: .deepLinkTask)) { notification in
             if let taskId = notification.userInfo?["taskId"] as? String,
                let task = familyViewModel.taskVM.task(byStableId: taskId)
-                           ?? familyViewModel.taskVM.allTasks.first(where: { $0.id == taskId }) {
+                ?? familyViewModel.taskVM.allTasks.first(where: { $0.id == taskId }) {
                 router.present(.taskDetail(task))
             }
         }
@@ -86,9 +86,9 @@ struct MainTabView: View {
             persistedTab = newTab.rawValue
         }
     }
-
+    
     // MARK: - Centralized Sheet Content
-
+    
     @ViewBuilder
     private func sheetContent(for sheet: AppSheet) -> some View {
         switch sheet {
@@ -118,19 +118,22 @@ struct MainTabView: View {
             PaywallView()
         }
     }
-
+    
     // MARK: - Data Loading
-
+    
     private func loadInitialData() async {
         guard let user = authViewModel.currentUser,
               let familyId = user.familyId,
               let userId = user.id else { return }
-
+        
         await familyViewModel.loadFamilyData(familyId: familyId, userId: userId)
-
+        
         let calendar = Calendar.current
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: .now))!
-        let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth)!
+        // FIX: Use start of NEXT month as exclusive upper bound.
+        // DateComponents(month: 1, day: -1) gave last-day-at-midnight, excluding
+        // any event ON the last day because query is startDate < end.
+        let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
         await familyViewModel.loadCalendarEvents(from: startOfMonth, to: endOfMonth)
         await familyViewModel.loadHabitLogs(from: startOfMonth, to: endOfMonth)
     }

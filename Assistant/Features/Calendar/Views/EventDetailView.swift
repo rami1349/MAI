@@ -1,11 +1,17 @@
 //
 //  EventDetailView.swift
 //
+//  PURPOSE:
+//    Full detail screen for a calendar event. Shows time, duration,
+//    participants, notes, and edit/delete actions.
 //
-//  UNICORN REDESIGN - Clean, focused event details
-//  - Hero color header with event title
-//  - Clean info cards with consistent styling
-//  - Streamlined actions
+//  ARCHITECTURE ROLE:
+//    Detail view — reached from calendar agenda tap.
+//    Presents EditEventView and confirms deletion.
+//
+//  DATA FLOW:
+//    CalendarEvent (input) → display
+//    FamilyViewModel → deleteEvent()
 //
 
 import SwiftUI
@@ -14,6 +20,7 @@ struct EventDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(FamilyViewModel.self) var familyViewModel
     @Environment(FamilyMemberViewModel.self) var familyMemberVM
+    @Environment(CalendarViewModel.self) var calendarVM
     
     let event: CalendarEvent
     
@@ -23,19 +30,25 @@ struct EventDetailView: View {
     
     private let calendar = Calendar.current
     
+    /// Live event from the Firestore listener — reflects edits immediately.
+    /// Falls back to the original `event` if it's been deleted.
+    private var liveEvent: CalendarEvent {
+        calendarVM.events.first(where: { $0.id == event.id }) ?? event
+    }
+    
     // MARK: - Computed Properties
     
     private var isMultiDayEvent: Bool {
-        !calendar.isDate(event.startDate, inSameDayAs: event.endDate)
+        !calendar.isDate(liveEvent.startDate, inSameDayAs: liveEvent.endDate)
     }
     
     private var numberOfDays: Int {
-        let days = calendar.dateComponents([.day], from: event.startDate, to: event.endDate).day ?? 0
+        let days = calendar.dateComponents([.day], from: liveEvent.startDate, to: liveEvent.endDate).day ?? 0
         return max(days, 1)
     }
     
     private var durationText: String {
-        let components = calendar.dateComponents([.day, .hour, .minute], from: event.startDate, to: event.endDate)
+        let components = calendar.dateComponents([.day, .hour, .minute], from: liveEvent.startDate, to: liveEvent.endDate)
         
         if let days = components.day, days > 0 {
             if let hours = components.hour, hours > 0 {
@@ -54,7 +67,7 @@ struct EventDetailView: View {
     }
     
     private var eventColor: Color {
-        Color(hex: event.color.replacingOccurrences(of: "#", with: ""))
+        Color(hex: liveEvent.color.replacingOccurrences(of: "#", with: ""))
     }
     
     // MARK: - Body
@@ -72,12 +85,12 @@ struct EventDetailView: View {
                         dateTimeCard
                         
                         // Description (if exists)
-                        if let description = event.description, !description.isEmpty {
+                        if let description = liveEvent.description, !description.isEmpty {
                             notesCard(description)
                         }
                         
                         // Participants
-                        if !event.participants.isEmpty {
+                        if !liveEvent.participants.isEmpty {
                             participantsCard
                         }
                         
@@ -113,7 +126,7 @@ struct EventDetailView: View {
                 Text("action_cannot_be_undone")
             }
             .sheet(isPresented: $showEditEvent) {
-                EditEventView(event: event)
+                EditEventView(event: liveEvent)
                     .presentationBackground(Color.themeSurfacePrimary)
             }
         }
@@ -130,7 +143,7 @@ struct EventDetailView: View {
                 .frame(maxWidth: 60)
             
             // Event title
-            Text(event.title)
+            Text(liveEvent.title)
                 .font(DS.Typography.displayMedium())
                 .foregroundStyle(.textPrimary)
                 .multilineTextAlignment(.center)
@@ -138,7 +151,7 @@ struct EventDetailView: View {
             
             // Quick time summary
             HStack(spacing: DS.Spacing.sm) {
-                Image(systemName: event.isAllDay ? "sun.max.fill" : "clock.fill")
+                Image(systemName: liveEvent.isAllDay ? "sun.max.fill" : "clock.fill")
                     .font(DS.Typography.body())
                     .foregroundStyle(eventColor)
                 
@@ -159,30 +172,25 @@ struct EventDetailView: View {
     }
     
     private var quickTimeSummary: String {
-        let dateFormatter = DateFormatter()
-        
-        if calendar.isDateInToday(event.startDate) {
-            if event.isAllDay {
-                return "today_all_day"
+        if calendar.isDateInToday(liveEvent.startDate) {
+            if liveEvent.isAllDay {
+                return AppStrings.localized("today_all_day")
             }
-            let timeFormatter = DateFormatter()
-            timeFormatter.dateFormat = "h:mm a"
-            return "\(AppStrings.localized("today")), \(timeFormatter.string(from: event.startDate))"
-        } else if calendar.isDateInTomorrow(event.startDate) {
-            if event.isAllDay {
+            let time = liveEvent.startDate.formatted(date: .omitted, time: .shortened)
+            return "\(AppStrings.localized("today")), \(time)"
+        } else if calendar.isDateInTomorrow(liveEvent.startDate) {
+            if liveEvent.isAllDay {
                 return AppStrings.localized("tomorrow_all_day")
             }
-            let timeFormatter = DateFormatter()
-            timeFormatter.dateFormat = "h:mm a"
-            return "\(AppStrings.localized("tomorrow")), \(timeFormatter.string(from: event.startDate))"
+            let time = liveEvent.startDate.formatted(date: .omitted, time: .shortened)
+            return "\(AppStrings.localized("tomorrow")), \(time)"
         } else {
-            dateFormatter.dateFormat = "EEE, MMM d"
-            if event.isAllDay {
-                return dateFormatter.string(from: event.startDate)
+            if liveEvent.isAllDay {
+                return liveEvent.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
             }
-            let timeFormatter = DateFormatter()
-            timeFormatter.dateFormat = "h:mm a"
-            return "\(dateFormatter.string(from: event.startDate)), \(timeFormatter.string(from: event.startDate))"
+            let date = liveEvent.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+            let time = liveEvent.startDate.formatted(date: .omitted, time: .shortened)
+            return "\(date), \(time)"
         }
     }
     
@@ -199,7 +207,7 @@ struct EventDetailView: View {
             }
             
             // Duration (if not all-day single day)
-            if !event.isAllDay || isMultiDayEvent {
+            if !liveEvent.isAllDay || isMultiDayEvent {
                 Divider().padding(.leading, 48)
                 
                 HStack(spacing: DS.Spacing.md) {
@@ -239,17 +247,17 @@ struct EventDetailView: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: DS.Spacing.xxs) {
-                Text(formatDate(event.startDate))
+                Text(formatDate(liveEvent.startDate))
                     .font(DS.Typography.body())
                     .fontWeight(.medium)
                     .foregroundStyle(.textPrimary)
                 
-                if event.isAllDay {
+                if liveEvent.isAllDay {
                     Text("all_day")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 } else {
-                    Text("\(event.startDate.formattedTime) – \(event.endDate.formattedTime)")
+                    Text("\(liveEvent.startDate.formattedTime) – \(liveEvent.endDate.formattedTime)")
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textSecondary)
                 }
@@ -274,13 +282,13 @@ struct EventDetailView: View {
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                     
-                    Text(formatDate(event.startDate))
+                    Text(formatDate(liveEvent.startDate))
                         .font(DS.Typography.body())
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
                     
-                    if !event.isAllDay {
-                        Text(event.startDate.formattedTime)
+                    if !liveEvent.isAllDay {
+                        Text(liveEvent.startDate.formattedTime)
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
                     }
@@ -313,13 +321,13 @@ struct EventDetailView: View {
                         .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                     
-                    Text(formatDate(event.endDate))
+                    Text(formatDate(liveEvent.endDate))
                         .font(DS.Typography.body())
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
                     
-                    if !event.isAllDay {
-                        Text(event.endDate.formattedTime)
+                    if !liveEvent.isAllDay {
+                        Text(liveEvent.endDate.formattedTime)
                             .font(DS.Typography.caption())
                             .foregroundStyle(.textSecondary)
                     }
@@ -379,7 +387,7 @@ struct EventDetailView: View {
                 
                 Spacer()
                 
-                Text("\(event.participants.count)")
+                Text("\(liveEvent.participants.count)")
                     .font(DS.Typography.badge())
                     .foregroundStyle(.accentPrimary)
                     .padding(.horizontal, 8)
@@ -392,7 +400,7 @@ struct EventDetailView: View {
             // Participant avatars
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DS.Spacing.md) {
-                    ForEach(event.participants, id: \.self) { participantId in
+                    ForEach(liveEvent.participants, id: \.self) { participantId in
                         if let member = familyMemberVM.familyMembers.first(where: { $0.id == participantId }) {
                             VStack(spacing: DS.Spacing.xs) {
                                 AvatarView(user: member, size: DS.Avatar.md)
@@ -472,17 +480,14 @@ struct EventDetailView: View {
     // MARK: - Helpers
     
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        
         if calendar.isDateInToday(date) {
-            return "today"
+            return String(localized: "today")
         } else if calendar.isDateInTomorrow(date) {
-            return "tomorrow"
+            return String(localized: "tomorrow")
         } else if calendar.isDateInYesterday(date) {
-            return "yesterday"
+            return String(localized: "yesterday")
         } else {
-            formatter.dateFormat = "EEEE, MMMM d"
-            return formatter.string(from: date)
+            return date.formatted(.dateTime.weekday(.wide).month(.wide).day())
         }
     }
     
@@ -491,7 +496,7 @@ struct EventDetailView: View {
         isDeleting = true
         
         Task {
-            await familyViewModel.deleteEvent(event)
+            await familyViewModel.deleteEvent(liveEvent)
             isDeleting = false
             dismiss()
         }

@@ -195,4 +195,4 @@ struct HomeCompactTaskRow: View {
     .padding()
     .background(Color.themeSurfacePrimary)
 }
- 
+

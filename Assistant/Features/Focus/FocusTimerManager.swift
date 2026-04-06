@@ -122,12 +122,12 @@ final class FocusTimerManager {
         if !isBreak {
             currentSession = FocusSession(
                 taskId: taskId,
-                startedAt: Date(),
+                startedAt: .now,
                 plannedDurationSeconds: totalSeconds
             )
         }
         
-        startTime = Date()
+        startTime = .now
         state = .running
         startTimer()
         persistState()
@@ -150,7 +150,7 @@ final class FocusTimerManager {
         
         timer?.invalidate()
         timer = nil
-        pausedTime = Date()
+        pausedTime = .now
         state = .paused
         
         // Cancel scheduled notification
@@ -162,7 +162,7 @@ final class FocusTimerManager {
         guard state == .paused else { return }
         
         if let paused = pausedTime {
-            accumulatedPauseTime += Date().timeIntervalSince(paused)
+            accumulatedPauseTime += Date.now.timeIntervalSince(paused)
         }
         pausedTime = nil
         
@@ -182,7 +182,7 @@ final class FocusTimerManager {
         if var session = currentSession, state == .running || state == .paused {
             session.wasInterrupted = true
             session.actualDurationSeconds = elapsedSeconds
-            session.endedAt = Date()
+            session.endedAt = .now
             currentSession = session
         }
         
@@ -205,7 +205,7 @@ final class FocusTimerManager {
         if var session = currentSession {
             session.wasCompleted = true
             session.actualDurationSeconds = totalSeconds
-            session.endedAt = Date()
+            session.endedAt = .now
             currentSession = session
         }
         
@@ -284,7 +284,7 @@ final class FocusTimerManager {
         
         // Recalculate remaining time based on actual elapsed time
         if state == .running, let start = startTime {
-            let elapsed = Date().timeIntervalSince(start) - accumulatedPauseTime
+            let elapsed = Date.now.timeIntervalSince(start) - accumulatedPauseTime
             let newRemaining = max(0, totalSeconds - Int(elapsed))
             
             if newRemaining != remainingSeconds {
@@ -315,8 +315,12 @@ final class FocusTimerManager {
     // MARK: - Local Notifications
     private func scheduleCompletionNotification() {
         let content = UNMutableNotificationContent()
-        content.title = isBreakMode ? "Break Complete! " : "Focus Session Complete! "
-        content.body = isBreakMode ? "Ready to get back to work?" : "Great job! Take a break or continue."
+        content.title = isBreakMode
+            ? String(localized: "notif_break_complete")
+            : String(localized: "notif_focus_complete")
+        content.body = isBreakMode
+            ? String(localized: "notif_break_complete_body")
+            : String(localized: "notif_focus_complete_body")
         content.sound = UNNotificationSound(named: UNNotificationSoundName("timer_complete.aiff"))
         content.categoryIdentifier = "FOCUS_TIMER"
         
@@ -520,7 +524,7 @@ final class FocusTimerManager {
             startTime = restoredStartTime
             
             // Calculate actual remaining time
-            let elapsed = Date().timeIntervalSince(restoredStartTime) - accumulatedPauseTime
+            let elapsed = Date.now.timeIntervalSince(restoredStartTime) - accumulatedPauseTime
             remainingSeconds = max(0, totalSeconds - Int(elapsed))
             
             if remainingSeconds > 0 {

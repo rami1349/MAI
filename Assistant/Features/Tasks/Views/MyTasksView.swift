@@ -239,77 +239,84 @@ struct MyTasksView: View {
         .padding(.bottom, DS.Spacing.md)
     }
 
-    // MARK: - Filter Chips (Ownership + Groups)
+    // MARK: - Filter Toolbar (Ownership + Folder Pickers)
 
     private var filterChipsSection: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DS.Spacing.sm) {
-                // Ownership chips
+        HStack(spacing: DS.Spacing.sm) {
+            // Ownership picker
+            Menu {
                 ForEach(OwnershipFilter.allCases, id: \.self) { filter in
-                    FilterChip(
-                        title: filter.label,
-                        isSelected: selectedOwnership == filter
-                    ) {
+                    Button {
                         withAnimation(.easeInOut(duration: 0.15)) {
                             selectedOwnership = filter
                         }
+                    } label: {
+                        if selectedOwnership == filter {
+                            Label(filter.label, systemImage: "checkmark")
+                        } else {
+                            Text(filter.label)
+                        }
+                    }
+                }
+            } label: {
+                PickerPill(
+                    icon: "person.fill",
+                    text: selectedOwnership.label
+                )
+            }
+
+            // Folder picker
+            Menu {
+                // "All Folders" option
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        selectedGroupId = nil
+                    }
+                } label: {
+                    if selectedGroupId == nil {
+                        Label(String(localized: "all_folders"), systemImage: "checkmark")
+                    } else {
+                        Text(String(localized: "all_folders"))
                     }
                 }
 
-                // Group chips (tap = filter, long-press = view/delete)
                 if !visibleGroups.isEmpty {
-                    Circle()
-                        .fill(Color.textTertiary.opacity(0.3))
-                        .frame(width: 4, height: 4)
+                    Divider()
 
                     ForEach(visibleGroups, id: \.id) { group in
-                        IconFilterChip(
-                            title: group.name,
-                            icon: group.icon,
-                            isSelected: selectedGroupId == group.id
-                        ) {
+                        Button {
                             withAnimation(.easeInOut(duration: 0.15)) {
                                 selectedGroupId = selectedGroupId == group.id ? nil : group.id
                             }
-                        }
-                        .contextMenu {
-                            Button {
-                                showGroupDetail = group
-                            } label: {
-                                Label("view_group", systemImage: "folder")
-                            }
-                            Button(role: .destructive) {
-                                Task { await familyViewModel.deleteTaskGroup(group) }
-                            } label: {
-                                Label("delete", systemImage: "trash")
+                        } label: {
+                            Label {
+                                Text(group.name)
+                            } icon: {
+                                Image(systemName: selectedGroupId == group.id ? "checkmark" : group.icon)
                             }
                         }
                     }
                 }
 
-                // Create group chip
-                Button(action: { showCreateGroup = true }) {
-                    HStack(spacing: DS.Spacing.xs) {
-                        Image(systemName: "plus")
-                            .font(DS.Typography.caption())
-                        Text("new_group")
-                            .font(DS.Typography.captionMedium())
-                    }
-                    .foregroundStyle(.accentPrimary)
-                    .padding(.horizontal, DS.Spacing.md)
-                    .padding(.vertical, DS.Spacing.sm)
-                    .background(
-                        Capsule()
-                            .strokeBorder(
-                                Color.accentPrimary.opacity(0.3),
-                                style: StrokeStyle(lineWidth: 1, dash: [4, 3])
-                            )
-                    )
+                Divider()
+
+                Button {
+                    showCreateGroup = true
+                } label: {
+                    Label(String(localized: "new_group"), systemImage: "folder.badge.plus")
                 }
-                .buttonStyle(.plain)
+            } label: {
+                PickerPill(
+                    icon: "folder.fill",
+                    text: selectedGroupId.flatMap { id in
+                        visibleGroups.first { $0.id == id }?.name
+                    } ?? String(localized: "all_folders")
+                )
             }
-            .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
+
+            Spacer()
         }
+        .padding(.horizontal, DS.Layout.adaptiveScreenPadding)
         .padding(.bottom, DS.Spacing.md)
     }
 
@@ -409,6 +416,40 @@ struct MyTasksView: View {
     private func groupName(for task: FamilyTask) -> String {
         guard let id = task.groupId else { return "" }
         return familyMemberVM.getTaskGroup(by: id)?.name ?? ""
+    }
+}
+
+// MARK: - Picker Pill (compact dropdown trigger)
+
+private struct PickerPill: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        HStack(spacing: DS.Spacing.xs) {
+            Image(systemName: icon)
+                .font(.system(size: 11))
+                .foregroundStyle(.accentPrimary)
+
+            Text(text)
+                .font(DS.Typography.captionMedium())
+                .foregroundStyle(.textPrimary)
+                .lineLimit(1)
+
+            Image(systemName: "chevron.up.chevron.down")
+                .font(.system(size: 9))
+                .foregroundStyle(.textTertiary)
+        }
+        .padding(.horizontal, DS.Spacing.md)
+        .padding(.vertical, DS.Spacing.sm)
+        .background(
+            Capsule()
+                .fill(Color.themeCardBackground)
+        )
+        .overlay(
+            Capsule()
+                .stroke(Color.themeCardBorder, lineWidth: 0.5)
+        )
     }
 }
 

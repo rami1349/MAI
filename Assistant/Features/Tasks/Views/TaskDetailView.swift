@@ -1,6 +1,22 @@
 //
 //  TaskDetailView.swift
 //
+//
+//
+//  PURPOSE:
+//    Full detail screen for a single task. Shows status, assignee,
+//    due date, proof submissions, MAI analysis results, focus timer
+//    link, and parent approval/rejection controls.
+//
+//  ARCHITECTURE ROLE:
+//    Detail view — the deepest navigation destination in the task flow.
+//    Reads task from TaskViewModel, triggers proof/verification actions.
+//
+//  DATA FLOW:
+//    TaskViewModel → task lookup, status updates
+//    HomeworkVerificationViewModel → AI analysis display
+//    FamilyViewModel → approve/reject/complete actions
+//
 
 import SwiftUI
 import UIKit
@@ -190,7 +206,7 @@ struct TaskDetailView: View {
             // Task type badge
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: task.taskType?.icon ?? "checklist")
-                Text(task.taskType?.displayName ?? "Task")
+                Text(task.taskType?.displayName ?? String(localized: "task"))
             }
             .font(DS.Typography.caption())
             
@@ -228,12 +244,12 @@ struct TaskDetailView: View {
     private func titleSection(task: FamilyTask) -> some View {
         VStack(alignment: .leading, spacing: DS.Spacing.sm) {
             Text(task.title)
-                .font(.title2)
+                .font(DS.Typography.displayMedium())
                 .foregroundStyle(.textPrimary)
             
             if let description = task.description, !description.isEmpty {
                 Text(description)
-                    .font(.body)
+                    .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
             }
         }
@@ -287,7 +303,7 @@ struct TaskDetailView: View {
             
             // Show homework subject if applicable
             if task.taskType == .homework, let subject = task.homeworkSubject {
-                infoRow(icon: "book.fill", label: "Subject") {
+                infoRow(icon: "book.fill", label: String(localized: "subject")) {
                     Text(subject.displayName)
                         .foregroundStyle(.textPrimary)
                 }
@@ -480,7 +496,7 @@ struct TaskDetailView: View {
                             
                             .foregroundStyle(confidenceColor(Double(computedStats.scorePercent) / 100.0))
                         Text("score")
-                            .font(.caption2)
+                            .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                     }
                 } else {
@@ -489,8 +505,8 @@ struct TaskDetailView: View {
                             .font(DS.Typography.caption())
                             
                             .foregroundStyle(confidenceColor(verification.confidence))
-                        Text("conf.")
-                            .font(.caption2)
+                        Text("confidence_short")
+                            .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                     }
                 }
@@ -499,15 +515,15 @@ struct TaskDetailView: View {
             // Score breakdown — derived from actual questions array
             if computedStats.total > 0 {
                 HStack(spacing: DS.Spacing.lg) {
-                    statItem(value: "\(computedStats.correct)", label: "Correct", color: Color.accentGreen)
+                    statItem(value: "\(computedStats.correct)", label: String(localized: "correct"), color: Color.accentGreen)
                     if computedStats.wrong > 0 {
-                        statItem(value: "\(computedStats.wrong)", label: "Wrong", color: .red)
+                        statItem(value: "\(computedStats.wrong)", label: String(localized: "wrong"), color: .red)
                     }
                     if computedStats.uncertain > 0 {
-                        statItem(value: "\(computedStats.uncertain)", label: "Uncertain", color: .orange)
+                        statItem(value: "\(computedStats.uncertain)", label: String(localized: "uncertain"), color: .orange)
                     }
                     Spacer()
-                    statItem(value: "\(computedStats.correct)/\(computedStats.total)", label: "Score", color: Color.textPrimary)
+                    statItem(value: "\(computedStats.correct)/\(computedStats.total)", label: String(localized: "score"), color: Color.textPrimary)
                 }
             }
             
@@ -527,9 +543,9 @@ struct TaskDetailView: View {
             // Disclaimer
             HStack(spacing: DS.Spacing.xs) {
                 Image(systemName: "info.circle")
-                    .font(.caption2)
+                    .font(DS.Typography.micro())
                 Text("mai_may_make_mistakes_parent_has_final_say")
-                    .font(.caption2)
+                    .font(DS.Typography.micro())
             }
             .foregroundStyle(.textTertiary)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -547,11 +563,11 @@ struct TaskDetailView: View {
     
     private func recommendationMessage(_ recommendation: String) -> String {
         switch recommendation {
-        case "approve": return "Looks correct!"
-        case "review": return "Some issues found"
-        case "unclear": return "Couldn't read clearly"
-        case "cannot_verify": return "Can't verify this type"
-        default: return "Analysis complete"
+        case "approve": return String(localized: "looks_correct")
+        case "review": return String(localized: "some_issues_found")
+        case "unclear": return String(localized: "couldnt_read_clearly")
+        case "cannot_verify": return String(localized: "cant_verify_this_type")
+        default: return String(localized: "analysis_complete")
         }
     }
     
@@ -634,7 +650,7 @@ struct TaskDetailView: View {
                         questionRow(q, isCorrect: true)
                     }
                 } label: {
-                    Text("\(correct.count) correct answers")
+                    Text(AppStrings.correctAnswersCount(correct.count))
                         .font(DS.Typography.caption())
                         
                         .foregroundStyle(.accentGreen)
@@ -668,10 +684,10 @@ struct TaskDetailView: View {
                 if let student = q.studentAnswer, !student.isEmpty {
                     HStack(spacing: 4) {
                         Text("answer")
-                            .font(.caption2)
+                            .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                         Text("student")
-                            .font(.caption2)
+                            .font(DS.Typography.micro())
                             .foregroundStyle(isCorrect ? .accentGreen : .red)
                     }
                 }
@@ -679,7 +695,7 @@ struct TaskDetailView: View {
                 if !isCorrect, let expected = q.expectedAnswer, !expected.isEmpty {
                     HStack(spacing: 4) {
                         Text("expected")
-                            .font(.caption2)
+                            .font(DS.Typography.micro())
                             .foregroundStyle(.textTertiary)
                     }
                 }
@@ -687,7 +703,7 @@ struct TaskDetailView: View {
                 // Note if any
                 if let note = q.note, !note.isEmpty, !isCorrect {
                     Text(note)
-                        .font(.caption2)
+                        .font(DS.Typography.micro())
                         .foregroundStyle(.textSecondary)
                         .italic()
                 }
@@ -703,7 +719,7 @@ struct TaskDetailView: View {
                 
                 .foregroundStyle(color)
             Text(label)
-                .font(.caption2)
+                .font(DS.Typography.micro())
                 .foregroundStyle(.textSecondary)
         }
     }
@@ -848,11 +864,11 @@ struct TaskDetailView: View {
     
     private func guidanceMessage(_ recommendation: String) -> String {
         switch recommendation {
-        case "approve": return "MAI suggests approving – looks good!"
-        case "review": return "MAI found some issues – please check"
-        case "unclear": return "MAI couldn't read clearly – check manually"
-        case "cannot_verify": return "MAI can't verify – use your judgment"
-        default: return "Review and decide"
+        case "approve": return String(localized: "mai_suggests_approving")
+        case "review": return String(localized: "mai_found_issues")
+        case "unclear": return String(localized: "mai_couldnt_read")
+        case "cannot_verify": return String(localized: "mai_cant_verify")
+        default: return String(localized: "review_and_decide")
         }
     }
     
@@ -1014,7 +1030,7 @@ struct TaskDetailView: View {
         await authViewModel.refreshCurrentUser()
         
         isApproving = false
-        toast = .success("Task approved!")
+        toast = .success(String(localized: "task_approved"))
         DS.Haptics.success()
         
         try? await Task.sleep(for: .seconds(0.5))
@@ -1032,7 +1048,7 @@ struct TaskDetailView: View {
         )
         
         isRejecting = false
-        toast = .info("Sent back for redo")
+        toast = .info(String(localized: "sent_back_for_redo"))
         DS.Haptics.warning()
     }
     

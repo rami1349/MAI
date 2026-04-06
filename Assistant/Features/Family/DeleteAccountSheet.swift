@@ -1,8 +1,16 @@
 //
 //  DeleteAccountSheet.swift
+//  PURPOSE:
+//    Account deletion confirmation flow. Requires password re-entry
+//    and shows warnings about permanent data loss.
 //
+//  ARCHITECTURE ROLE:
+//    Destructive modal — presented from SettingsView.
+//    Calls AccountDeletionService for server-side cleanup.
 //
-//  Sheet for confirming account deletion with reauthentication support
+//  DATA FLOW:
+//    AuthViewModel → re-authenticate
+//    AccountDeletionService → deleteAccount()
 //
 
 import SwiftUI
@@ -34,34 +42,34 @@ struct DeleteAccountSheet: View {
                 
                 // Title
                 Text("delete_account")
-                    .font(.title2)
+                    .font(DS.Typography.displayMedium())
                     .fontWeight(.bold)
                     .foregroundStyle(.textPrimary)
                 
                 // Warning message
                 VStack(spacing: DS.Spacing.md) {
                     Text("delete_account_permanent")
-                        .font(.subheadline)
+                        .font(DS.Typography.bodySmall())
                         .foregroundStyle(.textSecondary)
                         .multilineTextAlignment(.center)
                     
                     Text("delete_account_removes")
-                        .font(.subheadline)
+                        .font(DS.Typography.bodySmall())
                         .fontWeight(.medium)
                         .foregroundStyle(.textPrimary)
                     
                     VStack(alignment: .leading, spacing: DS.Spacing.sm) {
-                        deleteWarningItem("Your profile and account")
-                        deleteWarningItem("All your habits and habit history")
-                        deleteWarningItem("All tasks you created")
-                        deleteWarningItem("Calendar events you created")
-                        deleteWarningItem("Your notifications")
-                        deleteWarningItem("You will be removed from your family")
+                        deleteWarningItem(String(localized: "delete_warn_profile"))
+                        deleteWarningItem(String(localized: "delete_warn_habits"))
+                        deleteWarningItem(String(localized: "delete_warn_tasks"))
+                        deleteWarningItem(String(localized: "delete_warn_events"))
+                        deleteWarningItem(String(localized: "delete_warn_notifications"))
+                        deleteWarningItem(String(localized: "delete_warn_family"))
                     }
                     .padding(.horizontal)
                     
                     Text("tasks_unassigned_note")
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .foregroundStyle(.textTertiary)
                         .italic()
                 }
@@ -107,17 +115,17 @@ struct DeleteAccountSheet: View {
     private var confirmationStep: some View {
         VStack(spacing: DS.Spacing.lg) {
             Text(AppStrings.typeToConfirm(requiredConfirmation))
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.textSecondary)
             
             TextField("type_delete_placeholder", text: $confirmText)
                 .textFieldStyle(.roundedBorder)
-                .autocapitalization(.allCharacters)
+                .textInputAutocapitalization(.characters)
                 .padding(.horizontal)
             
             if let error = authViewModel.errorMessage {
                 Text(error)
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.accentRed)
                     .padding(.horizontal)
             }
@@ -151,16 +159,16 @@ struct DeleteAccountSheet: View {
     private var reauthenticationStep: some View {
         VStack(spacing: DS.Spacing.lg) {
             Text("reenter_password")
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.textSecondary)
             
-            SecureField("Password", text: $password)
+            SecureField("password", text: $password)
                 .textFieldStyle(.roundedBorder)
                 .padding(.horizontal)
             
             if let error = authViewModel.errorMessage {
                 Text(error)
-                    .font(.caption)
+                    .font(DS.Typography.caption())
                     .foregroundStyle(.accentRed)
                     .padding(.horizontal)
             }
@@ -201,7 +209,7 @@ struct DeleteAccountSheet: View {
                 authViewModel.errorMessage = nil
                 authViewModel.needsReauthentication = false
             }
-            .font(.subheadline)
+            .font(DS.Typography.bodySmall())
             .foregroundStyle(.textSecondary)
         }
     }
@@ -213,7 +221,7 @@ struct DeleteAccountSheet: View {
                 .scaleEffect(1.5)
             
             Text("deleting_account")
-                .font(.subheadline)
+                .font(DS.Typography.bodySmall())
                 .foregroundStyle(.textSecondary)
         }
         .padding(.top, DS.Spacing.xl)
@@ -225,9 +233,9 @@ struct DeleteAccountSheet: View {
         HStack(alignment: .top, spacing: DS.Spacing.sm) {
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.accentRed)
-                .font(.caption)
+                .font(DS.Typography.caption())
             Text(text)
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textSecondary)
         }
     }

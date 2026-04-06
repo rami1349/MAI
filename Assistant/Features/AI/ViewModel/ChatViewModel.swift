@@ -1,5 +1,20 @@
-// ============================================================================
 // ChatViewModel.swift
+//
+//
+//  PURPOSE:
+//    AI chat message state and streaming manager. Handles message
+//    send/receive, conversation history, daily limit enforcement,
+//    credit consumption, and tool-use action parsing.
+//
+//  ARCHITECTURE ROLE:
+//    Feature ViewModel — owned by AIChatView.
+//    Communicates with StreamingChatService for SSE streaming.
+//
+//  DATA FLOW:
+//    StreamingChatService → SSE message stream
+//    SubscriptionManager → limit/credit checks
+//    Firestore → conversation persistence
+//
 
 import SwiftUI
 import FirebaseFunctions
@@ -848,7 +863,7 @@ final class ChatViewModel {
         
         var errorDescription: String? {
             switch self {
-            case .invalidResponse: return "Invalid response"
+            case .invalidResponse: return String(localized: "error_invalid_response")
             case .retryable(let msg, _): return msg
             case .nonRetryable(let msg): return msg
             }

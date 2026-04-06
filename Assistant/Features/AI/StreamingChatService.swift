@@ -1,12 +1,8 @@
-// ============================================================================
 // StreamingChatService.swift
-// 
+//
 //
 // Service for handling Server-Sent Events (SSE) streaming from AI chat
 // Provides real-time response streaming instead of waiting for complete response
-//
-// FIXED: Removed @MainActor from class, using thread-safe buffer with NSLock
-// ============================================================================
 
 import Foundation
 import Observation
@@ -229,7 +225,7 @@ final class StreamingChatService: NSObject {
             
         case "error":
             isStreaming = false
-            let message = data["message"] as? String ?? "Unknown error"
+            let message = data["message"] as? String ?? String(localized: "error_unknown")
             let canRetry = data["canRetry"] as? Bool ?? false
             let streamError = StreamError.serverError(message)
             error = streamError
@@ -272,15 +268,15 @@ final class StreamingChatService: NSObject {
         var errorDescription: String? {
             switch self {
             case .notAuthenticated:
-                return "Please sign in to chat"
+                return String(localized: "please_sign_in_to_chat")
             case .connectionFailed:
-                return "Could not connect to server"
+                return String(localized: "could_not_connect")
             case .serverError(let message):
                 return message
             case .timeout:
-                return "Request timed out"
+                return String(localized: "request_timed_out")
             case .cancelled:
-                return "Request was cancelled"
+                return String(localized: "request_cancelled")
             }
         }
     }

@@ -17,17 +17,17 @@ struct QuickHabitsWidget: View {
     @State private var togglingHabits: Set<String> = []
     
     private let calendar = Calendar.current
-    private let today = Date()
+    private let today = Date.now
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: DS.Spacing.lg) {
             // Header
             HStack {
                 Image(systemName: "flame.fill")
                     .foregroundStyle(.accentOrange)
                 
-                Text("todays_Habits")
-                    .font(.headline)
+                Text("todays_habits")
+                    .font(DS.Typography.subheading())
                     .fontWeight(.bold)
                     .foregroundStyle(.textPrimary)
                 
@@ -38,7 +38,7 @@ struct QuickHabitsWidget: View {
                 let total = habitVM.habits.count
                 if total > 0 {
                     Text("\(completed)/\(total)")
-                        .font(.caption)
+                        .font(DS.Typography.caption())
                         .fontWeight(.medium)
                         .foregroundStyle(completed == total ? .accentGreen : .textSecondary)
                         .padding(.horizontal, 8)
@@ -90,9 +90,9 @@ struct QuickHabitsWidget: View {
                   }
               }
           }
-          .padding(16)
+          .padding(DS.Spacing.lg)
           .background(
-              RoundedRectangle(cornerRadius: 16)
+              RoundedRectangle(cornerRadius: DS.Radius.xl)
                   .fill(Color.backgroundCard)
           )
           .elevation1()
@@ -114,14 +114,14 @@ struct QuickHabitsWidget: View {
     private var emptyStateView: some View {
         VStack(spacing: 8) {
             Image(systemName: "plus.circle.dashed")
-                .font(.title)
+                .font(DS.Typography.heading())
                 .foregroundStyle(.textTertiary)
             Text("no_habits_short")
-                .font(.subheadline)
+                .font(DS.Typography.label())
                 .fontWeight(.medium)
                 .foregroundStyle(.textPrimary)
             Text("add_habits_to_track")
-                .font(.caption)
+                .font(DS.Typography.caption())
                 .foregroundStyle(.textTertiary)
         }
         .frame(maxWidth: .infinity)
@@ -181,7 +181,7 @@ struct QuickHabitRow: View {
                 
                 // Habit name
                 Text(habit.name)
-                    .font(.subheadline)
+                    .font(DS.Typography.label())
                     .fontWeight(.medium)
                     .foregroundStyle(isCompleted ? .textSecondary : .textPrimary)
                     .strikethrough(isCompleted, color: Color.textSecondary)

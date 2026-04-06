@@ -1,12 +1,22 @@
 //
 //  RewardWalletView.swift
 //
-//
-//  UNICORN REDESIGN - Unified Reward System
-//
 //  INDIVIDUAL PAYOUT REQUESTS:
 //  - Request payout → Targets specific person
 //  - Each request is independent per assigner
+//
+//  PURPOSE:
+//    Reward wallet screen. Shows balance, recent earnings history,
+//    who-owes-you ledger, and payout request management for
+//    both parents (approve/reject) and children (request).
+//
+//  ARCHITECTURE ROLE:
+//    Feature modal — presented from FamilyView or MeView.
+//    Reads RewardViewModel from environment.
+//
+//  DATA FLOW:
+//    RewardViewModel → balance, transactions, pendingWithdrawals
+//    FamilyViewModel → approvePayout(), rejectPayout()
 //
 
 import SwiftUI
@@ -552,7 +562,7 @@ private struct PayoutRequestCard: View {
                 reviewerName: payerName
             )
             
-    
+            
             await notificationVM.notifyPayoutApproved(
                 requesterId: request.userId,
                 payerName: payerName,

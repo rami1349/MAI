@@ -75,6 +75,11 @@ final class AuthViewModel {
     /// Cleared at the start of each operation via `withLoading(_:)`.
     var errorMessage: String?
     
+    /// Identifies which input field the current error relates to.
+    /// Used by AuthenticationView to highlight the correct field red.
+    /// Set alongside `errorMessage` in `handleAuthError(_:)`.
+    var errorField: AuthErrorField?
+    
     /// Prevents the login screen from flashing on a cold start when the user
     /// is already authenticated. Set to `true` after the auth listener fires
     /// for the first time (for both logged-in and logged-out states).
@@ -238,7 +243,8 @@ final class AuthViewModel {
     private func withLoading<T>(_ operation: () async throws -> T) async rethrows -> T {
         isLoading = true
         errorMessage = nil
-        defer { isLoading = false } // Guaranteed cleanup regardless of exit path
+        errorField = nil
+        defer { isLoading = false }
         return try await operation()
     }
     
@@ -353,17 +359,18 @@ final class AuthViewModel {
     
     /// Sends a password reset email to the specified address.
     ///
-    /// Firebase will deliver a reset link only if the email is registered.
-    /// For security, the UI should show a generic success message regardless
-    /// of whether the address exists (prevents user enumeration).
-    ///
-    /// - Parameter email: The email address to send the reset link to.
+    /// Shows a generic success message regardless of whether the email exists
+    /// (prevents user enumeration attacks).
+    var resetPasswordSent = false
+    
     func resetPassword(email: String) async {
         await withLoading {
             do {
                 try await Auth.auth().sendPasswordReset(withEmail: email)
+                resetPasswordSent = true
             } catch {
-                errorMessage = error.localizedDescription
+                // Show generic success to prevent user enumeration
+                resetPasswordSent = true
             }
         }
     }
@@ -386,7 +393,7 @@ final class AuthViewModel {
         await withLoading {
             do {
                 guard let presentingVC = Self.getPresentingViewController() else {
-                    errorMessage = "Unable to get root view controller"
+                    errorMessage = String(localized: "error_unable_root_vc")
                     return
                 }
                 
@@ -395,7 +402,7 @@ final class AuthViewModel {
                 
                 // Exchange Google tokens for a Firebase Auth credential
                 guard let idToken = result.user.idToken?.tokenString else {
-                    errorMessage = "Failed to get Google ID token"
+                    errorMessage = String(localized: "error_google_token")
                     return
                 }
                 
@@ -414,7 +421,7 @@ final class AuthViewModel {
                     let newUser = FamilyUser(
                         id: authResult.user.uid,
                         email: authResult.user.email ?? "",
-                        displayName: googleUser.profile?.name ?? "User",
+                        displayName: googleUser.profile?.name ?? String(localized: "default_user_name"),
                         avatarURL: googleUser.profile?.imageURL(withDimension: 200)?.absoluteString,
                         dateOfBirth: Date(),
                         familyId: nil,
@@ -429,7 +436,7 @@ final class AuthViewModel {
                 // Auth listener handles isAuthenticated + currentUser population
                 
             } catch {
-                errorMessage = error.localizedDescription
+                handleAuthError(error)
             }
         }
     }
@@ -474,7 +481,7 @@ final class AuthViewModel {
                     let newUser = FamilyUser(
                         id: authResult.user.uid,
                         email: authResult.user.email ?? "",
-                        displayName: name.isEmpty ? "Apple User" : name,
+                        displayName: name.isEmpty ? String(localized: "default_user_name") : name,
                         avatarURL: nil,     // Apple does not provide profile photos
                         dateOfBirth: Date(),
                         familyId: nil,
@@ -488,7 +495,7 @@ final class AuthViewModel {
                 }
                 
             } catch {
-                errorMessage = error.localizedDescription
+                handleAuthError(error)
             }
         }
     }
@@ -512,7 +519,7 @@ final class AuthViewModel {
     ///   the reauth prompt and unblock the pending sensitive operation.
     func reauthenticate(email: String, password: String) async -> Bool {
         guard let user = Auth.auth().currentUser else {
-            errorMessage = "No user logged in"
+            errorMessage = String(localized: "error_no_user")
             return false
         }
         
@@ -538,14 +545,14 @@ final class AuthViewModel {
     /// - Returns: `true` if reauthentication succeeded; `false` otherwise.
     func reauthenticateWithGoogle() async -> Bool {
         guard let user = Auth.auth().currentUser else {
-            errorMessage = "No user logged in"
+            errorMessage = String(localized: "error_no_user")
             return false
         }
         
         return await withLoading {
             do {
                 guard let presentingVC = Self.getPresentingViewController() else {
-                    errorMessage = "Unable to get root view controller"
+                    errorMessage = String(localized: "error_unable_root_vc")
                     return false
                 }
                 
@@ -553,7 +560,7 @@ final class AuthViewModel {
                 let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: presentingVC)
                 
                 guard let idToken = result.user.idToken?.tokenString else {
-                    errorMessage = "Failed to get Google ID token"
+                    errorMessage = String(localized: "error_google_token")
                     return false
                 }
                 
@@ -580,7 +587,7 @@ final class AuthViewModel {
     /// - Returns: `true` if reauthentication succeeded; `false` otherwise.
     func reauthenticateWithApple(idTokenString: String, nonce: String) async -> Bool {
         guard let user = Auth.auth().currentUser else {
-            errorMessage = "No user logged in"
+            errorMessage = String(localized: "error_no_user")
             return false
         }
         
@@ -622,7 +629,7 @@ final class AuthViewModel {
     /// - Other errors: Surfaced via `errorMessage`.
     func deleteAccount() async {
         guard let userId = currentUser?.id else {
-            errorMessage = "No user logged in"
+            errorMessage = String(localized: "error_no_user")
             return
         }
         
@@ -747,21 +754,29 @@ final class AuthViewModel {
         
         switch nsError.code {
         case AuthErrorCode.emailAlreadyInUse.rawValue:
-            errorMessage = "This email is already registered. Please sign in instead."
+            errorMessage = String(localized: "error_email_registered")
+            errorField = .email
         case AuthErrorCode.invalidEmail.rawValue:
-            errorMessage = "Please enter a valid email address."
+            errorMessage = String(localized: "error_invalid_email")
+            errorField = .email
         case AuthErrorCode.weakPassword.rawValue:
-            errorMessage = "Password must be at least 6 characters."
+            errorMessage = String(localized: "error_password_short")
+            errorField = .password
         case AuthErrorCode.wrongPassword.rawValue:
-            errorMessage = "Incorrect password. Please try again."
+            errorMessage = String(localized: "error_wrong_password")
+            errorField = .password
         case AuthErrorCode.userNotFound.rawValue:
-            errorMessage = "No account found with this email."
+            errorMessage = String(localized: "error_no_account")
+            errorField = .email
         case AuthErrorCode.networkError.rawValue:
-            errorMessage = "Network error. Please check your connection."
+            errorMessage = String(localized: "error_network")
+            errorField = .both
         case AuthErrorCode.tooManyRequests.rawValue:
-            errorMessage = "Too many attempts. Please try again later."
+            errorMessage = String(localized: "error_too_many_attempts")
+            errorField = .both
         default:
             errorMessage = error.localizedDescription
+            errorField = .both
         }
     }
     

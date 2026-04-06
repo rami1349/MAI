@@ -232,7 +232,7 @@ actor FamilyManagementService {
             // (onNotificationCreated trigger will send FCM push)
             let existingMembers = familyDoc.data()["memberIds"] as? [String] ?? []
             for memberId in existingMembers where memberId != userId {
-                try? await db.collection("notifications").addDocument(data: [
+                _ = try? await db.collection("notifications").addDocument(data: [
                     "userId": memberId,
                     "familyId": familyId,
                     "type": "memberJoined",

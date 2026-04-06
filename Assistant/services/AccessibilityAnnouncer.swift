@@ -220,8 +220,8 @@ struct AccessibleFABButton: View {
                     .foregroundStyle(.textOnAccent)
             }
         }
-        .accessibilityLabel("Add new \(contextLabel)")
-        .accessibilityHint("Double tap to create a new \(contextLabel)")
+        .accessibilityLabel(AppStrings.addNewItem(contextLabel))
+        .accessibilityHint(AppStrings.doubleTapToCreate(contextLabel))
         .accessibilityIdentifier("fab_add_button")
     }
 }
@@ -477,7 +477,7 @@ extension View {
         AccessibleFABButton(action: {}, contextLabel: "task")
         
         // Test Dynamic Type scaling
-        Text( "dynamicTypeTest")
+        Text("dynamic_type_test")
             .dynamicTypeScaling()
     }
     .padding()

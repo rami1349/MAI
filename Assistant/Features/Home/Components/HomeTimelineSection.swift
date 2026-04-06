@@ -40,7 +40,7 @@ struct HomeTimelineSection: View {
                                 .fill(Color.accentPrimary.opacity(0.1))
                         )
                     
-                    Text( "todayTomorrow")
+                    Text("today_tomorrow_events")
                         .font(DS.Typography.subheading())
                         .foregroundStyle(.textPrimary)
                     
@@ -74,12 +74,12 @@ struct HomeTimelineSection: View {
                     VStack(alignment: .leading, spacing: DS.Spacing.lg) {
                         // Today section
                         if !todayItems.isEmpty {
-                            timelineGroup(title: "Today", items: todayItems)
+                            timelineGroup(title: String(localized: "today"), items: todayItems)
                         }
                         
                         // Tomorrow section
                         if !tomorrowItems.isEmpty {
-                            timelineGroup(title: "Tomorrow", items: tomorrowItems)
+                            timelineGroup(title: String(localized: "tomorrow"), items: tomorrowItems)
                         }
                     }
                     .padding(.horizontal, DS.Spacing.screenH)
@@ -143,11 +143,11 @@ struct HomeTimelineSection: View {
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text( "clear_schedule")
+                Text("clear_schedule")
                     .font(DS.Typography.body())
                     .foregroundStyle(.textSecondary)
                 
-                Text( "nothing_scheduled_for_today")
+                Text("nothing_scheduled_for_today_or_tomorrow")
                     .font(DS.Typography.caption())
                     .foregroundStyle(.textTertiary)
             }

@@ -1,19 +1,17 @@
 //
 //  HomeView.swift
+//  PURPOSE:
+//    Root container for the Home tab. Selects between iPhone and iPad
+//    layouts and injects shared state (greeting, progress, derived data).
 //
-//  v3: NAVIGATION VIA ROUTER
+//  ARCHITECTURE ROLE:
+//    Coordinator view — owns no data, delegates to HomeIphone/HomeIpad.
+//    Reads AuthViewModel and FamilyViewModel from environment.
 //
-//  WHAT CHANGED (v2 → v3):
-//    - resetTrigger parameter: REMOVED
-//    - 7 navigation @State vars: REMOVED
-//      (showNotifications, showTodayTasks, showTaskGroup, selectedTask,
-//       showAddTask, showAddHabit, showAddEvent)
-//    - applyNavigationDestinations/applySheets: REMOVED
-//      (destinations now declared at NavigationStack level in MainTab*Content)
-//      (sheets now centralized in MainTabView)
-//    - .onReceive(.dismissTaskSheets): REMOVED (router.dismissSheet())
-//    - .onChange(of: resetTrigger): REMOVED (router.popToRoot())
-//    - All data logic, derived state, fingerprint, etc: UNCHANGED
+//  DATA FLOW:
+//    AuthViewModel.currentUser → greeting
+//    FamilyViewModel child VMs → tasks, events, habits
+//    HomeDerivedState → computed sections for layout
 //
 
 import SwiftUI
@@ -57,10 +55,10 @@ struct HomeView: View {
     @State private var rebuildTask: Task<Void, Never>?
     @State private var pendingEventRecompute = false
     
-    /// Cheap fingerprint combining all data source counts + identity.
+    /// Fingerprint combining data source identity + content.
+    /// Hashes task statuses so status changes (todo → completed) trigger rebuild.
     private var dataFingerprint: Int {
         var hasher = Hasher()
-        hasher.combine(taskVM.allTasks.count)
         hasher.combine(taskVM.isLoading)
         hasher.combine(habitVM.habits.count)
         hasher.combine(familyMemberVM.familyMembers.count)
@@ -69,6 +67,12 @@ struct HomeView: View {
         hasher.combine(eventKitService.events.count)
         hasher.combine(eventKitService.holidayEvents.count)
         hasher.combine(Calendar.current.component(.day, from: calendarVM.selectedDate))
+        // FIX: Include task identity + status so status changes trigger rebuild.
+        // Previously only hashed .count — a task completing didn't change the count.
+        for task in taskVM.allTasks {
+            hasher.combine(task.id)
+            hasher.combine(task.status)
+        }
         return hasher.finalize()
     }
     
@@ -169,58 +173,6 @@ struct HomeView: View {
         }
     }
     
-    // MARK: - Shared Components
-    
-    var headerSection: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: DS.Spacing.xs) {
-                // Date (small, muted) - on top
-                Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()))
-                    .font(DS.Typography.caption())
-                    .foregroundStyle(.textTertiary)
-                
-                // Large greeting with name
-                Text("\(greetingText), \(authVM.currentUser?.displayName ?? "")!")
-                    .font(DS.Typography.displayMedium())
-                    .foregroundStyle(.textPrimary)
-            }
-            
-            Spacer()
-            
-            // Notification button → router
-            Button(action: { router.present(.notifications) }) {
-                ZStack(alignment: .topTrailing) {
-                    Image(systemName: "bell")
-                        .font(DS.Typography.heading())
-                        .foregroundStyle(.textPrimary)
-                        .frame(width: 44, height: 44)
-                        .background(
-                            Circle()
-                                .fill(Color.themeCardBackground)
-                                .elevation1()
-                        )
-                    
-                    if notificationVM.unreadCount > 0 {
-                        Circle()
-                            .fill(Color.accentPrimary)
-                            .frame(width: 10, height: 10)
-                            .offset(x: 2, y: 2)
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, isRegularWidth ? 0 : DS.Spacing.screenH)
-    }
-    
-    var greetingText: String {
-        let hour = Calendar.current.component(.hour, from: .now)
-        switch hour {
-        case 0..<12: return "good_morning"
-        case 12..<17: return "good_afternoon"
-        default: return "good_evening"
-        }
-    }
-    
     // MARK: - Data Methods
     
     /// Debounced rebuild: cancels pending work, waits 150ms, then executes once.
@@ -240,13 +192,16 @@ struct HomeView: View {
     
     func loadData() async {
         let today = Date.now
-        let startOfWeek = today.startOfWeek
-        let endOfWeek = Calendar.current.date(byAdding: .day, value: 6, to: startOfWeek) ?? .now
         let calendar = Calendar.current
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
         let startOfNextMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
         
-        async let habitLogs: () = familyVM.loadHabitLogs(from: startOfWeek, to: endOfWeek)
+        // FIX: Load 90 days of habit logs so streak calculation can walk back
+        // beyond the current week. Previously loaded only startOfWeek..endOfWeek
+        // which capped visible streaks at 7 days.
+        let streakLookback = calendar.date(byAdding: .day, value: -90, to: today) ?? today
+        
+        async let habitLogs: () = familyVM.loadHabitLogs(from: streakLookback, to: today)
         async let eventKit: () = eventKitService.loadEvents()
         async let calendarEvents: () = familyVM.loadCalendarEvents(from: startOfMonth, to: startOfNextMonth)
         
@@ -258,11 +213,23 @@ struct HomeView: View {
     
     func refreshData() async {
         DS.Haptics.light()
-        if let familyId = authVM.currentUser?.familyId,
-           let userId = authVM.currentUser?.id {
-            await familyVM.loadFamilyData(familyId: familyId, userId: userId)
+        
+        // FIX: Previous implementation called familyVM.loadFamilyData() which has a
+        // `guard currentFamilyId != familyId` early return — making pull-to-refresh
+        // a no-op since the family never changes. Now reload task and event data directly.
+        let today = Date.now
+        let calendar = Calendar.current
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        let startOfNextMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth)!
+        
+        if let familyId = authVM.currentUser?.familyId {
+            await taskVM.loadTasks(familyId: familyId)
         }
+        await familyVM.loadCalendarEvents(from: startOfMonth, to: startOfNextMonth)
         await eventKitService.refreshEvents()
+        
+        recomputeUpcomingEvents()
+        rebuildDerived()
     }
     
     func rebuildDerived() {
@@ -270,7 +237,7 @@ struct HomeView: View {
             allTasks: taskVM.activeTasks,
             userId: authVM.currentUser?.id ?? "",
             capabilities: authVM.currentUser?.resolvedCapabilities
-                ?? CapabilityPreset.standard.capabilities(),
+            ?? CapabilityPreset.standard.capabilities(),
             members: familyMemberVM.familyMembers,
             groups: familyMemberVM.taskGroups,
             upcomingEvents: cachedUpcomingEvents,
@@ -323,7 +290,9 @@ struct HomeView: View {
                 task.status == .completed &&
                 task.isAssigned(to: userId) &&
                 task.hasReward &&
-                task.dueDate >= startOfWeek
+                // FIX: Use completedAt for weekly earnings, not dueDate.
+                // An overdue task completed this week should count.
+                (task.completedAt ?? task.dueDate) >= startOfWeek
             }
             .compactMap { $0.rewardAmount }
             .reduce(0, +)
